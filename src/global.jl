@@ -1,4 +1,4 @@
-function Global_K(mesh::Mesh; x=Float64[]; p=1.0)
+function Global_K(mesh::Mesh; x=Float64[], p=1.0)
 
     # Alias
     bmesh = mesh.bmesh
