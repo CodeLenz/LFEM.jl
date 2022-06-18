@@ -16,3 +16,9 @@ U, F, Chol = Solve_KU(m)
 # exponent p=3.0
 x = ones(length(m.bmesh.ne))
 U, F, Chol = Solve_KU(m; x=x, p=3.0)
+
+# Stress for element 6
+Stress(m,6,U)
+
+# qp parametrization
+Stress(m,6,U;xe=0.4,p=3.0,q=2.5)
