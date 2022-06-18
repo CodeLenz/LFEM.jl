@@ -1,0 +1,10 @@
+name = "LFEM"
+uuid = "4af38767-59e5-4730-b1a5-c8cba679ba80"
+authors = ["CodeLenz <eduardobarplenz@gmail.com>"]
+version = "0.1.0"
+
+[deps]
+BMesh = "91fb467a-ecbd-11ec-0e64-1b9c3501232a"
+LMesh = "d047fe3d-8f3f-49d5-9d8c-6d96a24d56f7"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
