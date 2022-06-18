@@ -14,7 +14,7 @@ U, F, Chol = Solve_KU(m)
 
 # Add a vector of design variables and use a SIMP
 # exponent p=3.0
-x = ones(length(m.bmesh.ne))
+x = ones(m.bmesh.ne)
 U, F, Chol = Solve_KU(m; x=x, p=3.0)
 
 # Stress for element 6
