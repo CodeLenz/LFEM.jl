@@ -69,7 +69,7 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
     end #ele
 
     # Retorna a matriz global
-    return K
+    return Symmetric(K)
 
 end
 
