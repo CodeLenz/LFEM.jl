@@ -34,31 +34,12 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
     # e posicionando na K
     for ele=1:ne
 
-        # Descobre os dados do elemento
-        Ee = mesh.materials[1].Ex
-        Ae = mesh.geometries[1].A
-        Le = Length(bmesh,ele)
-        
-        # Monta a matriz local (4 × 4)
-        if etype==:truss2D
-           Ke = K_truss2D(Ee,Ae,Le)
-        elseif etype==:truss3D
-           Ke = K_truss3D(Ee,Ae,Le)
-        else
-            error("Global_K::elemento $etype ainda não implementado")
-        end
-
-        # Se for barras precisamos rotacionar
         if flag_truss
-
-            # Evaluate the rotation matrix for this element
-            Te = T_matrix(bmesh,ele)
-
-            # Rotaciona a matriz local para o sistema global 
-            Ke .= transpose(Te)*Ke*Te
-    
+           Keg = Keg_truss(mesh,ele)
+        else 
+            error("Global_K:: só truss por enquanto")
         end
-
+           
         # Determina quais são os gls GLOBAIS que são "acessados"
         # por esse elemento
         gls = DOFs(bmesh,ele) 
