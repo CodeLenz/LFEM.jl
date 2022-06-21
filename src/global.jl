@@ -45,7 +45,7 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
         gls = DOFs(bmesh,ele) 
 
         # Adiciona a matriz do elemento (rotacionada) a matriz Global
-        K[gls,gls] .= K[gls,gls] .+ Ke*(x[ele]^p)
+        K[gls,gls] .= K[gls,gls] .+ Keg*(x[ele]^p)
 
     end #ele
 
