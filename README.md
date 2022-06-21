@@ -16,10 +16,10 @@ U, F, Chol = Solve_KU(m)
 Stress(m,6,U)
 
 # Vector with stresses
-ne = mesh.bmesh.ne
+ne = m.bmesh.ne
 sigma = zeros(ne)
 for i=1:ne
-   sigma[i] = Stress(m,i,U) 
+   sigma[i] = Stress(m,i,U)[1] 
 end
 
 # Show displacements and stresses
