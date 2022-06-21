@@ -25,6 +25,18 @@ end
 # Show displacements and stresses
 plot(m;U=U,N=sigma)
 
+# It is also possible to export the results to
+# gmsh
+
+# Initilize an output file
+name = "output.pos"
+Gmsh_init(name,m)
+
+# Export stresses
+Gmsh_element_scalar(m,sigma,name,"Stress")
+
+# Export displacements
+Gmsh_nodal_vector(m,U,name,"Displacement")
 
 # Add a vector of design variables and use a SIMP
 # exponent p=3.0
