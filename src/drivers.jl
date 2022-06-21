@@ -13,3 +13,32 @@ function Stress(mesh::Mesh,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
   
 end
     
+#
+# Driver for Keg
+#
+function Keg_truss(mesh::Mesh,ele::Int64)
+  
+  # Descobre os dados do elemento
+  Ee = mesh.materials[1].Ex
+  Ae = mesh.geometries[1].A
+  Le = Length(mesh.bmesh,ele)
+        
+  # Monta a matriz local (4 × 4)
+  if etype==:truss2D
+     Ke = K_truss2D(Ee,Ae,Le)
+  elseif etype==:truss3D
+     Ke = K_truss3D(Ee,Ae,Le)
+  else
+     error("Keg_truss::elemento $etype ainda não implementado")
+  end
+
+  # Evaluate the rotation matrix for this element
+  Te = T_matrix(mesh.bmesh,ele)
+
+  # Rotaciona a matriz local para o sistema global 
+  Ke .= transpose(Te)*Ke*Te
+ 
+  # Retorna a matriz global
+  return Ke
+  
+end
