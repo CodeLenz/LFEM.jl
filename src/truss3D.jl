@@ -23,14 +23,10 @@ function Stress_truss3D(mesh::Mesh3D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,
 
     # Descobre os dados do elemento
     Ee = mesh.materials[1].Ex
-    Ae = mesh.geometries[1].A
     Le = Length(mesh.bmesh,ele)
 
     # Matriz B do elemento
     B = B_truss3D(Le)
-
-    # Monta a matriz de rigidez local
-    Ke = K_truss3D(Ee,Ae,Le)
 
     # Matriz de rotação
     Te = T_matrix(mesh.bmesh,ele)
