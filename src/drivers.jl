@@ -22,7 +22,10 @@ function Keg_truss(mesh::Mesh,ele::Int64)
   Ee = mesh.materials[1].Ex
   Ae = mesh.geometries[1].A
   Le = Length(mesh.bmesh,ele)
-        
+     
+  # Element type
+  etype = mesh.bmesh.etype
+  
   # Monta a matriz local (4 × 4)
   if etype==:truss2D
      Ke = K_truss2D(Ee,Ae,Le)
