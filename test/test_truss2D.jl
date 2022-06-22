@@ -65,6 +65,9 @@
 
     @test s==100.0
 
-
+   # Test the driver 
+   s = Stress(m2,1,U) 
+    
+   @test s==100.0 
 
 end
