@@ -1,5 +1,6 @@
 using Test
 using BMesh, LMesh, TMeshes
+using LFEM
 using LinearAlgebra
 
 # truss2D
