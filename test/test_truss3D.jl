@@ -71,6 +71,11 @@
     s = Stress_truss3D(m3,1,U)[1]
 
     @test s==100.0
+    
+    # Test the driver 
+    s = Stress(m2,1,U) 
+    
+    @test s==100.0 
 
-
+    
 end
