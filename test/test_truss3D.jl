@@ -74,8 +74,6 @@
     
     # Test the driver 
     s = Stress(m2,1,U) 
-    
-    @test s.==[100.0] 
-
+    @test all(s.==[100.0])
     
 end
