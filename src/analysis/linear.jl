@@ -1,7 +1,7 @@
 #
 # Sequencia de chamadas para a solução do problema de equilíbrio
 #
-function Solve_KU(mesh::Mesh; x=Float64[], p=1.0)
+function Solve_linear(mesh::Mesh; x=Float64[], p=1.0)
   
     # Assembly
     K = Global_K(mesh;x=x,p=p)
