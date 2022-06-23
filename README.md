@@ -9,8 +9,11 @@ using LFEM
 # Load Simply supported 2D from TMeshes
 m = Simply_supported2D(6,6)
 
-# Solve the linear system 
+# Solve the linear static equilibrium
 U, F, Chol = Solve_linear(m)
+
+# Solve the modal problem
+λ, ϕ = Solve_modal(m)
 
 # Stress for element 6
 Stress(m,6,U)
@@ -37,6 +40,9 @@ Gmsh_element_scalar(m,sigma,name,"Stress")
 
 # Export displacements
 Gmsh_nodal_vector(m,U,name,"Displacement")
+
+# Export modes
+Gmsh_nodal_vector(m,vec(ϕ[:,1]),name,"First mode, λ=$(λ[1])")
 
 # Add a vector of design variables and use a SIMP
 # exponent p=3.0
