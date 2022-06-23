@@ -3,7 +3,7 @@
 #
 # nev -> number of modes
 # which=:SM -> Smaller in magnitude
-function Solve_Modal(mesh::Mesh, nev=4, which=:SM; x=Float64[], p=1.0)
+function Solve_modal(mesh::Mesh, nev=4, which=:SM; x=Float64[], p=1.0)
   
     # Assembly K and M
     K = Global_K(mesh;x=x,p=p)
@@ -24,7 +24,7 @@ function Solve_Modal(mesh::Mesh, nev=4, which=:SM; x=Float64[], p=1.0)
     if isa(mesh,Mesh3D)
         dim=3
     end
-    modes = zeros(dim*mesh.nn,nev)
+    modes = zeros(dim*mesh.bmesh.nn,nev)
     for j=1:nev
       modes[free_dofs,j] .= ϕ[:,j]
     end
