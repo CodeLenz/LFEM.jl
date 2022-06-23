@@ -47,7 +47,7 @@ Gmsh_nodal_vector(m,vec(ϕ[:,1]),name,"First mode, λ=$(λ[1])")
 # Add a vector of design variables and use a SIMP
 # exponent p=3.0
 x = ones(m.bmesh.ne)
-U, F, Chol = Solve_KU(m; x=x, p=3.0)
+U, F, Chol = Solve_linear(m; x=x, p=3.0)
 
 # qp parametrization
 Stress(m,6,U;xe=0.4,p=3.0,q=2.5)
