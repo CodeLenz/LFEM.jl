@@ -56,26 +56,59 @@ end
 
 
 
-#
-# Sequencia de chamadas para a solução do problema de equilíbrio
-#
-function Solve_KU(mesh::Mesh; x=Float64[], p=1.0)
-  
-    # Assembly
-    K = Global_K(mesh;x=x,p=p)
-    F = Point_load(mesh)
 
-    # Free dofs
-    free_dofs = mesh.free_dofs
+
+ function Global_M(mesh::Mesh; x=Float64[])
+
+    # Alias
+    bmesh = mesh.bmesh
+    ne = bmesh.ne
+
+    # Basic test for x
+    if isempty(x)
+        x = ones(ne)
+    end
     
-    # Solve just for free dofs
-    Chol = cholesky(K[free_dofs,free_dofs])
-    Ul = Chol\F[free_dofs]
-    
-    # Expand homogeneous ebc
-    Us  = zeros(length(F))
-    Us[free_dofs] .= Ul
-    
-    return Us, F, Chol
-    
- end
+    # Vamos reforçar a ideia de que x tem a dimensão ne
+    @assert length(x)==bmesh.ne "Global_M::x deve ter dimensão igual o número de elementos"
+
+    # Dimensão do problema
+    dim = 2
+    if isa(mesh,Mesh3D)
+        dim=3
+    end
+
+    # Tipo de elemento
+    etype = bmesh.etype
+
+    # Primeira coisa é alocar a matriz M 
+    ng = dim*bmesh.nn
+    M = spzeros(ng,ng)
+
+    # Flag se for barras
+    flag_truss = contains(string(etype),"truss")
+
+    # Loop pelos elementos, calculando a matriz local Me de cada um
+    # e posicionando na M
+    for ele=1:ne
+
+        if flag_truss
+           Meg = Meg_truss(mesh,ele)
+        else 
+            error("Global_M:: só truss por enquanto")
+        end
+           
+        # Determina quais são os gls GLOBAIS que são "acessados"
+        # por esse elemento
+        gls = DOFs(bmesh,ele) 
+
+        # Adiciona a matriz do elemento (rotacionada) a matriz Global
+        M[gls,gls] .= M[gls,gls] .+ Meg*(x[ele])
+
+    end #ele
+
+    # Retorna a matriz global
+    return Symmetric(M)
+
+end
+
