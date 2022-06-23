@@ -20,7 +20,11 @@ function Solve_Modal(mesh::Mesh, nev=4, which=:SM; x=Float64[], p=1.0)
     λ, ϕ = eigs(Symmetric(KV),Symmetric(MV),nev=nev,which=which)
 
     # Expand the modes to the full mesh
-    modes = zero(ϕ)
+    dim = 2
+    if isa(mesh,Mesh3D)
+        dim=3
+    end
+    modes = zeros(dim*mesh.nn,nev)
     for j=1:nev
       modes[free_dofs,j] .= ϕ[:,j]
     end
