@@ -41,7 +41,42 @@ function Keg_truss(mesh::Mesh,ele::Int64)
   # Rotaciona a matriz local para o sistema global 
   Ke .= transpose(Te)*Ke*Te
  
-  # Retorna a matriz global
+  # Retorna a matriz local no sistema global
   return Ke
   
 end
+
+
+#
+# Driver for Meg
+#
+function Meg_truss(mesh::Mesh,ele::Int64)
+  
+   # Descobre os dados do elemento
+   dense = mesh.materials[1].density
+   Ae = mesh.geometries[1].A
+   Le = Length(mesh.bmesh,ele)
+      
+   # Element type
+   etype = mesh.bmesh.etype
+   
+   # Monta a matriz local (4 × 4)
+   if etype==:truss2D
+      Me = M_truss2D(dense,Ae,Le)
+   elseif etype==:truss3D
+      Me = M_truss3D(dense,Ae,Le)
+   else
+      error("Meg_truss::elemento $etype ainda não implementado")
+   end
+ 
+   # Evaluate the rotation matrix for this element
+   Te = T_matrix(mesh.bmesh,ele)
+ 
+   # Rotaciona a matriz local para o sistema global 
+   Me .= transpose(Te)*Me*Te
+  
+   # Retorna a matriz local no sistema global
+   return Me
+   
+ end
+ 
