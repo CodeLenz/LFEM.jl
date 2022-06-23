@@ -13,11 +13,11 @@ function Solve_Modal(mesh::Mesh, nev=4, which=:SM; x=Float64[], p=1.0)
     free_dofs = mesh.free_dofs
     
     # Local views to the free dofs
-    KV = @view Symmetric(K[free_dofs, free_dofs])
-    MV = @view Symmetric(M[free_dofs, free_dofs])
+    KV = @view  K[free_dofs, free_dofs]
+    MV = @view  M[free_dofs, free_dofs]
 
     # Solve using Arpack
-    λ, ϕ = eigs(KV,MV,nev=nev,which=which)
+    λ, ϕ = eigs(Symmetric(KV),Symmetric(MV),nev=nev,which=which)
 
     # Expand the modes to the full mesh
     modes = zero(ϕ)
