@@ -34,7 +34,7 @@
     nbc = [2 1 100.0]
 
     # Material and geometry
-    materials = [Material(Ex=100.0)]
+    materials = [Material(Ex=100.0,density=1.0)]
     geometries = [Geometry(A=1.0)]
            
     # Mesh
@@ -75,5 +75,21 @@
     # Test the driver 
     s = Stress(m3,1,U) 
     @test all(s.==[100.0])
+
     
+    # Test local mass matrix
+    M = M_truss3D(1.0,5.0,0.1)
+
+    # Reference
+    cte = (1.0*5.0*0.1)/2
+    refer = cte*[1.0 0.0 0.0  0.0 0.0 0.0;
+                 0.0 1.0 0.0  0.0 0.0 0.0;
+                 0.0 0.0 1.0  0.0 0.0 0.0;
+                 0.0 0.0 0.0  1.0 0.0 0.0;
+                 0.0 0.0 0.0  0.0 1.0 0.0;
+                 0.0 0.0 0.0  0.0 0.0 1.0]
+
+    @test all(M.==refer)
+
+
 end
