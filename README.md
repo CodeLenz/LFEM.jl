@@ -10,7 +10,7 @@ using LFEM
 m = Simply_supported2D(6,6)
 
 # Solve the linear system 
-U, F, Chol = Solve_KU(m)
+U, F, Chol = Solve_linear(m)
 
 # Stress for element 6
 Stress(m,6,U)
