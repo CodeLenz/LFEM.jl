@@ -36,14 +36,14 @@ name = "output.pos"
 Gmsh_init(name,m)
 
 # Export stresses
-Gmsh_element_scalar(m,sigma,name,"Stress")
+Gmsh_element_scalar(m,sigma,name,"Stress [Pa]")
 
 # Export displacements
-Gmsh_nodal_vector(m,U,name,"Displacement")
+Gmsh_nodal_vector(m,U,name,"Displacement [m]")
 
 # Export modes
 w1 = sqrt(real(λ[1]))
-Gmsh_nodal_vector(m,vec(ϕ[:,1]),name,"First mode, w=$w1")
+Gmsh_nodal_vector(m,vec(ϕ[:,1]),name,"First mode, w=$w1 [rad/s]")
 
 # Add a vector of design variables and use a SIMP
 # exponent p=3.0
