@@ -16,7 +16,7 @@ function Solve_linear(mesh::Mesh; x=Float64[], p=1.0)
     
     # Expand homogeneous ebc
     Us  = zeros(length(F))
-    Us[free_dofs] .= Ul
+    Expand_vector!(Us,Ul,free_dofs)
     
     return Us, F, Chol
     
