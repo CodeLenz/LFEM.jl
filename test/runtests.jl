@@ -3,6 +3,9 @@ using BMesh, LMesh, TMeshes
 using LFEM
 using LinearAlgebra
 
+# base
+include("test_base.jl")
+
 # truss2D
 include("test_truss2D.jl")
 
