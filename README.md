@@ -44,9 +44,6 @@ using LFEM
 # Load Simply supported 2D from TMeshes
 m = Simply_supported2D(6,6)
 
-# Load Simply supported 2D from TMeshes
-m = Simply_supported2D(6,6)
-
 # Solve the linear static equilibrium
 U, F, Chol = Solve_linear(m)
 
@@ -81,8 +78,8 @@ Modal analysis
 using BMesh, LMesh, TMeshes, Plots
 using LFEM
 
-# Load Simply supported 2D from TMeshes
-m = Simply_supported2D(6,6)
+# Load Simply supported 3D from TMeshes
+m = Simply_supported3D(6,6,6)
 
 # Solve the modal problem with default parameters
 λ, ϕ = Solve_modal(m)
@@ -120,9 +117,9 @@ name = "output.pos"
 Gmsh_init(name,m)
 
 # Export to gmsh
-Gmsh_nodal_vector(m,real.(Ud),name,"Harmonic response - real part")
-Gmsh_nodal_vector(m,imag.(Ud),name,"Harmonic response - imag part")
-Gmsh_nodal_vector(m,abs.(Ud),name,"Harmonic response - abs")
+Gmsh_nodal_vector(m,real.(Ud),name,"Harmonic displacement - real part")
+Gmsh_nodal_vector(m,imag.(Ud),name,"Harmonic displacement - imag part")
+Gmsh_nodal_vector(m,abs.(Ud),name,"Harmonic displacement - abs")
 
 ```
 
