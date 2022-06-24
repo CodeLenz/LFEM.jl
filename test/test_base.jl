@@ -22,11 +22,11 @@
   
   u = ones(5)
   pos = [1;3;4;8;10]
-  @test all(Expand_vector(u,pos).==[1.0;0.0;1.0;1.0;0.0;0.0;0.0;1.0;0.0;1.0])
+  @test all(Expand_vector(u,10,pos).==[1.0;0.0;1.0;1.0;0.0;0.0;0.0;1.0;0.0;1.0])
   
   # Should throw - length of u and pos2 are different
   pos2 = [1;2]
-  @test_throws String Expand_vector(u,pos2)
+  @test_throws String Expand_vector(u,10,pos2)
   
   
   
