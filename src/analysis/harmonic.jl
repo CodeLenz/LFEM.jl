@@ -10,6 +10,9 @@ function Solve_harmonic(mesh::Mesh, w::Float64 ; x=Float64[], p=1.0)
     K = Global_K(mesh;x=x,p=p)
     M = Global_M(mesh;x=x)
 
+    # total size
+    nfull = size(K,1)
+  
     # Assembly F
     F = Point_load(mesh)
 
@@ -33,7 +36,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64 ; x=Float64[], p=1.0)
     Ul = LU\F[free_dofs]
 
     # Expand 
-    Ud = Expand_vector(Ul,free_dofs)
+    Ud = Expand_vector(Ul,nfull,free_dofs)
     
     # Return
     return Ud, LU
