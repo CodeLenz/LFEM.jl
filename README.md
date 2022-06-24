@@ -126,3 +126,36 @@ Gmsh_nodal_vector(m,abs.(Ud),name,"Harmonic response - abs")
 
 ```
 
+Transient  analysis - Newmark method
+```julia
+
+using BMesh, LMesh, TMeshes, Plots
+using LFEM
+
+# Load Simply supported 2D from TMeshes
+m = Simply_supported2D(6,6)
+
+# We need to define a function that modifies a force
+# vector according to time t
+function f!(t,F,m)
+         P  = Point_load(m)
+         F .= cos(2*t)*P
+end
+
+# And a list of nodes/dofs to monitor. Lets monitor 
+# the same DOF as the load
+node = m.nbc[1,1]
+dof  = m.nbc[1,2]
+monitor = [node dof]
+
+# timespan [s]
+tspan = (0.0,5.0)
+
+# Solve the transisent problem
+U,V,A,T = Solve_newmark(n,f!,monitor,tspan)
+
+# Plot displacement 
+plot(T,U)
+
+```
+
