@@ -15,7 +15,7 @@ end
 function Expand_vector(v::Vector{T},dim::Int64,free_dofs::Vector{Int64}) where {T}
 
     V = zeros(T,dim)
-    Expand!(V,v,free_dofs)
+    Expand_vector!(V,v,free_dofs)
     return V
 
 end
