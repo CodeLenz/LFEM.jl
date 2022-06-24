@@ -13,7 +13,7 @@
 #
 #
 #
-function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, Δt::Float64, Tf::Float64;
+function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple(Float64,Float64), Δt::Float64;
                  x=Float64[], U0=Float64[], V0=Float64[], β=1/4, γ=1/2, p=1.0)
 
 
@@ -22,7 +22,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, Δt::Float6
     #             
 
     # Tspan
-    tspan = 0.0:Δt:Tf
+    
+    t0,tf = ts
+    tspan = t0:Δt:tf
 
     # Number of time steps
     nt = length(tspan)
@@ -104,7 +106,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, Δt::Float6
     #
 
     # Initial force
-    f!(0.0,F,mesh)
+    f!(t0,F,mesh)
 
     # Lets make a final consistency test
     @assert length(F)==nfull "Function f!(t,F) must return a $nfull length vector F"
@@ -122,7 +124,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, Δt::Float6
     A_A = Array{Float64}(undef,nt+1,ndofs)
 
     # Store initial values
-    A_t[1]    = 0.0
+    A_t[1]    = t0
     A_U[1,:] .= U0[dofs]
     A_V[1,:] .= V0[dofs]
     A_A[1,:] .= A0[dofs]
