@@ -1,7 +1,7 @@
 #
 # Sequencia de chamadas para a solução do problema harmônico
 #
-function Solve_modal(mesh::Mesh, w::Float64 ; x=Float64[], p=1.0)
+function Solve_harmonic(mesh::Mesh, w::Float64 ; x=Float64[], p=1.0)
   
     # Basic check
     w >= 0.0 || throw("Solve_modal:: angular frequency w must be positive")
