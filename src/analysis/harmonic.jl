@@ -33,7 +33,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64 ; x=Float64[], p=1.0)
     Ul = LU\F[free_dofs]
 
     # Expand 
-    Ud = Expand_vector!(Ul,free_dofs)
+    Ud = Expand_vector(Ul,free_dofs)
     
     # Return
     return Ud, LU
