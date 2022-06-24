@@ -13,7 +13,7 @@
 #
 #
 #
-function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple(Float64,Float64), Δt::Float64;
+function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64;
                  x=Float64[], U0=Float64[], V0=Float64[], β=1/4, γ=1/2, p=1.0)
 
 
