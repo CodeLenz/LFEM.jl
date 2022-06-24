@@ -12,7 +12,7 @@ function Expand_vector!(V::Vector{T},v::Vector{T},free_dofs::Vector{Int64}) wher
 end
 
 
-function Expand_vector(v::Vector{T},dim::Int64,free_dofs::Vector{Int65}) where {T}
+function Expand_vector(v::Vector{T},dim::Int64,free_dofs::Vector{Int64}) where {T}
 
     V = zeros(T,dim)
     Expand!(V,v,free_dofs)
