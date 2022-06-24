@@ -168,8 +168,3 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple(F
 end 
 
 
-#=
-
-
-
-=#
