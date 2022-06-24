@@ -1,6 +1,7 @@
 # LFEM
 Basic routines for FEM
 
+Linear elastic analysis in 2D
 ```julia
 
 using BMesh, LMesh, TMeshes, Plots
@@ -12,11 +13,42 @@ m = Simply_supported2D(6,6)
 # Solve the linear static equilibrium
 U, F, Chol = Solve_linear(m)
 
-# Solve the modal problem
-λ, ϕ = Solve_modal(m)
+# Show displacements
+plot(m;U=U)
 
-# Stress for element 6
-Stress(m,6,U)
+```
+
+Linear elastic analysis in 3D
+```julia
+
+using BMesh, LMesh, TMeshes, Plots
+using LFEM
+
+# Load Simply supported 3D from TMeshes
+m = Simply_supported3D(6,6,6)
+
+# Solve the linear static equilibrium
+U, F, Chol = Solve_linear(m)
+
+# Show displacements
+plot(m;U=U)
+
+```
+
+Stresses
+```julia
+
+using BMesh, LMesh, TMeshes, Plots
+using LFEM
+
+# Load Simply supported 2D from TMeshes
+m = Simply_supported2D(6,6)
+
+# Load Simply supported 2D from TMeshes
+m = Simply_supported2D(6,6)
+
+# Solve the linear static equilibrium
+U, F, Chol = Solve_linear(m)
 
 # Vector with stresses
 ne = m.bmesh.ne
@@ -41,14 +73,56 @@ Gmsh_element_scalar(m,sigma,name,"Stress [Pa]")
 # Export displacements
 Gmsh_nodal_vector(m,U,name,"Displacement [m]")
 
-# Export modes
+```
+
+Modal analysis
+```julia
+
+using BMesh, LMesh, TMeshes, Plots
+using LFEM
+
+# Load Simply supported 2D from TMeshes
+m = Simply_supported2D(6,6)
+
+# Solve the modal problem with default parameters
+λ, ϕ = Solve_modal(m)
+
+# It is also possible to export the results to
+# gmsh (https://gmsh.info/)
+
+# Initilize an output file
+name = "output.pos"
+Gmsh_init(name,m)
+
+# Export first mode
 w1 = sqrt(real(λ[1]))
 Gmsh_nodal_vector(m,vec(ϕ[:,1]),name,"First mode, w=$w1 [rad/s]")
 
-# Add a vector of design variables and use a SIMP
-# exponent p=3.0
-x = ones(m.bmesh.ne)
-U, F, Chol = Solve_linear(m; x=x, p=3.0)
+```
 
-# qp parametrization
-Stress(m,6,U;xe=0.4,p=3.0,q=2.5)
+Harmonic analysis
+```julia
+
+using BMesh, LMesh, TMeshes, Plots
+using LFEM
+
+# Load Simply supported 2D from TMeshes
+m = Simply_supported2D(6,6)
+
+# Angular frequency [rad/s]
+w = 20.0
+
+# Solve the harmonic problem
+Ud,LU = Solve_harmonic(m,w)
+
+# Initilize an output file
+name = "output.pos"
+Gmsh_init(name,m)
+
+# Export to gmsh
+Gmsh_nodal_vector(m,real.(Ud),name,"Harmonic response - real part")
+Gmsh_nodal_vector(m,imag.(Ud),name,"Harmonic response - imag part")
+Gmsh_nodal_vector(m,abs.(Ud),name,"Harmonic response - abs")
+
+```
+
