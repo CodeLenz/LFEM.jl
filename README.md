@@ -136,7 +136,8 @@ using LFEM
 m = Simply_supported2D(6,6)
 
 # We need to define a function that modifies a force
-# vector according to time t
+# vector according to time t. Lets use the same point
+# load as the static example, but with a cos(2*t) 
 function f!(t,F,m)
          P  = Point_load(m)
          F .= cos(2*t)*P
@@ -151,8 +152,11 @@ monitor = [node dof]
 # timespan [s]
 tspan = (0.0,5.0)
 
+# Interval
+dt = 1E-2
+
 # Solve the transisent problem
-U,V,A,T = Solve_newmark(n,f!,monitor,tspan)
+U,V,A,T = Solve_newmark(m,f!,monitor,tspan,dt)
 
 # Plot displacement 
 plot(T,U)
