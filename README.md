@@ -145,8 +145,8 @@ end
 
 # And a list of nodes/dofs to monitor. Lets monitor 
 # the same DOF as the load
-node = m.nbc[1,1]
-dof  = m.nbc[1,2]
+node = Int(m.nbc[1,1])
+dof  = Int(m.nbc[1,2])
 monitor = [node dof]
 
 # timespan [s]
@@ -159,7 +159,7 @@ dt = 1E-2
 U,V,A,T = Solve_newmark(m,f!,monitor,tspan,dt)
 
 # Plot displacement 
-plot(T,U)
+plot(T,U,xlabel="time [s]",ylabel="Displacement [m]", label="")
 
 ```
 
