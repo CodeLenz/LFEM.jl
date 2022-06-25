@@ -49,6 +49,27 @@ function Keg_truss(mesh::Mesh,ele::Int64)
   
 end
 
+#
+# Driver for Keg solid
+#
+function Keg_solid(mesh::Mesh,ele::Int64)
+  
+   # Element type
+   etype = mesh.bmesh.etype
+   
+   # Monta a matriz local 
+   if etype==:solid2D
+      Ke = K_solid2D(mesh,ele)
+   else
+      error("Keg_solid::elemento $etype ainda não implementado")
+   end
+ 
+   # Retorna a matriz local no sistema global
+   return Ke
+   
+ end
+ 
+
 
 #
 # Driver for Meg
@@ -83,6 +104,26 @@ function Meg_truss(mesh::Mesh,ele::Int64)
    # Rotaciona a matriz local para o sistema global 
    Me .= transpose(Te)*Me*Te
   
+   # Retorna a matriz local no sistema global
+   return Me
+   
+ end
+ 
+#
+# Driver for Meg solid
+#
+function Meg_solid(mesh::Mesh,ele::Int64)
+  
+   # Element type
+   etype = mesh.bmesh.etype
+   
+   # Monta a matriz local 
+   if etype==:solid2D
+      Me = M_solid2D(mesh,ele)
+   else
+      error("Meg_solid::elemento $etype ainda não implementado")
+   end
+ 
    # Retorna a matriz local no sistema global
    return Me
    
