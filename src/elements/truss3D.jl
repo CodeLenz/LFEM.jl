@@ -34,7 +34,8 @@ end
 function Stress_truss3D(mesh::Mesh3D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
 
     # Descobre os dados do elemento
-    Ee = mesh.materials[1].Ex
+    mat = mesh.mat_ele[ele]
+    Ee = mesh.materials[mat].Ex
     Le = Length(mesh.bmesh,ele)
 
     # Matriz B do elemento
