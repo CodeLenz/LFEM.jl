@@ -1,7 +1,7 @@
 # LFEM
 Basic routines for FEM
 
-Linear elastic analysis in 2D
+Linear elastic analysis in 2D - truss
 ```julia
 
 using BMesh, LMesh, TMeshes, Plots
@@ -15,6 +15,30 @@ U, F, Chol = Solve_linear(m)
 
 # Show displacements
 plot(m;U=U)
+
+```
+
+Linear elastic analysis in 2D - Plane Stress
+```julia
+
+using BMesh, LMesh, TMeshes, Plots
+using LFEM
+
+# Load Simply supported 2D from TMeshes
+m = Simply_supported2D(6,6,:solid2D)
+
+# Solve the linear static equilibrium
+U, F, Chol = Solve_linear(m)
+
+# It is also possible to export the results to
+# gmsh (https://gmsh.info/)
+
+# Initilize an output file
+name = "output.pos"
+Gmsh_init(name,m)
+
+# Export displacements
+Gmsh_nodal_vector(m,U,name,"Displacement [m]")
 
 ```
 
