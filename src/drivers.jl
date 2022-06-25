@@ -19,8 +19,11 @@ end
 function Keg_truss(mesh::Mesh,ele::Int64)
   
   # Descobre os dados do elemento
-  Ee = mesh.materials[1].Ex
-  Ae = mesh.geometries[1].A
+  mat = mesh.mat_ele[ele]
+  Ee = mesh.materials[mat].Ex
+  
+  geo = mesh.geo_ele[ele]
+  Ae = mesh.geometries[geo].A
   Le = Length(mesh.bmesh,ele)
      
   # Element type
@@ -53,8 +56,13 @@ end
 function Meg_truss(mesh::Mesh,ele::Int64)
   
    # Descobre os dados do elemento
-   dense = mesh.materials[1].density
-   Ae = mesh.geometries[1].A
+   mat = mesh.mat_ele[ele]
+   Ee = mesh.materials[mat].Ex
+   dense = mesh.materials[mat].density
+   
+   geo = mesh.geo_ele[ele]
+   Ae = mesh.geometries[geo].A
+ 
    Le = Length(mesh.bmesh,ele)
       
    # Element type
