@@ -37,7 +37,7 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
         if flag_truss
            Keg = Keg_truss(mesh,ele)
         else 
-            error("Global_K:: só truss por enquanto")
+           Keg = Keg_solid(mesh,ele)
         end
            
         # Determina quais são os gls GLOBAIS que são "acessados"
@@ -53,8 +53,6 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
     return Symmetric(K)
 
 end
-
-
 
 
 
@@ -95,7 +93,7 @@ end
         if flag_truss
            Meg = Meg_truss(mesh,ele)
         else 
-            error("Global_M:: só truss por enquanto")
+           Meg = Meg_solid2D(mesh,ele)
         end
            
         # Determina quais são os gls GLOBAIS que são "acessados"
