@@ -37,15 +37,12 @@ function Gmsh_init(nome_arquivo::String,mesh::Mesh)
     end    
     println(saida,"\$EndNodes")
 
-    # Conectividades
-    if dim==3   
-       mesh.bmesh.etype==:truss3D || throw("Gmsh_init::invalid element type for Mesh3D")
-    end   
-
     # Element type (gmsh code)
     tipo_elemento = 1
     if mesh.bmesh.etype==:solid2D
         tipo_elemento = 3
+    elseif mesh.bmesh.etype==:solid3D
+        tipo_elemento = 5    
     end
 
     println(saida,"\$Elements")
