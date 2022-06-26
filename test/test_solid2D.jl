@@ -48,8 +48,8 @@
     # Mass matrix
     M = Meg_solid(m2,1)
     
-    # trace should be equal mass
-    @test isapprox(tr(M), mass)
+    # sum should be equal 2*mass
+    @test isapprox(sum(M), 2*mass)
 
     # Displacement
     U,_ = Solve_linear(m2)
