@@ -60,6 +60,8 @@ function Keg_solid(mesh::Mesh,ele::Int64)
    # Monta a matriz local 
    if etype==:solid2D
       Ke = K_solid2D(mesh,ele)
+   elseif etype==:solid3D
+    Ke = K_solid3D(mesh,ele)
    else
       error("Keg_solid::elemento $etype ainda não implementado")
    end
