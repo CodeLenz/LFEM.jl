@@ -9,6 +9,7 @@ include("base.jl")
 include("elements/truss2D.jl")
 include("elements/truss3D.jl")
 include("elements/solid2D.jl")
+include("elements/solid3D.jl")
 include("global.jl")
 include("drivers.jl")
 include("analysis/linear.jl")
@@ -23,6 +24,7 @@ export Expand_vector, Expand_vector!, Nodal_coordinates
 export K_truss2D, M_truss2D, B_truss2D, Stress_truss2D
 export K_truss3D, M_truss3D, B_truss3D, Stress_truss3D
 export K_solid2D, M_solid2D
+export K_solid3D, M_solid3D
 export Global_K, Global_M
 export Solve_linear, Solve_modal, Solve_harmonic, Solve_newmark
 export Stress, Keg_truss, Meg_truss, Keg_solid, Meg_solid
