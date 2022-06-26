@@ -144,7 +144,8 @@ function N_solid2D(r::T,s::T) where T
     N3 = (1/4)*(1+r)*(1+s)
     N4 = (1/4)*(1-r)*(1+s)
 
-    return [N1 N1 N2 N2 N3 N3 N4 N4]
+    return [N1 0 N2 0 N3 0 N4 0 ; 
+            0 N1 0 N2 0 N3 0 N4 ]
 
 end
 
