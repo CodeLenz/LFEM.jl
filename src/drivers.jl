@@ -122,6 +122,8 @@ function Meg_solid(mesh::Mesh,ele::Int64)
    # Monta a matriz local 
    if etype==:solid2D
       Me = M_solid2D(mesh,ele)
+  elseif etype==:solid3D
+      Me = M_solid3D(mesh,ele)
    else
       error("Meg_solid::elemento $etype ainda não implementado")
    end
