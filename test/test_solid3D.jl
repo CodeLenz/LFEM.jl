@@ -67,8 +67,8 @@
     # Mass matrix
     M = Meg_solid(m3,1)
     
-    # sum of all terms in M  should be 8*mass
-    #@test isapprox(sum(M), 8*mass)
+    # trace of M should be equal mass
+    @test isapprox(tr(M), mass)
 
     # Displacement
     U,_ = Solve_linear(m3)
