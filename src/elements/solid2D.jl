@@ -187,9 +187,15 @@ function M_solid2D(m::Mesh2D,ele,lumped=false)
         # N matrix
         N = N_solid2D(r,s)
 
+        # Derivates of N
+        dNrs = dN_solid2D(r,s)
+
+        # Jacobian matrix
+        J = Jacobian_solid2D(x,y,dNrs)
+
         # Add 
-        M .= M .+ transpose(N)*N*(dJ*thick*dens)
-        
+        M .= M .+ transpose(N)*N*(det(J)*thick*dens)
+          
     end
 
     # Return M
