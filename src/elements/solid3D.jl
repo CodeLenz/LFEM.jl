@@ -170,8 +170,9 @@ function N_solid3D(r::T,s::T,t::T) where T
     N7 = (1/8)*(1+r)*(1+s)*(1-t); 
     N8 = (1/8)*(1-r)*(1+s)*(1-t); 
 
-    return [N1 0 N2 0 N3 0 N4 0 N5 0 N6 0 N7 0 N8 0 ;
-            0 N1 0 N2 0 N3 0 N4 0 N5 0 N6 0 N7 0 N8]
+    return [N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8 0 0;
+            0 N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 N8 0 ;
+            0 0 N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8]
 
 end
 
