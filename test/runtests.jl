@@ -15,6 +15,9 @@ include("test_truss3D.jl")
 # solid2D
 include("test_solid2D.jl")
 
+# solid3D
+include("test_solid3D.jl")
+
 # load.jl
 include("test_point_load2D.jl")
 
