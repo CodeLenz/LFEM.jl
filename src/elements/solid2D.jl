@@ -56,7 +56,7 @@ function B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
     dNxy = J\dNrs
 
     # B matrix
-    B = zeros(T,3,12)
+    B = @MMatrix zeros(T,3,12)
     for j=1:6
 
         # xx
@@ -70,7 +70,7 @@ function B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
     end
 
     # Return B and detJ
-    return SMatrix{3,12,T}(B), detJ
+    return B, detJ
 
 end
 
@@ -195,7 +195,7 @@ function M_solid2D(m::Mesh2D,ele,lumped=false)
         J = Jacobian_solid2D(x,y,dNrs)
 
         # Add 
-        M .= M .+ dot(N,N)*(det(J)*thick*dens)
+        M .= M .+ N*tranpose(N)*(det(J)*thick*dens)
           
     end
 
