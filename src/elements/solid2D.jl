@@ -34,7 +34,7 @@ function Jacobian_solid2D(x::Vector{T},y::Vector{T},dN::Matrix{T}) where T
        J22 += y[i]*dN[2,i]
     end
 
-    return @SMatrix{2,2,T}([J11 J12 ; J21 J22])
+    return SMatrix{2,2,T}([J11 J12 ; J21 J22])
 
 end
 
@@ -99,7 +99,7 @@ function K_solid2D(m::Mesh2D,ele)
     νxy = m.materials[mat].νxy
     G = Ex/(2*(1+νxy))
     c = Ex/(1-νxy^2)
-    C = @SMatrix{3,3,Float64} ([  c    νxy*c 0.0 ;
+    C = SMatrix{3,3,Float64} ([  c    νxy*c 0.0 ;
                                  νxy*c  c    0.0 ;
                                   0.0  0.0    G ]   )
 
@@ -144,7 +144,7 @@ function N_solid2D(r::T,s::T) where T
     N3 = (1/4)*(1+r)*(1+s)
     N4 = (1/4)*(1-r)*(1+s)
 
-    return @SMatrix{2,8}([N1 0 N2 0 N3 0 N4 0 ; 
+    return SMatrix{2,8}([N1 0 N2 0 N3 0 N4 0 ; 
                           0 N1 0 N2 0 N3 0 N4 ])
 
 end
