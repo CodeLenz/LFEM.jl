@@ -42,10 +42,10 @@ function Keg_truss(mesh::Mesh,ele::Int64)
   Te = T_matrix(mesh.bmesh,ele)
 
   # Rotaciona a matriz local para o sistema global 
-  Ke .= transpose(Te)*Ke*Te
+  Kg = transpose(Te)*Ke*Te
  
   # Retorna a matriz local no sistema global
-  return Ke
+  return Kg
   
 end
 
@@ -104,10 +104,10 @@ function Meg_truss(mesh::Mesh,ele::Int64)
    Te = T_matrix(mesh.bmesh,ele)
  
    # Rotaciona a matriz local para o sistema global 
-   Me .= transpose(Te)*Me*Te
+   Mg = transpose(Te)*Me*Te
   
    # Retorna a matriz local no sistema global
-   return Me
+   return Mg
    
  end
  
