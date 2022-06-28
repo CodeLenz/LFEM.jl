@@ -1,11 +1,11 @@
 function K_truss3D(E,A,L)
 
-         (E*A/L)*[  1.0 0.0 0.0  -1.0 0.0 0.0;
-                    0.0 0.0 0.0   0.0 0.0 0.0; 
-                    0.0 0.0 0.0   0.0 0.0 0.0;
-                   -1.0 0.0 0.0   1.0 0.0 0.0;
-                    0.0 0.0 0.0   0.0 0.0 0.0;
-                    0.0 0.0 0.0   0.0 0.0 0.0]
+         SMatrix{6,6,Float64}((E*A/L)*[  1.0 0.0 0.0  -1.0 0.0 0.0;
+                                         0.0 0.0 0.0   0.0 0.0 0.0; 
+                                         0.0 0.0 0.0   0.0 0.0 0.0;
+                                        -1.0 0.0 0.0   1.0 0.0 0.0;
+                                         0.0 0.0 0.0   0.0 0.0 0.0;
+                                         0.0 0.0 0.0   0.0 0.0 0.0] )
 
 end
 
@@ -13,19 +13,19 @@ end
 # Local mass matrix (Lumped)
 #
 function M_truss3D(dens,A,L,lumped=true)
-    (dens*A*L/2)*[ 1.0 0.0 0.0  0.0 0.0 0.0;
-                   0.0 1.0 0.0  0.0 0.0 0.0; 
-                   0.0 0.0 1.0  0.0 0.0 0.0;
-                   0.0 0.0 0.0  1.0 0.0 0.0;
-                   0.0 0.0 0.0  0.0 1.0 0.0;
-                   0.0 0.0 0.0  0.0 0.0 1.0]
+    SMatrix{6,6,Float64}((dens*A*L/2)*[ 1.0 0.0 0.0  0.0 0.0 0.0;
+                                        0.0 1.0 0.0  0.0 0.0 0.0; 
+                                        0.0 0.0 1.0  0.0 0.0 0.0;
+                                        0.0 0.0 0.0  1.0 0.0 0.0;
+                                        0.0 0.0 0.0  0.0 1.0 0.0;
+                                        0.0 0.0 0.0  0.0 0.0 1.0] )
 end
 
 #
 # Local B matrix
 #
 function B_truss3D(L)
-    [-1/L 0.0 0.0 1/L 0.0 0.0]
+    SMatrix{1,6,Float64}([-1/L 0.0 0.0 1/L 0.0 0.0])
 end
 
 #
@@ -47,8 +47,11 @@ function Stress_truss3D(mesh::Mesh3D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,
     # Global DOFs
     gls = DOFs(mesh.bmesh,ele) 
 
-    # Local displacements
-    u = Te*U[gls]
+    # Element displacements in global reference
+    ug = SVector{6,Float64}(U[gls])
+         
+    # Element displacements in local reference
+    u = Te*ug
 
     # Stress
     (xe^(p-q))*Ee*B*u
