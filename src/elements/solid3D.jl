@@ -39,9 +39,9 @@ function Jacobian_solid3D(x::Vector{T},y::Vector{T},z::Vector{T},
        J31 += x[i]*dN[3,i]; J32 += y[i]*dN[3,i]; J33 += z[i]*dN[3,i]
     end
 
-    return [J11 J12 J13;
-            J21 J22 J23;
-            J31 J32 J33]
+    return SMatrix{3,3,T}([J11 J12 J13;
+                           J21 J22 J23;
+                           J31 J32 J33])
 
 end
 
@@ -70,7 +70,7 @@ function B_solid3D(r::T,s::T,t::T,x::Vector{T},y::Vector{T},z::Vector{T}) where 
     #    yy yz
     #       zz
 
-    B = zeros(T,6,33)
+    B = @MMatrix zeros(T,6,33)
     for j=1:11
 
         # xx
@@ -117,12 +117,12 @@ function K_solid3D(m::Mesh3D,ele)
     c0 = 1-2*νxy^2-νxy
     c2 = (Ex*νxy)/c0
     c1 = Ex/c0 - c2
-    C = [  c1    c2  c2  0.0 0.0 0.0;
-           c2    c1  c2  0.0 0.0 0.0;
-           c2    c2  c1  0.0 0.0 0.0;
-           0.0  0.0  0.0  G  0.0 0.0;
-           0.0  0.0  0.0 0.0  G  0.0;
-           0.0  0.0  0.0 0.0 0.0  G]   
+    C = SMatrix{6,6,Float64}([  c1    c2  c2  0.0 0.0 0.0;
+                                c2    c1  c2  0.0 0.0 0.0;
+                                c2    c2  c1  0.0 0.0 0.0;
+                                0.0  0.0  0.0  G  0.0 0.0;
+                                0.0  0.0  0.0 0.0  G  0.0;
+                                0.0  0.0  0.0 0.0 0.0  G]   
 
     # Gauss points
     pp = 1.0/sqrt(3.0)
@@ -131,7 +131,7 @@ function K_solid3D(m::Mesh3D,ele)
          -pp -pp -pp  -pp   pp  pp  pp   pp] # t
 
     # Matrix
-    K = zeros(33,33)
+    K = @MMatrix zeros(33,33)
 
     # Main loop
     for i=1:8
@@ -170,9 +170,9 @@ function N_solid3D(r::T,s::T,t::T) where T
     N7 = (1/8)*(1+r)*(1+s)*(1+t); 
     N8 = (1/8)*(1-r)*(1+s)*(1+t); 
 
-    return [N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8 0 0;
-            0 N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8 0 ;
-            0 0 N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8]
+    return SMatrix{3,24}([N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8 0 0;
+                           0 N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8 0 ;
+                           0 0 N1 0 0 N2 0 0 N3 0 0 N4 0 0 N5 0 0 N6 0 0 N7 0 0 N8])
 
 end
 
@@ -200,7 +200,7 @@ function M_solid3D(m::Mesh3D,ele,lumped=false)
          -pp -pp -pp  -pp   pp  pp  pp   pp] # t
 
     # Matrix
-    M = zeros(24,24)
+    M = @MMatrix zeros(24,24)
 
     # Main loop
     for i=1:8
