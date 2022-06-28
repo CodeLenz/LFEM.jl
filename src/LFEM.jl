@@ -1,6 +1,7 @@
 module LFEM
 
 using LinearAlgebra, SparseArrays
+using StaticArrays
 using Plots, Arpack
 using BMesh, LMesh
 
