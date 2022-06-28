@@ -24,7 +24,7 @@ function Keg_truss(mesh::Mesh,ele::Int64)
   
   geo = mesh.geo_ele[ele]
   Ae = mesh.geometries[geo].A
-  Le = Length(mesh.bmesh,ele)
+  Le = BMesh.Length(mesh.bmesh,ele)
      
   # Element type
   etype = mesh.bmesh.etype
@@ -86,7 +86,7 @@ function Meg_truss(mesh::Mesh,ele::Int64)
    geo = mesh.geo_ele[ele]
    Ae = mesh.geometries[geo].A
  
-   Le = Length(mesh.bmesh,ele)
+   Le = BMesh.Length(mesh.bmesh,ele)
       
    # Element type
    etype = mesh.bmesh.etype
