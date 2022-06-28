@@ -195,7 +195,7 @@ function M_solid2D(m::Mesh2D,ele,lumped=false)
         J = Jacobian_solid2D(x,y,dNrs)
 
         # Add 
-        M .= M .+ N*tranpose(N)*(det(J)*thick*dens)
+        M .= M .+ N*transpose(N)*(det(J)*thick*dens)
           
     end
 
