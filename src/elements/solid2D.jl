@@ -121,7 +121,7 @@ function K_solid2D(m::Mesh2D,ele)
         B, dJ = B_solid2D(r,s,x,y)
 
         # Add 
-        K .= K .+ dot(B,C,B)*dJ*thick
+        K .= K .+ dot(B',C,B)*dJ*thick
         
     end
 
