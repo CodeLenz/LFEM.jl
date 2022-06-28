@@ -34,7 +34,7 @@ function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,
        # Descobre os dados do elemento
        mat = mesh.mat_ele[ele]
        Ee = mesh.materials[mat].Ex
-       Le = Length(mesh.bmesh,ele)
+       Le = BMesh.Length(mesh.bmesh,ele)
 
        # Matriz B do elemento
        B = B_truss2D(Le)
