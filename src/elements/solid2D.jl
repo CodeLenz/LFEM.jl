@@ -34,7 +34,7 @@ function Jacobian_solid2D(x::Vector{T},y::Vector{T},dN::Matrix{T}) where T
        J22 += y[i]*dN[2,i]
     end
 
-    return [J11 J12 ; J21 J22]
+    return @SMatrix{2,2,T}([J11 J12 ; J21 J22])
 
 end
 
@@ -70,7 +70,7 @@ function B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
     end
 
     # Return B and detJ
-    return B, detJ
+    return SMatrix{3,12,T}(B), detJ
 
 end
 
@@ -99,9 +99,9 @@ function K_solid2D(m::Mesh2D,ele)
     νxy = m.materials[mat].νxy
     G = Ex/(2*(1+νxy))
     c = Ex/(1-νxy^2)
-    C = [  c    νxy*c 0.0 ;
-          νxy*c  c    0.0 ;
-           0.0  0.0    G ]   
+    C = @SMatrix{3,3,Float64} ([  c    νxy*c 0.0 ;
+                                 νxy*c  c    0.0 ;
+                                  0.0  0.0    G ]   )
 
     # Gauss points
     pp = 1.0/sqrt(3.0)
@@ -109,7 +109,7 @@ function K_solid2D(m::Mesh2D,ele)
          -pp -pp pp  pp]
 
     # Matrix
-    K = zeros(12,12)
+    K = @MMatrix zeros(12,12)
 
     # Main loop
     for i=1:4
@@ -121,7 +121,7 @@ function K_solid2D(m::Mesh2D,ele)
         B, dJ = B_solid2D(r,s,x,y)
 
         # Add 
-        K .= K .+ transpose(B)*C*B*dJ*thick
+        K .= K .+ dot(B,C,B)*dJ*thick
         
     end
 
@@ -144,8 +144,8 @@ function N_solid2D(r::T,s::T) where T
     N3 = (1/4)*(1+r)*(1+s)
     N4 = (1/4)*(1-r)*(1+s)
 
-    return [N1 0 N2 0 N3 0 N4 0 ; 
-            0 N1 0 N2 0 N3 0 N4 ]
+    return @SMatrix{2,8}([N1 0 N2 0 N3 0 N4 0 ; 
+                          0 N1 0 N2 0 N3 0 N4 ])
 
 end
 
@@ -177,7 +177,7 @@ function M_solid2D(m::Mesh2D,ele,lumped=false)
          -pp -pp pp  pp]
 
     # Matrix
-    M = zeros(8,8)
+    M = @MMatrix zeros(8,8)
 
     # Main loop
     for i=1:4
@@ -195,7 +195,7 @@ function M_solid2D(m::Mesh2D,ele,lumped=false)
         J = Jacobian_solid2D(x,y,dNrs)
 
         # Add 
-        M .= M .+ transpose(N)*N*(det(J)*thick*dens)
+        M .= M .+ dot(N,N)*(det(J)*thick*dens)
           
     end
 
