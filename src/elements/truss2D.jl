@@ -46,7 +46,7 @@ function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,
        gls = DOFs(mesh.bmesh,ele) 
 
        # Element displacements in global reference
-       ug = @SVector{4,Float64}(U[gls])
+       ug = SVector{4,Float64}(U[gls])
        
        # Element displacements in local reference
        u = Te*ug
