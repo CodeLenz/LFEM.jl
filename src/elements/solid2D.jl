@@ -99,9 +99,9 @@ function K_solid2D(m::Mesh2D,ele)
     νxy = m.materials[mat].νxy
     G = Ex/(2*(1+νxy))
     c = Ex/(1-νxy^2)
-    C = SMatrix{3,3,Float64} ([  c    νxy*c 0.0 ;
-                                 νxy*c  c    0.0 ;
-                                  0.0  0.0    G ]   )
+    C = SMatrix{3,3,Float64}([  c    νxy*c 0.0 ;
+                               νxy*c  c    0.0 ;
+                               0.0  0.0    G ]   )
 
     # Gauss points
     pp = 1.0/sqrt(3.0)
