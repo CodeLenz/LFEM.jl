@@ -20,3 +20,57 @@ function Expand_vector(v::Vector{T},dim::Int64,free_dofs::Vector{Int64}) where {
 
 end
 
+
+ #
+ # Change of reference Local to Global
+ #
+ function To_global(M::AbstractMatrix,mesh::Mesh,ele::Int64)
+
+    # Evaluate the rotation matrix for this element
+    Te = T_matrix(mesh.bmesh,ele)
+  
+    # Rotaciona a matriz local para o sistema global 
+    transpose(Te)*M*Te
+   
+  end
+ 
+  #
+  # Change of reference  Global to Local
+  #
+  function To_local(M::AbstractMatrix,mesh::Mesh,ele::Int64)
+ 
+    # Evaluate the rotation matrix for this element
+    Te = T_matrix(mesh.bmesh,ele)
+  
+    # Rotaciona a matriz local para o sistema global 
+    Te*M*transpose(Te)
+   
+  end
+ 
+ 
+  #
+  # Change of reference Local to Global
+  #
+  function To_global(V::AbstractVector,mesh::Mesh,ele::Int64)
+ 
+    # Evaluate the rotation matrix for this element
+    Te = T_matrix(mesh.bmesh,ele)
+  
+    # Rotaciona o vetor local para o sistema global 
+    transpose(Te)*V
+   
+  end
+ 
+  #
+  # Change of reference Global to Local
+  #
+  function To_local(V::AbstractVector,mesh::Mesh,ele::Int64)
+ 
+    # Evaluate the rotation matrix for this element
+    Te = T_matrix(mesh.bmesh,ele)
+  
+    # Rotaciona o vetor global para o local 
+    Te*V
+   
+  end
+ 
