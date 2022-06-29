@@ -14,122 +14,74 @@ function Stress(mesh::Mesh,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
 end
     
 #
-# Driver for Keg
+# Driver for Stiffness
 #
-function Keg_truss(mesh::Mesh,ele::Int64)
-  
-  # Descobre os dados do elemento
-  mat = mesh.mat_ele[ele]
-  Ee = mesh.materials[mat].Ex
-  
-  geo = mesh.geo_ele[ele]
-  Ae = mesh.geometries[geo].A
-  Le = BMesh.Length(mesh.bmesh,ele)
-     
-  # Element type
-  etype = mesh.bmesh.etype
-  
-  # Monta a matriz local (4 × 4)
-  if etype==:truss2D
-     Ke = K_truss2D(Ee,Ae,Le)
-  elseif etype==:truss3D
-     Ke = K_truss3D(Ee,Ae,Le)
-  else
-     error("Keg_truss::elemento $etype ainda não implementado")
-  end
+function Local_K(mesh::Mesh,ele::Int64)
 
-  # Evaluate the rotation matrix for this element
-  Te = T_matrix(mesh.bmesh,ele)
-
-  # Rotaciona a matriz local para o sistema global 
-  Kg = transpose(Te)*Ke*Te
- 
-  # Retorna a matriz local no sistema global
-  return Kg
+   # Element type
+   etype = mesh.bmesh.etype
   
+   # If solid
+   if etype==:solid2D 
+
+      Ke = K_solid2D(mesh,ele)
+
+   elseif etype==:solid3D
+
+      Ke = K_solid3D(mesh,ele)   
+
+   elseif etype==:truss2D
+
+      Ke = K_truss2D(mesh,ele)
+
+   elseif etype==:truss3D  
+      
+      Ke = K_truss3D(mesh,ele)
+
+   else
+      
+      throw("Local_K:: etype $etype is invalid")
+
+   end
+   
+   return Ke
+
 end
 
-#
-# Driver for Keg solid
-#
-function Keg_solid(mesh::Mesh,ele::Int64)
-  
-   # Element type
-   etype = mesh.bmesh.etype
-   
-   # Monta a matriz local 
-   if etype==:solid2D
-      Ke = K_solid2D(mesh,ele)
-   elseif etype==:solid3D
-    Ke = K_solid3D(mesh,ele)
-   else
-      error("Keg_solid::elemento $etype ainda não implementado")
-   end
- 
-   # Retorna a matriz local no sistema global
-   return Ke
-   
- end
- 
-
 
 #
-# Driver for Meg
+# Driver for Mass
 #
-function Meg_truss(mesh::Mesh,ele::Int64)
-  
-   # Descobre os dados do elemento
-   mat = mesh.mat_ele[ele]
-   Ee = mesh.materials[mat].Ex
-   dense = mesh.materials[mat].density
-   
-   geo = mesh.geo_ele[ele]
-   Ae = mesh.geometries[geo].A
- 
-   Le = BMesh.Length(mesh.bmesh,ele)
-      
+function Local_M(mesh::Mesh,ele::Int64)
+
    # Element type
    etype = mesh.bmesh.etype
-   
-   # Monta a matriz local (4 × 4)
-   if etype==:truss2D
-      Me = M_truss2D(dense,Ae,Le)
-   elseif etype==:truss3D
-      Me = M_truss3D(dense,Ae,Le)
-   else
-      error("Meg_truss::elemento $etype ainda não implementado")
-   end
- 
-   # Evaluate the rotation matrix for this element
-   Te = T_matrix(mesh.bmesh,ele)
- 
-   # Rotaciona a matriz local para o sistema global 
-   Mg = transpose(Te)*Me*Te
   
-   # Retorna a matriz local no sistema global
-   return Mg
-   
- end
- 
-#
-# Driver for Meg solid
-#
-function Meg_solid(mesh::Mesh,ele::Int64)
-  
-   # Element type
-   etype = mesh.bmesh.etype
-   
-   # Monta a matriz local 
-   if etype==:solid2D
+   # If solid
+   if etype==:solid2D 
+
       Me = M_solid2D(mesh,ele)
-  elseif etype==:solid3D
-      Me = M_solid3D(mesh,ele)
+
+   elseif etype==:solid3D
+
+      Me = M_solid3D(mesh,ele)   
+
+   elseif etype==:truss2D
+
+      Me = M_truss2D(mesh,ele)
+
+   elseif etype==:truss3D  
+      
+      Me = M_truss3D(mesh,ele)
+
    else
-      error("Meg_solid::elemento $etype ainda não implementado")
+      
+      throw("Local_M:: etype $etype is invalid")
+
    end
- 
-   # Retorna a matriz local no sistema global
-   return Me
    
- end
- 
+   return Me
+
+end
+
+
