@@ -46,7 +46,7 @@
     mass = 10.0*5*2*0.1
 
     # Mass matrix
-    M = Meg_solid(m2,1)
+    M = Local_M(m2,1)
     
     # sum should be equal 2*mass
     @test isapprox(sum(M), 2*mass)

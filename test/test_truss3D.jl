@@ -42,7 +42,7 @@
 
     # FIRST TEST 
     # Local stiffness matrix
-    K = K_truss3D(100.0,1.0,0.1)
+    K = Local_K(m3,1)
 
     # Reference
     cte = 100.0*1.0/0.1
@@ -57,7 +57,7 @@
 
     # SECOND TEST 
     # B matrix
-    B = B_truss3D(0.1)
+    B = B_truss3D(m3,1)
 
     # Rerefence
     refer =[-1/0.1 0.0 0.0 1/0.1 0.0 0.0]
@@ -78,10 +78,10 @@
 
     
     # Test local mass matrix
-    M = M_truss3D(1.0,5.0,0.1)
+    M = Local_M(m3,1)
 
     # Reference
-    cte = (1.0*5.0*0.1)/2
+    cte = (1.0*1.0*0.1)/2
     refer = cte*[1.0 0.0 0.0  0.0 0.0 0.0;
                  0.0 1.0 0.0  0.0 0.0 0.0;
                  0.0 0.0 1.0  0.0 0.0 0.0;
@@ -89,6 +89,8 @@
                  0.0 0.0 0.0  0.0 1.0 0.0;
                  0.0 0.0 0.0  0.0 0.0 1.0]
 
+    @show refer
+    @show M             
     @test all(M.==refer)
 
 
