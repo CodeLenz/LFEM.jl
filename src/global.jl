@@ -33,18 +33,18 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
     # Loop pelos elementos, calculando a matriz local Ke de cada um
     # e posicionando na K
     for ele=1:ne
+    
+        # Local stiffness matrix
+        Ke = Local_K(mesh,ele) 
 
-        if flag_truss
-           Keg = Keg_truss(mesh,ele)
-        else 
-           Keg = Keg_solid(mesh,ele)
-        end
-           
         # Determina quais são os gls GLOBAIS que são "acessados"
         # por esse elemento
         gls = DOFs(bmesh,ele) 
 
-        # Adiciona a matriz do elemento (rotacionada) a matriz Global
+        # If truss
+        Keg = flag_truss ? To_global(Ke,mesh,ele) :  Ke
+        
+        # Adiciona a matriz do elemento (rotacionada) à matriz Global
         K[gls,gls] .= K[gls,gls] .+ Keg*(x[ele]^p)
 
     end #ele
@@ -90,16 +90,16 @@ end
     # e posicionando na M
     for ele=1:ne
 
-        if flag_truss
-           Meg = Meg_truss(mesh,ele)
-        else 
-           Meg = Meg_solid2D(mesh,ele)
-        end
+        # Local mass matrix
+        Me = Local_M(mesh,ele)
            
         # Determina quais são os gls GLOBAIS que são "acessados"
         # por esse elemento
         gls = DOFs(bmesh,ele) 
 
+        # If truss
+        Meg = flag_truss ? To_global(Me,mesh,ele) :  Me
+        
         # Adiciona a matriz do elemento (rotacionada) a matriz Global
         M[gls,gls] .= M[gls,gls] .+ Meg*(x[ele])
 
