@@ -4,10 +4,7 @@
 function Point_load(mesh::Mesh)
    
     # Dimension
-    dim = 2
-    if isa(mesh,Mesh3D)
-        dim = 3
-    end
+    dim = Get_dim(mesh)
 
     # Create an empty vector
     F = zeros(dim*mesh.bmesh.nn)
