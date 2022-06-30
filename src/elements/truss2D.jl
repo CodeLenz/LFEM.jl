@@ -30,7 +30,7 @@ function M_truss2D(mesh::Mesh,ele::Int64;lumped=true)
        # Material and geometric properties
        De = mesh.materials[mat].density
        Ae = mesh.geometries[geo].A
-       Le = BMesh.Length(mesh.bmesh,ele)
+       Le = Length(mesh,ele)
   
         SMatrix{4,4,Float64}((De*Ae*Le/2)*[ 1.0 0.0  0.0 0.0 ;
                                             0.0 1.0  0.0 0.0 ; 
@@ -43,7 +43,7 @@ end
 # Local B matrix
 #
 function B_truss2D(mesh::Mesh,ele)
-       Le = BMesh.Length(mesh.bmesh,ele)
+       Le = Length(mesh,ele)
        SMatrix{1,4,Float64}( [-1/Le 0.0 1/Le 0.0] )
 end
 
@@ -60,7 +60,7 @@ function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,
        B = B_truss2D(mesh,ele)
 
        # Global DOFs
-       gls = DOFs(mesh.bmesh,ele) 
+       gls = DOFs(bmesh,ele) 
 
        # Element displacements in global reference
        ug = SVector{4,Float64}(U[gls])
