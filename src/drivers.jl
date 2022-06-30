@@ -3,12 +3,14 @@
 #
 function Stress(mesh::Mesh,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
   
-   if mesh.bmesh.etype==:truss2D
+   etype = Get_etype(mesh)
+  
+   if etype==:truss2D
          return  Stress_truss2D(mesh,ele,U;xe=xe,p=p,q=q)  
-   elseif mesh.bmesh.etype==:truss3D
+   elseif etype==:truss3D
        return  Stress_truss3D(mesh,ele,U;xe=xe,p=p,q=q)  
    else
-       error("Stress:: element $mesh.bmesh.etype:: not implemented")
+       error("Stress:: element $etype:: not implemented")
   end
   
 end
@@ -19,7 +21,7 @@ end
 function Local_K(mesh::Mesh,ele::Int64)
 
    # Element type
-   etype = mesh.bmesh.etype
+   etype = Get_etype(mesh)
   
    # If solid
    if etype==:solid2D 
@@ -55,7 +57,7 @@ end
 function Local_M(mesh::Mesh,ele::Int64)
 
    # Element type
-   etype = mesh.bmesh.etype
+   etype = Get_etype(mesh)
   
    # If solid
    if etype==:solid2D 
