@@ -79,8 +79,6 @@ end
 #
 function K_solid2D(m::Mesh2D,ele)
 
-    # Alias
-    bm = m.bmesh
 
     # Coordinates
     x,y = Nodal_coordinates(m,ele)
@@ -155,8 +153,6 @@ end
 #
 function M_solid2D(m::Mesh2D,ele,lumped=false)
 
-    # Alias
-    bm = m.bmesh
 
     # Coordinates
     x,y = Nodal_coordinates(m,ele)
