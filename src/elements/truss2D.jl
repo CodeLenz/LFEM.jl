@@ -10,7 +10,7 @@ function K_truss2D(mesh::Mesh,ele::Int64)
        # Material and geometric properties
        Ee = mesh.materials[mat].Ex
        Ae = mesh.geometries[geo].A
-       Le = BMesh.Length(mesh.bmesh,ele)
+       Le = LMesh.Length(mesh,ele)
   
        SMatrix{4,4,Float64}( (Ee*Ae/Le)*[ 1.0 0.0 -1.0 0.0 ;
                                           0.0 0.0  0.0 0.0 ; 
