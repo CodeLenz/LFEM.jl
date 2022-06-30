@@ -15,20 +15,17 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
     p>=1.0 || throw("Global_K:::p must be larger or equal to 1.0")
     
     # Dimensão do problema
-    dim = 2
-    if isa(mesh,Mesh3D)
-        dim=3
-    end
-
+    dim = Get_dim(mesh)
+    
     # Tipo de elemento
-    etype = bmesh.etype
+    etype = Get_etype(mesh)
 
     # Primeira coisa é alocar a matriz K 
     ng = dim*bmesh.nn
     K = spzeros(ng,ng)
 
     # Flag se for barras
-    flag_truss = contains(string(etype),"truss")
+    flag_truss = Get_eclass(mesh)==:truss
 
     # Loop pelos elementos, calculando a matriz local Ke de cada um
     # e posicionando na K
@@ -39,7 +36,7 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
 
         # Determina quais são os gls GLOBAIS que são "acessados"
         # por esse elemento
-        gls = DOFs(bmesh,ele) 
+        gls = DOFs(mesh,ele) 
 
         # If truss
         Keg = flag_truss ? To_global(Ke,mesh,ele) :  Ke
@@ -71,20 +68,17 @@ end
     @assert length(x)==bmesh.ne "Global_M::x deve ter dimensão igual o número de elementos"
 
     # Dimensão do problema
-    dim = 2
-    if isa(mesh,Mesh3D)
-        dim=3
-    end
+    dim = Get_dim(mesh)
 
     # Tipo de elemento
-    etype = bmesh.etype
+    etype = Get_etype(mesh)
 
     # Primeira coisa é alocar a matriz M 
     ng = dim*bmesh.nn
     M = spzeros(ng,ng)
 
     # Flag se for barras
-    flag_truss = contains(string(etype),"truss")
+    flag_truss = Get_eclass(mesh)==:truss
 
     # Loop pelos elementos, calculando a matriz local Me de cada um
     # e posicionando na M
@@ -95,7 +89,7 @@ end
            
         # Determina quais são os gls GLOBAIS que são "acessados"
         # por esse elemento
-        gls = DOFs(bmesh,ele) 
+        gls = DOFs(mesh,ele) 
 
         # If truss
         Meg = flag_truss ? To_global(Me,mesh,ele) :  Me
