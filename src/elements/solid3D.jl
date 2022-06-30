@@ -101,9 +101,6 @@ end
 #
 function K_solid3D(m::Mesh3D,ele)
 
-    # Alias
-    bm = m.bmesh
-
     # Coordinates
     x,y,z = Nodal_coordinates(m,ele)
 
@@ -181,8 +178,6 @@ end
 #
 function M_solid3D(m::Mesh3D,ele,lumped=false)
 
-    # Alias
-    bm = m.bmesh
 
     # Coordinates
     x,y,z = Nodal_coordinates(m,ele)
