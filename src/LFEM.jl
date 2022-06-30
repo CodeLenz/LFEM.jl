@@ -5,6 +5,8 @@ using StaticArrays
 using Plots, Arpack
 using BMesh, LMesh
 
+include("overload_bmesh.jl")
+
 include("load.jl")
 include("base.jl")
 include("elements/truss2D.jl")
@@ -20,6 +22,8 @@ include("analysis/newmark.jl")
 include("show.jl")
 include("gmsh.jl")
 
+
+export Conec,Coord,Length,DOFs,T_matrix
 export Point_load
 export Expand_vector, Expand_vector!, To_global, To_local
 export K_truss2D, M_truss2D, B_truss2D, Stress_truss2D
