@@ -30,7 +30,7 @@ function M_truss2D(mesh::Mesh,ele::Int64;lumped=true)
        # Material and geometric properties
        De = mesh.materials[mat].density
        Ae = mesh.geometries[geo].A
-       Le = Length(mesh,ele)
+       Le = LMesh.Length(mesh,ele)
   
         SMatrix{4,4,Float64}((De*Ae*Le/2)*[ 1.0 0.0  0.0 0.0 ;
                                             0.0 1.0  0.0 0.0 ; 
@@ -43,7 +43,7 @@ end
 # Local B matrix
 #
 function B_truss2D(mesh::Mesh,ele)
-       Le = Length(mesh,ele)
+       Le = LMesh.Length(mesh,ele)
        SMatrix{1,4,Float64}( [-1/Le 0.0 1/Le 0.0] )
 end
 
