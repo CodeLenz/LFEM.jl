@@ -13,10 +13,11 @@ function Gmsh_init(nome_arquivo::String,mesh::Mesh)
     # Abre o arquivo para escrita
     saida = open(nome_arquivo,"a")
 
-    dim = 2
-    if isa(mesh,Mesh3D)
-        dim = 3
-    end
+    # Dimension (2/3)
+    dim = Get_dim(mesh)
+    
+    # Number of nodes
+    nn = Get_nn(mesh)
 
     # Cabecalho do gmsh
     println(saida,"\$MeshFormat")
@@ -27,11 +28,11 @@ function Gmsh_init(nome_arquivo::String,mesh::Mesh)
     println(saida,"\$Nodes")
     println(saida,mesh.bmesh.nn)
     if dim==2
-        for i=1:mesh.bmesh.nn
+        for i=1:nn
             println(saida,i," ",mesh.bmesh.coord[i,1]," ",mesh.bmesh.coord[i,2]," 0.0 ")
         end
     else
-        for i=1:mesh.bmesh.nn
+        for i=1:nn
             println(saida,i," ",mesh.bmesh.coord[i,1]," ",mesh.bmesh.coord[i,2]," ",mesh.bmesh.coord[i,3])
         end
     end    
@@ -47,7 +48,7 @@ function Gmsh_init(nome_arquivo::String,mesh::Mesh)
 
     println(saida,"\$Elements")
     println(saida,mesh.bmesh.ne)
-    for i=1:mesh.bmesh.ne
+    for i in mesh 
         con = string(i)*" "*string(tipo_elemento)*" 0 "*string(mesh.bmesh.connect[i,1])
         for j=2:size(mesh.bmesh.connect,2)
             con = con * " " * string(mesh.bmesh.connect[i,j])
@@ -140,7 +141,7 @@ function Gmsh_element_scalar(mesh::Mesh,escalares::Vector,nome_arquivo::String,
     println(saida,"0")
     println(saida,"1")
     println(saida,nelems)
-    for i=1:nelems
+    for i in mesh
         println(saida,i," ",escalares[i])#,digits=15))
     end
     println(saida,"\$EndElementData")
@@ -167,10 +168,7 @@ function Gmsh_nodal_vector(mesh::Mesh,vetor::Vector,nome_arquivo::String,
         error("ERROR::Adiciona_Vista_Nodal_Vetorial_Gmsh:: Nao foi possivel acessar $nome_arquivo")
     end
 
-    dim = 2
-    if isa(mesh,Mesh3D)
-        dim=3
-    end
+    dim = Get_dim(mesh)
 
     # Verifica se a dimensao esta correta
     dim_total = dim*mesh.bmesh.nn
