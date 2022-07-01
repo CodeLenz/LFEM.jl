@@ -231,7 +231,7 @@ function Stress_solid3D(r::Float64,s::Float64,t::Float64,
     ug = SVector{24,Float64}(U[gls])
     
     # Stress
-    (xe^(p-q))*C*B[:,1:24]*u
+    (xe^(p-q))*C*B[:,1:24]*ug
     
 
 end
