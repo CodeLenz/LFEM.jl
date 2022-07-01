@@ -158,3 +158,53 @@ function Local_M(mesh::Mesh3D,ele::Int64)
 end
 
 
+
+#
+# Evaluate stresses for the entire mesh (central points only)
+#
+"""
+Return stresses for the entire mesh. This version evaluates only in the central point.
+
+  Stresses(mesh::Mesh,U::Vector{T};x=Float64[],p=1.0,q=0.0)
+
+The output is a matrix ne x ncol, where ncol is 1 for :truss2D and 3D, 3 for :solid2D and 6 for :solid3D
+
+
+"""
+function Stresses(mesh::Mesh,U::Vector{T};x=Float64[],p=1.0,q=0.0)  where T
+
+   # Number of elements
+   ne = Get_ne(mesh)
+
+   # Check for empty x
+   if isempty(x)
+      x1 = ones(ne)
+   else
+      x1=x
+   end   
+
+   # Alocate the output array. It depends on the number of stresses 
+   # for each element type
+   etype = Get_etype(mesh)
+
+   ncol = 1
+   if etype==:solid2D
+      ncol = 3
+   elseif etype==:solid3D
+      ncol = 6
+   end
+
+   # Alocate
+   stresses = zeros(ne,ncol)
+
+   # Loop 
+   for ele in mesh
+      s = Stress(mesh,U,xe=x1[ele],p=p,q=q)
+      stresses[ele,:].=s[:]
+   end
+
+   # Return stresses
+   return stresses
+
+end
+
