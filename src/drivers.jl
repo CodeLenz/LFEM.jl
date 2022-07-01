@@ -199,7 +199,7 @@ function Stresses(mesh::Mesh,U::Vector{T};x=Float64[],p=1.0,q=0.0)  where T
 
    # Loop 
    for ele in mesh
-      s = Stress(mesh,U,xe=x1[ele],p=p,q=q)
+      s = Stress(mesh,ele,U,xe=x1[ele],p=p,q=q)
       stresses[ele,:].=s[:]
    end
 
