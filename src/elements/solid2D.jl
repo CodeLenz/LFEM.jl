@@ -212,7 +212,7 @@ function Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{
     ug = SVector{8,Float64}(U[gls])
     
     # Stress
-    (xe^(p-q))*C*B[:,1:8]*u
+    (xe^(p-q))*C*B[:,1:8]*ug
     
 
 end
