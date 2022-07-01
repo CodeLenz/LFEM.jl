@@ -24,9 +24,6 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
     ng = dim*bmesh.nn
     K = spzeros(ng,ng)
 
-    # Flag se for barras
-    flag_truss = Get_eclass(mesh)==:truss
-
     # Loop pelos elementos, calculando a matriz local Ke de cada um
     # e posicionando na K
     for ele in mesh
@@ -38,8 +35,8 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
         # por esse elemento
         gls = DOFs(mesh,ele) 
 
-        # If truss
-        Keg = flag_truss ? To_global(Ke,mesh,ele) :  Ke
+        # If needed, convert to global reference
+        Keg = To_global(Ke,mesh,ele)
         
         # Adiciona a matriz do elemento (rotacionada) à matriz Global
         K[gls,gls] .= K[gls,gls] .+ Keg*(x[ele]^p)
@@ -77,9 +74,6 @@ end
     ng = dim*bmesh.nn
     M = spzeros(ng,ng)
 
-    # Flag se for barras
-    flag_truss = Get_eclass(mesh)==:truss
-
     # Loop pelos elementos, calculando a matriz local Me de cada um
     # e posicionando na M
     for ele in mesh
@@ -91,8 +85,8 @@ end
         # por esse elemento
         gls = DOFs(mesh,ele) 
 
-        # If truss
-        Meg = flag_truss ? To_global(Me,mesh,ele) :  Me
+        # If needed, convert to global reference
+        Meg = To_global(Me,mesh,ele)
         
         # Adiciona a matriz do elemento (rotacionada) a matriz Global
         M[gls,gls] .= M[gls,gls] .+ Meg*(x[ele])
