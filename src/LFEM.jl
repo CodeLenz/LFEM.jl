@@ -8,6 +8,7 @@ using BMesh, LMesh
 
 include("load.jl")
 include("base.jl")
+include("material.jl")
 include("elements/truss2D.jl")
 include("elements/truss3D.jl")
 include("elements/solid2D.jl")
@@ -24,6 +25,7 @@ include("gmsh.jl")
 
 export Point_load
 export Expand_vector, Expand_vector!, To_global, To_local
+export Constitutive
 export K_truss2D, M_truss2D, B_truss2D, Stress_truss2D
 export K_truss3D, M_truss3D, B_truss3D, Stress_truss3D
 export K_solid2D, M_solid2D, B_solid2D
