@@ -10,7 +10,7 @@ function Constitutive(mesh::Mesh,ele::Int64)
    mat = Get_material(mesh,ele)
 
    # Element type
-   etype = Get_etype(mesh,ele)
+   etype = Get_etype(mesh)
 
    # Basic data for linear elastic
    Ex = mat.Ex
