@@ -79,12 +79,8 @@ end
 #
 function K_solid2D(m::Mesh2D,ele)
 
-
     # Coordinates
     x,y = Nodal_coordinates(m,ele)
-
-    # Material 
-    mat = m.mat_ele[ele]
 
     # Geometry
     geo = m.geo_ele[ele]
@@ -92,15 +88,9 @@ function K_solid2D(m::Mesh2D,ele)
     # Thickness
     thick = m.geometries[geo].thickness
 
-    # Constitutive matrix (EPT)
-    Ex = m.materials[mat].Ex
-    νxy = m.materials[mat].νxy
-    G = Ex/(2*(1+νxy))
-    c = Ex/(1-νxy^2)
-    C = SMatrix{3,3,Float64}([  c    νxy*c 0.0 ;
-                               νxy*c  c    0.0 ;
-                               0.0  0.0    G ]   )
-
+    # Constitutive matrix 
+    C = Constitutive(m,ele)
+    
     # Gauss points
     pp = 1.0/sqrt(3.0)
     G = [-pp  pp pp -pp ; 
