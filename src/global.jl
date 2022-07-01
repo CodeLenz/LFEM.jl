@@ -29,7 +29,7 @@ function Global_K(mesh::Mesh; x=Float64[], p=1.0)
 
     # Loop pelos elementos, calculando a matriz local Ke de cada um
     # e posicionando na K
-    for ele=1:ne
+    for ele in mesh
     
         # Local stiffness matrix
         Ke = Local_K(mesh,ele) 
@@ -82,7 +82,7 @@ end
 
     # Loop pelos elementos, calculando a matriz local Me de cada um
     # e posicionando na M
-    for ele=1:ne
+    for ele in mesh
 
         # Local mass matrix
         Me = Local_M(mesh,ele)
