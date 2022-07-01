@@ -80,9 +80,8 @@ Gmsh_nodal_vector(m,U,name,"Displacement [m]")
 
 ```
 
-
-
 Stresses
+
 Evaluation and gmsh export are automatic for each element type
 ```julia
 
