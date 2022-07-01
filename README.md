@@ -71,9 +71,6 @@ m = Simply_supported3D(6,6,6,:solid3D)
 # Solve the linear static equilibrium
 U, F, Chol = Solve_linear(m)
 
-# It is also possible to export the results to
-# gmsh (https://gmsh.info/)
-
 # Initilize an output file
 name = "output.pos"
 Gmsh_init(name,m)
@@ -86,6 +83,7 @@ Gmsh_nodal_vector(m,U,name,"Displacement [m]")
 
 
 Stresses
+Evaluation and gmsh export are automatic for each element type
 ```julia
 
 using BMesh, LMesh, TMeshes, Plots
@@ -99,9 +97,6 @@ U, F, Chol = Solve_linear(m)
 
 # Array with stresses
 sigma = Stresses(m,U)
-
-# It is also possible to export the results to
-# gmsh (https://gmsh.info/)
 
 # Initilize an output file
 name = "output.pos"
