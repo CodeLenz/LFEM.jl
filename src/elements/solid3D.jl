@@ -104,23 +104,9 @@ function K_solid3D(m::Mesh3D,ele)
     # Coordinates
     x,y,z = Nodal_coordinates(m,ele)
 
-    # Material 
-    mat = m.mat_ele[ele]
-
     # Constitutive matrix
-    Ex = m.materials[mat].Ex
-    νxy = m.materials[mat].νxy
-    G = Ex/(2*(1+νxy))
-    c0 = 1-2*νxy^2-νxy
-    c2 = (Ex*νxy)/c0
-    c1 = Ex/c0 - c2
-    C = SMatrix{6,6,Float64}([  c1    c2  c2  0.0 0.0 0.0;
-                                c2    c1  c2  0.0 0.0 0.0;
-                                c2    c2  c1  0.0 0.0 0.0;
-                                0.0  0.0  0.0  G  0.0 0.0;
-                                0.0  0.0  0.0 0.0  G  0.0;
-                                0.0  0.0  0.0 0.0 0.0  G])
-
+    C = Constitutive(m,ele)
+    
     # Gauss points
     pp = 1.0/sqrt(3.0)
     G = [-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
