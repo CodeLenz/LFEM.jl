@@ -100,9 +100,6 @@ U, F, Chol = Solve_linear(m)
 # Array with stresses
 sigma = Stresses(m,U)
 
-# Show displacements and stresses
-plot(m;U=U,N=sigma)
-
 # It is also possible to export the results to
 # gmsh (https://gmsh.info/)
 
@@ -111,7 +108,7 @@ name = "output.pos"
 Gmsh_init(name,m)
 
 # Export stresses
-Gmsh_element_scalar(m,sigma,name,"Stress [Pa]")
+Gmsh_element_stress(m,sigma,name,"Stress [Pa]")
 
 # Export displacements
 Gmsh_nodal_vector(m,U,name,"Displacement [m]")
