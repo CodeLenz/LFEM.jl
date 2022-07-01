@@ -121,9 +121,6 @@ m = Simply_supported3D(6,6,6)
 # Solve the modal problem with default parameters
 λ, ϕ = Solve_modal(m)
 
-# It is also possible to export the results to
-# gmsh (https://gmsh.info/)
-
 # Initilize an output file
 name = "output.pos"
 Gmsh_init(name,m)
