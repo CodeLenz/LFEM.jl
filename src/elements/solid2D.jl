@@ -189,3 +189,30 @@ function M_solid2D(m::Mesh2D,ele,lumped=false)
     return M
 
 end
+
+
+#
+# Local stress (Not expanding bubble DOFs)
+#
+function Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
+
+    # Consitutive relation
+    C = Consitutive(mesh,ele)
+
+    # Coordinates
+    x,y = Nodal_coordinates(mesh,ele)
+
+    # B matrix
+    B, _ = B_solid2D(r,s,x,y)
+
+    # Global DOFs
+    gls = DOFs(mesh,ele) 
+
+    # Element displacements
+    ug = SVector{8,Float64}(U[gls])
+    
+    # Stress
+    (xe^(p-q))*C*B[:,1:8]*u
+    
+
+end
