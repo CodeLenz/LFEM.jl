@@ -33,6 +33,7 @@ export K_solid3D, M_solid3D, B_solid3D, Stress_solid3D
 export Global_K, Global_M
 export Solve_linear, Solve_modal, Solve_harmonic, Solve_newmark
 export Stress, Local_K, Local_M
+export Stresses
 export plot
 export Gmsh_init, Gmsh_nodal_scalar, Gmsh_element_scalar, Gmsh_nodal_vector
 
