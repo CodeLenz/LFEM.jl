@@ -33,10 +33,10 @@ function plot(mesh::Mesh2D,dscale=1.0,cutout = 1E-3;
     # Loop over the elements, extracting the nodes
     # and their coordinates
     
-    for ele=1:ne
+    for ele in mesh
 
         # recover the nodes
-        nodes = Conect(bmesh,ele)
+        nodes = Connect(bmesh,ele)
         
         # recover the coordinates
         c1 = Coord(bmesh,nodes[1])
@@ -79,10 +79,10 @@ function plot(mesh::Mesh2D,dscale=1.0,cutout = 1E-3;
         # Loop over the elements. Now, the coordinates of each
         # node are given by the initial coordinates
         # plus the displacement*dscale
-        for ele=1:ne
+        for ele in mesh
 
             # recover the nodes
-            nodes = Conect(bmesh,ele)
+            nodes = Connect(bmesh,ele)
             
             # recover the coordinates
             c1 = Coord(bmesh,nodes[1])
@@ -155,10 +155,10 @@ function plot(mesh::Mesh3D,dscale=1.0,cutout = 1E-3;
     # Loop over the elements, extracting the nodes
     # and their coordinates
 
-    for ele=1:ne
+    for ele in mesh
 
         # recover the nodes
-        nodes = Conect(bmesh,ele)
+        nodes = Connect(bmesh,ele)
                 
         # recover the coordinates
         c1 = Coord(bmesh,nodes[1])
@@ -201,10 +201,10 @@ function plot(mesh::Mesh3D,dscale=1.0,cutout = 1E-3;
         # Loop over the elements. Now, the coordinates of each
         # node are given by the initial coordinates
         # plus the displacement*dscale
-        for ele=1:ne
+        for ele in mesh
 
             # recover the nodes
-            nodes = Conect(bmesh,ele)
+            nodes = Connect(bmesh,ele)
                     
             # recover the coordinates
             c1 = Coord(bmesh,nodes[1])
