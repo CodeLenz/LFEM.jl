@@ -197,7 +197,7 @@ end
 function Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
 
     # Consitutive relation
-    C = Consitutive(mesh,ele)
+    C = Constitutive(mesh,ele)
 
     # Coordinates
     x,y = Nodal_coordinates(mesh,ele)
