@@ -97,12 +97,8 @@ m = Simply_supported2D(6,6)
 # Solve the linear static equilibrium
 U, F, Chol = Solve_linear(m)
 
-# Vector with stresses
-ne = m.bmesh.ne
-sigma = zeros(ne)
-for i=1:ne
-   sigma[i] = Stress(m,i,U)[1] 
-end
+# Array with stresses
+sigma = Stresses(m,U)
 
 # Show displacements and stresses
 plot(m;U=U,N=sigma)
