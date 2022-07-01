@@ -202,3 +202,71 @@ function Gmsh_nodal_vector(mesh::Mesh,vetor::Vector,nome_arquivo::String,
     close(saida)
 
 end
+
+
+#
+# Adiciona uma vista tensorial a um arquivo (que ja deve ter o cabecalho)
+# O vetor que contem os valores centroidais deve ter dimensao nelems e o número de 
+# colunas depende do tipo de elemento
+#
+function Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
+                             nome_vista::String,tempo=0.0)
+
+
+    # Alias
+    nelems = Get_ne(mesh)
+
+    # Tenta abrir o arquivo para append
+    saida = try
+    open(nome_arquivo,"a")
+    catch
+        error("ERROR::Gmsh_element_stress:: Nao foi possivel acessar $nome_arquivo")
+    end
+
+
+    # Verifica se a dimensao esta correta
+    if size(stress,1)!=nelems
+        error("ERROR::Gmesh_element_stress:: vetor com escalares deve ter dimensao nnos")
+    end
+
+    # Now we have to proccess the input. Each element type has different number of
+    # stress components. The maximum number is 6
+    # components are xx yy zz xz yz zy 
+    outs = zeros(nelems,6)
+
+    etype = Get_etype(mesh)
+    if etype==:truss2D || etype==:truss3D
+
+        outs[:,1].=stress[:]
+
+    elseif etype==:solid2D    
+
+        # Normal
+        outs[:,1:2].=stress[:,1:2]
+
+        # Shear xy
+        outs[:,6].= stress[:,3]
+    else
+        outs = stress    
+    end
+    #
+    #
+    println(saida,"\$ElementData")
+    println(saida,"1")
+    println(saida,"\" $nome_vista \"")
+    println(saida,"1")
+    println(saida,tempo)
+    println(saida,"3")
+    println(saida,"0")
+    println(saida,"9")
+    println(saida,nelems)
+    for i in mesh
+        comp =outs[i,:]
+        println(saida,i," ",comp[1], " ", comp[6], " ", comp[5], " ", comp[6], " ",comp[2]," ",comp[4], " ",comp[5], " ",comp[4]," ",comp[3])
+    end
+    println(saida,"\$EndElementData")
+
+    # Fecha por hora
+    close(saida)
+
+end
