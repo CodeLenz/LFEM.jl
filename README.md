@@ -1,6 +1,8 @@
 # LFEM
 Basic routines for FEM
 
+https://codelenz.github.io/LFEM/
+
 # Examples 
 
 ## Linear elastic analysis in 2D - truss 
