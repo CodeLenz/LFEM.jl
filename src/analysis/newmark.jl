@@ -1,28 +1,50 @@
+"""
+Solve the transient problem M(x)A(x,t) + C(x)V(x,t) + K(x,t)U(x,t) = F(t), 
+using Newmark-beta method.
 
- 
-#
-# f!(t,F,m) must be a function of t, mesh and F where F is dim*nn 
-#
-# function f!(t,F,m::Mesh)
-#          P = Point_load(m)
-#          F.= cos(2*t)*P 
-# end   
-#
-#
-# gls must be a matrix with [node gl ; node gl ...] to monitor
-#
-#
-#
-function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64;
-                 x=Float64[], U0=Float64[], V0=Float64[], β=1/4, γ=1/2, p=1.0)
+    Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
+                  ts::Tuple{Float64, Float64}, Δt::Float64,
+                  x::Vector{Float64}, kparam::Function, mparam::Function;
+                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+
+where 
+
+    ts is Tupple with initial and end time (Ti,Tf)
+    Δt is (fixed) time step
+    x is a ne x 1 vector of design varibles 
+    kparam(xe): R->R is the material parametrization for K (SIMP like)
+    mparam(xe): R->R is the material parametrization for M (SIMP like)
+
+    f!(t,F,mesh) must be a function of t, mesh and F where F is dim*nn x 1,
+                Example: 
+    
+                function f!(t,F,mesh::Mesh)
+                            P = Point_load(mesh)
+                            F.= cos(2*t)*P 
+                end   
+
+    gls is a matrix with [node gl ;
+                          node gl ...] to monitor
+
+Return three arrays of size ng x nt, where ng is size(gls,1) and nt is the 
+number of time steps (length of t0:Δt:tf)
+
+    A_U displacements
+    A_V velocities
+    A_A accelerations
+    
+    A_t is a vector of size nt x 1 with discrete times
+    dofs is a vector with the (global) monitored dofs
+"""
+function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64,
+                       x::Vector{Float64}, kparam::Function, mparam::Function; U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
 
 
     #
     #                              Initialization
     #             
 
-    # Tspan
-    
+    # Tspan    
     t0,tf = ts
     tspan = t0:Δt:tf
 
@@ -30,42 +52,38 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
     nt = length(tspan)
 
     # Alias
-    nn = mesh.bmesh.nn
+    ne = Get_ne(mesh)
+    nn = Get_nn(mesh)
 
     # free dofs
     free_dofs = mesh.free_dofs
     nfree = mesh.ngls
 
     # Dimension
-    dim = 2
-    if isa(mesh,Mesh3D)
-        dim=3
-    end
+    dim = Get_dim(mesh)
 
     # Dimension of full vectors
     nfull = dim*nn
 
     # Check x
-    if isempty(x)
-        x = ones(mesh.bmesh.ne)
-    end
+    length(x)==ne || throw("Solve_newmark:: length of x must be ne")
 
     # Check initial conditons
     if isempty(U0)
         resize!(U0,nfull)
         fill!(U0,0.0)
     else
-        length(U0)==dim*nn || throw("Newmark::U0::wrong dimension")
+        length(U0)==dim*nn || throw("Newmark::U0 should be dim*nn")
     end
 
     if isempty(V0)
         resize!(V0,nfull)
         fill!(V0,0.0)
     else
-        length(V0)==dim*nn || throw("Newmark::V0::wrong dimension")
+        length(V0)==dim*nn || throw("Newmark::V0 should be dim*nn")
     end
 
-    # Force vectors
+    # Force vector
     F = zeros(nfull)
 
     # List with DOFs to monitor
@@ -87,10 +105,10 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
     #
 
     # Global stiffness matrix
-    K = Global_K(mesh, x=x, p=p)
+    K = Global_K(mesh, x, kparam)
 
     # Global mass matrix
-    M = Global_M(mesh, x=x)
+    M = Global_M(mesh, x, mparam)
 
     # Just to play a little bit
     C = 1E-6*K
@@ -109,7 +127,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
     f!(t0,F,mesh)
 
     # Lets make a final consistency test
-    @assert length(F)==nfull "Function f!(t,F) must return a $nfull length vector F"
+    @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
 
     rhs = F .- K*U0 .- C*V0
     A0f = M[free_dofs,free_dofs]\rhs[free_dofs]
@@ -163,8 +181,54 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
     end #t
 
     # Retorna os arrays de monitoramento
-    return A_U, A_V, A_A, A_t
-
+    return A_U, A_V, A_A, A_t, dofs
 end 
 
 
+"""
+Solve the transient problem MA(t) + CV(t) + K(t)U(t) = F(t), 
+using Newmark-beta method.
+
+    Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
+                  ts::Tuple{Float64, Float64}, Δt::Float64;
+                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+
+where 
+
+    ts is Tupple with initial and end time (Ti,Tf)
+    Δt is (fixed) time steps
+
+    f!(t,F,mesh) must be a function of t, mesh and F where F is dim*nn x 1,
+                Example: 
+    
+                function f!(t,F,mesh::Mesh)
+                            P = Point_load(mesh)
+                            F.= cos(2*t)*P 
+                end   
+
+    gls is a matrix with [node gl ;
+                          node gl ...] to monitor
+
+Return three arrays of size ng x nt, where ng is size(gls,1) and nt is the 
+number of time steps (length of t0:Δt:tf)
+
+    A_U displacements
+    A_V velocities
+    A_A accelerations
+    
+    A_t is a vector of size nt x 1 with discrete times
+    dofs is a vector with the (global) monitored dofs
+"""
+function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64;
+                       U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+
+      # x->1.0 mapping
+      dummy_f(x)=1.0
+
+      # x is not used
+      x = Vector{Float64}(undef,Get_ne(mesh))
+
+      # Call Solve_newmark
+      Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,U0=U0,V0=V0,β=β,γ=γ)
+ 
+end   
