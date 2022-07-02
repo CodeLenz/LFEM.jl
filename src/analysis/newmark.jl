@@ -14,6 +14,7 @@ where
     x is a ne x 1 vector of design varibles 
     kparam(xe): R->R is the material parametrization for K (SIMP like)
     mparam(xe): R->R is the material parametrization for M (SIMP like)
+    verbose is false or true
 
     f!(t,F,mesh) must be a function of t, mesh and F where F is dim*nn x 1,
                 Example: 
@@ -37,7 +38,7 @@ number of time steps (length of t0:Δt:tf)
     dofs is a vector with the (global) monitored dofs
 """
 function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64,
-                       x::Vector{Float64}, kparam::Function, mparam::Function; U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+                       x::Vector{Float64}, kparam::Function, mparam::Function, verbose=false; U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
 
 
     #
@@ -93,7 +94,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
 
         # Lets make it easy to use it in this routine
         ndofs = size(gls,1)
-        println("Newmark::monitoring $ndofs DOFs in $nt time steps")
+        if verbose println("Newmark::monitoring $ndofs DOFs in $nt time steps")
         dofs = zeros(Int64,ndofs)
         for i=1:ndofs
             dofs[i] = dim*(gls[i,1]-1)+gls[i,2]
@@ -197,6 +198,7 @@ where
 
     ts is Tupple with initial and end time (Ti,Tf)
     Δt is (fixed) time steps
+    verbose is false or true
 
     f!(t,F,mesh) must be a function of t, mesh and F where F is dim*nn x 1,
                 Example: 
@@ -219,7 +221,8 @@ number of time steps (length of t0:Δt:tf)
     A_t is a vector of size nt x 1 with discrete times
     dofs is a vector with the (global) monitored dofs
 """
-function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64;
+function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64,
+                       verbose=false;
                        U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
 
       # x->1.0 mapping
@@ -229,6 +232,6 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
       x = Vector{Float64}(undef,Get_ne(mesh))
 
       # Call Solve_newmark
-      Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,U0=U0,V0=V0,β=β,γ=γ)
+      Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,verbose,U0=U0,V0=V0,β=β,γ=γ)
  
 end   
