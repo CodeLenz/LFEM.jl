@@ -19,6 +19,20 @@ Solve_harmonic
 ```@docs
 Solve_newmark
 ```
+## Global
+
+```@docs
+Global_K
+```
+
+```@docs
+Global_M
+```
+
+```@docs
+Stresses
+```
+
 
 ## Truss2D
 
