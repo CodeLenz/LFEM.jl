@@ -32,3 +32,6 @@ include("test_modal.jl")
 
 # Solve_harmonic
 include("test_harmonic.jl")
+
+# Solve_newmark
+include("test_newmark.jl")
