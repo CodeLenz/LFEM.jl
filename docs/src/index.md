@@ -1,6 +1,6 @@
 # LFEM.jl
 
-*Basic building block for other codes *
+* Basic routines for FEM *
 
 ## Solvers
 
