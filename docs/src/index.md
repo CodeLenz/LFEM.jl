@@ -2,6 +2,24 @@
 
 *Basic building block for other codes *
 
+## Solvers
+
+```@docs
+Solve_linear
+```
+
+```@docs
+Solve_modal
+```
+
+```@docs
+Solve_harmonic
+```
+
+```@docs
+Solve_newmark
+```
+
 ## Truss2D
 
 ```@docs
