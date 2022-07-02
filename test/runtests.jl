@@ -29,3 +29,6 @@ include("test_linear.jl")
 
 # Solve_modal
 include("test_modal.jl")
+
+# Solve_harmonic
+include("test_harmonic.jl")
