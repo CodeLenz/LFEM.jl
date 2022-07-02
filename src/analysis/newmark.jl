@@ -94,7 +94,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
 
         # Lets make it easy to use it in this routine
         ndofs = size(gls,1)
-        if verbose println("Newmark::monitoring $ndofs DOFs in $nt time steps")
+        
+        verbose && println("Newmark::monitoring $ndofs DOFs in $nt time steps")
+        
         dofs = zeros(Int64,ndofs)
         for i=1:ndofs
             dofs[i] = dim*(gls[i,1]-1)+gls[i,2]
