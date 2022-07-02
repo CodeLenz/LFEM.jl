@@ -1,4 +1,8 @@
-function K_truss3D(mesh::Mesh,ele::Int64)
+"""
+Local stiffness matrix for truss3D
+       K_truss3D(mesh::Mesh3D,ele::Int64)
+"""
+function K_truss3D(mesh::Mesh3D,ele::Int64)
   
         # Element properties
         mat = mesh.mat_ele[ele]
@@ -18,9 +22,10 @@ function K_truss3D(mesh::Mesh,ele::Int64)
 
 end
 
-#
-# Local mass matrix (Lumped)
-#
+"""
+Local mass matrix for truss3D (lumped)
+       M_truss3D(mesh::Mesh3D,ele::Int64)
+"""
 function M_truss3D(mesh::Mesh,ele::Int64;lumped=true)
 
     # Element properties
@@ -40,18 +45,22 @@ function M_truss3D(mesh::Mesh,ele::Int64;lumped=true)
                                         0.0 0.0 0.0  0.0 0.0 1.0] )
 end
 
-#
-# Local B matrix
-#
-function B_truss3D(mesh::Mesh,ele::Int64)
+"""
+Local B matrix for truss3D
+       B_truss3D(mesh::Mesh3D,ele::Int64)
+"""
+function B_truss3D(mesh::Mesh3D,ele::Int64)
     Le = LMesh.Length(mesh,ele)
     SMatrix{1,6,Float64}([-1/Le 0.0 0.0 1/Le 0.0 0.0])
 end
 
-#
-# Local stress
-#
-function Stress_truss3D(mesh::Mesh3D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
+"""
+Local stress for truss3D
+       Stress_truss3D(mesh::Mesh3D,ele::Int64,U::Vector{Float64})
+       
+It returns stress as [sxx] for compatibility with solid elements.
+"""
+function Stress_truss3D(mesh::Mesh3D,ele::Int64,U::Vector{Float64})
 
     # Descobre os dados do elemento
     mat = mesh.mat_ele[ele]
@@ -70,7 +79,6 @@ function Stress_truss3D(mesh::Mesh3D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,
     u = To_local(ug,mesh,ele)
 
     # Stress
-    (xe^(p-q))*Ee*B*u
+    Ee*B*u
     
-
 end

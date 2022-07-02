@@ -1,7 +1,7 @@
-
-#
-# Derivative of N with respect to r, s and t
-#
+"""
+Derivative of N with respect to r,  s and t
+    dN_solid3D(r::T,s::T,t::T) where T
+"""
 function dN_solid3D(r::T,s::T,t::T) where T
 
     dN1 = (1/8)*[-(1-s)*(1-t); -(1-r)*(1-t); -(1-r)*(1-s)]
@@ -23,9 +23,12 @@ function dN_solid3D(r::T,s::T,t::T) where T
 
 end
 
-#
-# Jacobian
-#
+"""
+Jacobian matrix for solid3D
+
+    Jacobian_solid3D(x::Vector{T},y::Vector{T},z::Vector{T},
+                     dN::Matrix{T}) where T
+"""
 function Jacobian_solid3D(x::Vector{T},y::Vector{T},z::Vector{T},
                           dN::Matrix{T}) where T
 
@@ -45,9 +48,10 @@ function Jacobian_solid3D(x::Vector{T},y::Vector{T},z::Vector{T},
 
 end
 
-#
-# B Matrix (with additional functions)
-#
+"""
+B Matrix (with additional bublle functions) for 3D elements
+    B_solid3D(r::T,s::T,t::T,x::Vector{T},y::Vector{T},z::Vector{T}) where T
+"""
 function B_solid3D(r::T,s::T,t::T,x::Vector{T},y::Vector{T},z::Vector{T}) where T
 
     # Derivates of N
@@ -96,10 +100,11 @@ function B_solid3D(r::T,s::T,t::T,x::Vector{T},y::Vector{T},z::Vector{T}) where 
 
 end
 
-#
-# Stiffness Matrix
-#
-function K_solid3D(m::Mesh3D,ele)
+"""
+Stiffness Matrix for (incompatible) 3D element
+    K_solid3D(m::Mesh3D,ele::Int64)
+"""
+function K_solid3D(m::Mesh3D,ele::Int64)
 
     # Coordinates
     x,y,z = Nodal_coordinates(m,ele)
@@ -138,9 +143,10 @@ function K_solid3D(m::Mesh3D,ele)
 
 end
 
-#
-# Interpolation (For M)
-#
+"""
+Interpolation matrix for solid 3D (For M)
+    N_solid3D(r::T,s::T,t::T) where T
+"""
 function N_solid3D(r::T,s::T,t::T) where T
 
     # Functions
@@ -159,11 +165,11 @@ function N_solid3D(r::T,s::T,t::T) where T
 
 end
 
-#
-# Mass  Matrix (Consistent)
-#
-function M_solid3D(m::Mesh3D,ele,lumped=false)
-
+"""
+Consistent mass matrix for solid 3D
+    M_solid3D(m::Mesh3D,ele::Int64,lumped=false)
+"""
+function M_solid3D(m::Mesh3D,ele::Int64,lumped=false)
 
     # Coordinates
     x,y,z = Nodal_coordinates(m,ele)
@@ -209,11 +215,12 @@ function M_solid3D(m::Mesh3D,ele,lumped=false)
 end
 
 
-#
-# Local stress (Not expanding bubble DOFs)
-#
+"""
+Local stress for solid 3D ((Not expanding bubble DOFs)
+    Stress_solid3D(r::Float64,s::Float64,t::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+"""
 function Stress_solid3D(r::Float64,s::Float64,t::Float64,
-                        mesh::Mesh3D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
+                        mesh::Mesh3D,ele::Int64,U::Vector{Float64})
 
     # Consitutive relation
     C = Constitutive(mesh,ele)
@@ -231,7 +238,6 @@ function Stress_solid3D(r::Float64,s::Float64,t::Float64,
     ug = SVector{24,Float64}(U[gls])
     
     # Stress
-    (xe^(p-q))*C*B[:,1:24]*ug
+    C*B[:,1:24]*ug
     
-
 end

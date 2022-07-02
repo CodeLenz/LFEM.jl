@@ -1,7 +1,8 @@
-#
-# Local stiffness matrix
-#
-function K_truss2D(mesh::Mesh,ele::Int64)
+"""
+Local stiffness matrix for truss2D
+       K_truss2D(mesh::Mesh2D,ele::Int64)
+"""
+function K_truss2D(mesh::Mesh2D,ele::Int64)
   
        # Element properties
        mat = mesh.mat_ele[ele]
@@ -18,10 +19,11 @@ function K_truss2D(mesh::Mesh,ele::Int64)
                                           0.0 0.0  0.0 0.0 ] )
 end
   
-#
-# Local mass matrix (Lumped)
-#
-function M_truss2D(mesh::Mesh,ele::Int64;lumped=true)
+"""
+Local mass matrix for truss2D (lumped)
+       M_truss2D(mesh::Mesh2D,ele::Int64)
+"""
+function M_truss2D(mesh::Mesh2D,ele::Int64;lumped=true)
 
        # Element properties
        mat = mesh.mat_ele[ele]
@@ -39,18 +41,22 @@ function M_truss2D(mesh::Mesh,ele::Int64;lumped=true)
 end
 
 
-#
-# Local B matrix
-#
-function B_truss2D(mesh::Mesh,ele)
+"""
+Local B matrix for truss2D
+       B_truss2D(mesh::Mesh2D,ele::Int64)
+"""
+function B_truss2D(mesh::Mesh2D,ele::Int64)
        Le = LMesh.Length(mesh,ele)
        SMatrix{1,4,Float64}( [-1/Le 0.0 1/Le 0.0] )
 end
 
-#
-# Local stress
-#
-function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,q=0.0)
+"""
+Local stress for truss2D
+       Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+       
+It returns stress as [sxx] for compatibility with solid elements.
+"""
+function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64})
 
        # Descobre os dados do elemento
        mat = mesh.mat_ele[ele]
@@ -69,7 +75,6 @@ function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64};xe=1.0,p=1.0,
        u = To_local(ug,mesh,ele)
 
        # Stress
-       (xe^(p-q))*Ee*B*u
+       Ee*B*u
        
-
 end
