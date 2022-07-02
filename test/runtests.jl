@@ -26,3 +26,6 @@ include("test_point_load3D.jl")
 
 # Solve_linear
 include("test_linear.jl")
+
+# Solve_modal
+include("test_modal.jl")
