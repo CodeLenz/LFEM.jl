@@ -1,6 +1,7 @@
 """
 Derivative of N with respect to r and s
     dN_solid2D(r::T,s::T) where T
+
 """
 function dN_solid2D(r::T,s::T) where T
 
@@ -21,6 +22,7 @@ end
 Jacobian matrix for solid2D
 
     Jacobian_solid2D(x::Vector{T},y::Vector{T},dN::Matrix{T}) where T
+
 """
 function Jacobian_solid2D(x::Vector{T},y::Vector{T},dN::Matrix{T}) where T
 
@@ -43,6 +45,7 @@ end
 """
 B Matrix (with additional bublle functions) for 2D elements
     B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
+
 """
 function B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
 
@@ -80,6 +83,7 @@ end
 """
 Stiffness Matrix for (incompatible) 2D element
     K_solid2D(m::Mesh2D,ele::Int64)
+
 """
 function K_solid2D(m::Mesh2D,ele::Int64)
 
@@ -128,6 +132,7 @@ end
 """
 Interpolation matrix for solid 2D (For M)
     N_solid2D(r::T,s::T) where T
+
 """
 function N_solid2D(r::T,s::T) where T
 
@@ -146,6 +151,7 @@ end
 """
 Consistent mass matrix for solid 2D
     M_solid2D(m::Mesh2D,ele::Int64,lumped=false)
+
 """
 function M_solid2D(m::Mesh2D,ele::Int64,lumped=false)
 
@@ -198,6 +204,7 @@ end
 """
 Local stress for solid 2D ((Not expanding bubble DOFs)
     Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+
 """
 function Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64})
 
