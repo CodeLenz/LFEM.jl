@@ -217,7 +217,7 @@ tspan = (0.0,5.0)
 # Interval
 dt = 1E-2
 
-# Solve the transisent problem
+# Solve the transient problem
 U,V,A,T,dofs = Solve_newmark(mesh,f!,monitor,tspan,dt)
 
 # Plot displacement 
