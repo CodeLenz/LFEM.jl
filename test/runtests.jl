@@ -23,3 +23,6 @@ include("test_point_load2D.jl")
 
 # truss3D
 include("test_point_load3D.jl")
+
+# Solve_linear
+include("test_linear.jl")
