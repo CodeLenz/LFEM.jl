@@ -1,7 +1,7 @@
 using Test
 using BMesh, LMesh, TMeshes
 using LFEM
-using LinearAlgebra
+using LinearAlgebra, StaticArrays, Arpack, SparseArrays
 
 # base
 include("test_base.jl")
