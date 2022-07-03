@@ -18,8 +18,8 @@ jobs:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
         with:
-          version: ${{ matrix.version }}
-          arch: ${{ matrix.arch }}
+          version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.julia-arch }}
       - name: Install BMesh
         run: julia  -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/BMesh.jl.git")'
       - name: Install LMesh
