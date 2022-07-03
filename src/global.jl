@@ -10,6 +10,10 @@ function kparam(x,p=1.0)
 end
 
 for a SIMP like material parametrization.
+    
+This function also considers entries :Stiffness in mesh.options
+with [node dof value;]
+
 """
 function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
 
@@ -56,6 +60,44 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
 
     end #ele
 
+    # Add options:: :Stiffness
+    # If there are lumped stiffness, we add here
+    options = mesh.options
+
+    # If :Stiffness is defined
+    if haskey(options,:Stiffness)
+
+       # Alias 
+       stiffness = options[:Stiffness]
+
+       # Dimensions
+       nstiff,ncol = size(stiffness)
+
+       # Check if ncols==3
+       # node gl value
+       ncol==3 || throw("Global_K:: :Stiffness must have 3 columns")
+
+       # Add stiffness
+       for s=1:nstiff
+ 
+           # Recover data for this stiffness
+           node   = Int(stiffness[s,1])
+           dof    = Int(stiffness[s,2])
+           gl     = dim*(node-1)+dof
+
+           value  = stiffness[s,3]
+           
+           # Assert if valid gl
+           0<node<=nn   || throw("Global_K:: :Stiffness :: invalid node")
+           0<dof<=dim   || throw("Global_K:: :Stiffness :: invalid dof")
+           value >= 0.0 || throw("Global_K:: :Stiffness :: invalid value")
+
+           K[gl,gl] += value
+
+       end #Stiff
+
+    end # if :Stiffness
+
     # Retorna a matriz global
     return Symmetric(K)
 
@@ -69,6 +111,10 @@ Assembly the global stiffness matrix.
 
     Global_K(mesh::Mesh)
 
+        
+This function also considers entries :Stiffness in mesh.options
+with [node dof value;]
+    
 """
 function Global_K(mesh::Mesh)
 
@@ -97,6 +143,10 @@ function param(x,p=2.0,cut=0.1)
 end
 
 for a SIMP like material parametrization.
+        
+This function also considers entries :Mass in mesh.options
+with [node dof value;]
+    
 """
  function Global_M(mesh::Mesh, xin::Vector{Float64}, mparam::Function)
 
@@ -143,6 +193,43 @@ for a SIMP like material parametrization.
 
     end #ele
 
+    # Add options:: :Mass
+    # If there are lumped mass, we add here
+    options = mesh.options
+
+    # If :Mass is defined
+    if haskey(options,:Mass)
+
+       # Alias 
+       mass = options[:Mass]
+
+       # Dimensions
+       nmass,ncol = size(mass)
+
+       # Check if ncols==3
+       # node gl value
+       ncol==3 || throw("Global_M:: :Mass must have 3 columns")
+
+       # Add mass
+       for m=1:nmass
+ 
+           # Recover data for this stiffness
+           node   = Int(mass[m,1])
+           dof    = Int(mass[m,2])
+           gl     = dim*(node-1)+dof
+           value  = mass[m,3]
+           
+           # Assert if valid gl
+           0<node<=nn   || throw("Global_M:: :Mass :: invalid node")
+           0<dof<=dim   || throw("Global_M:: :Mass :: invalid dof")
+           value >= 0.0 || throw("Global_M:: :Mass :: invalid value")
+
+           M[gl,gl] += value
+
+       end # Mass
+
+    end # if :Mass
+
     # Retorna a matriz global
     return Symmetric(M)
 
@@ -152,7 +239,10 @@ end
 Assembly the global mass matrix.
 
      Global_M(mesh::Mesh)
-
+         
+This function also considers entries :Stiffness in mesh.options
+with [node dof value;]
+    
 """
 function Global_M(mesh::Mesh)
 
