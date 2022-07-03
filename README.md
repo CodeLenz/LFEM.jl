@@ -1,7 +1,13 @@
 # LFEM
 Basic routines for FEM
 
-https://codelenz.github.io/LFEM.jl/
+Docs: https://codelenz.github.io/LFEM.jl/
+
+This package depends on
+
+https://github.com/CodeLenz/BMesh.jl  
+https://github.com/CodeLenz/LMesh.jl  
+https://github.com/CodeLenz/TMeshes.jl  
 
 # Examples 
 
