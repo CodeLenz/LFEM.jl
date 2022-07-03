@@ -21,11 +21,13 @@ jobs:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - name: Install BMesh
-        run: julia --project -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/BMesh.jl.git")'
+        run: julia  -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/BMesh.jl.git")'
       - name: Install LMesh
-        run: julia --project -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/LMesh.jl.git")'
+        run: julia  -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/LMesh.jl.git")'
       - name: Install TMeshes
-        run: julia --project -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/TMeshes.jl.git")'  
+        run: julia  -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/TMeshes.jl.git")'  
+      - name: Install LFEM
+        run: julia  -e 'using Pkg; Pkg.add(; url="https://github.com/CodeLenz/LFEM.jl.git")'      
       - uses: actions/cache@v1
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
