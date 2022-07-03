@@ -1,7 +1,7 @@
 using Test
 using BMesh, LMesh, TMeshes
 using LFEM
-using LinearAlgebra, StaticArrays, Arpack, SparseArrays
+using LinearAlgebra
 
 # base
 include("test_base.jl")
@@ -35,3 +35,9 @@ include("test_harmonic.jl")
 
 # Solve_newmark
 include("test_newmark.jl")
+
+# Options :Stiffness
+include("test_options_stiffness.jl")
+
+# Options :Mass
+include("test_options_mass.jl")
