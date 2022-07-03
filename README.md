@@ -1,7 +1,7 @@
 # LFEM
 Basic routines for FEM
 
-https://codelenz.github.io/LFEM/
+https://codelenz.github.io/LFEM.jl/
 
 # Examples 
 
