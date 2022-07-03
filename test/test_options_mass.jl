@@ -40,6 +40,14 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported2D(6,6)
 
+    # Invalid entry
+    mesh.options[:Mass] = [1 2 1E5 10.0 20.0]
+    @test_throws String Solve_modal(mesh)
+
+    # Invalid entry
+    mesh.options[:Mass] = [1 2]
+    @test_throws String Solve_modal(mesh)
+
     # Mass - invalid nodes
     mesh.options[:Mass] = [0 2 10.0]
     @test_throws String Solve_modal(mesh)
