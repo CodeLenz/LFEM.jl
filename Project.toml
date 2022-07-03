@@ -13,3 +13,12 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 TMeshes = "00e613e3-3517-4068-b432-60b6a85c0988"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+julia = "1.7"
+Plots = "1"
+StaticArrays = "1.5"
+BMesh = "0.2"
+LMesh = "0.1"
+Arpack = "0.5"
+TMeshes = "0.1"
