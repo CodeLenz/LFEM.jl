@@ -31,7 +31,7 @@ function Jacobian_solid2D(x::Vector{T},y::Vector{T},dN::Matrix{T}) where T
     J12 = zero(T)
     J21 = zero(T)
     J22 = zero(T)
-    for i=1:4 
+    @inbounds for i=1:4 
        J11 += x[i]*dN[1,i]
        J12 += y[i]*dN[1,i]
        J21 += x[i]*dN[2,i]
@@ -63,7 +63,7 @@ function B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
 
     # B matrix
     B = @MMatrix zeros(T,3,12)
-    for j=1:6
+    @inbounds for j=1:6
 
         # xx
         B[1,2*(j-1)+1]=dNxy[1,j]
@@ -101,14 +101,14 @@ function K_solid2D(m::Mesh2D,ele::Int64)
     
     # Gauss points
     pp = 1.0/sqrt(3.0)
-    G = [-pp  pp pp -pp ; 
-         -pp -pp pp  pp]
+    G = SMatrix{2,4,Float64}([-pp  pp pp -pp ; 
+                              -pp -pp pp  pp])
 
     # Matrix
     K = @MMatrix zeros(12,12)
 
     # Main loop
-    for i=1:4
+    @inbounds for i=1:4
 
         # Gauss points
         r,s = G[:,i]
@@ -170,14 +170,14 @@ function M_solid2D(m::Mesh2D,ele::Int64,lumped=false)
 
     # Gauss points
     pp = 1.0/sqrt(3.0)
-    G = [-pp  pp pp -pp ; 
-         -pp -pp pp  pp]
+    G = SMatrix{2,4,Float64}([-pp  pp pp -pp ; 
+                              -pp -pp pp  pp])
 
     # Matrix
     M = @MMatrix zeros(8,8)
 
     # Main loop
-    for i=1:4
+    @inbounds for i=1:4
 
         # Gauss points
         r,s = G[:,i]
@@ -237,12 +237,12 @@ Return the volume of element ele
    Volume_solid2D(mesh::Mesh,ele::Int64)
 
 """
-function Volume_solid2D(mesh::Mesh,ele::Int64)
+function Volume_solid2D(mesh::Mesh2D,ele::Int64)
     
     # Gauss points
     pp = 1.0/sqrt(3.0)
-    G = [-pp  pp pp -pp ; 
-        -pp -pp pp  pp]
+    G = SMatrix{2,4,Float64}([-pp  pp pp -pp ; 
+                              -pp -pp pp  pp])
 
     # Coordinates
     x,y = Nodal_coordinates(m,ele)
@@ -251,7 +251,7 @@ function Volume_solid2D(mesh::Mesh,ele::Int64)
     thick = Get_geometry(mesh,ele).thickness
 
     volume = 0.0
-    for i=1:4
+    @inbounds for i=1:4
 
         # Gauss points
         r,s = G[:,i]

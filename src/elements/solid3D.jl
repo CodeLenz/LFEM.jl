@@ -36,7 +36,7 @@ function Jacobian_solid3D(x::Vector{T},y::Vector{T},z::Vector{T},
     J11 = zero(T); J12 = zero(T); J13 = zero(T)
     J21 = zero(T); J22 = zero(T); J23 = zero(T)
     J31 = zero(T); J32 = zero(T); J33 = zero(T)
-    for i=1:8
+    @inbounds for i=1:8
        J11 += x[i]*dN[1,i]; J12 += y[i]*dN[1,i]; J13 += z[i]*dN[1,i]
        J21 += x[i]*dN[2,i]; J22 += y[i]*dN[2,i]; J23 += z[i]*dN[2,i]
        J31 += x[i]*dN[3,i]; J32 += y[i]*dN[3,i]; J33 += z[i]*dN[3,i]
@@ -75,7 +75,7 @@ function B_solid3D(r::T,s::T,t::T,x::Vector{T},y::Vector{T},z::Vector{T}) where 
     #       zz
 
     B = @MMatrix zeros(T,6,33)
-    for j=1:11
+    @inbounds for j=1:11
 
         # xx
         B[1,3*(j-1)+1] = dNxyz[1,j]
@@ -114,15 +114,15 @@ function K_solid3D(m::Mesh3D,ele::Int64)
     
     # Gauss points
     pp = 1.0/sqrt(3.0)
-    G = [-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
-         -pp -pp  pp   pp  -pp -pp  pp   pp; # s
-         -pp -pp -pp  -pp   pp  pp  pp   pp] # t
+    G = SMatrix{3,8,Float64}([-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
+                              -pp -pp  pp   pp  -pp -pp  pp   pp; # s
+                              -pp -pp -pp  -pp   pp  pp  pp   pp]) # t
 
     # Matrix
     K = @MMatrix zeros(33,33)
 
     # Main loop
-    for i=1:8
+    @inbounds for i=1:8
 
         # Gauss points
         r,s,t = G[:,i]
@@ -182,15 +182,15 @@ function M_solid3D(m::Mesh3D,ele::Int64,lumped=false)
     
     # Gauss points
     pp = 1.0/sqrt(3.0)
-    G = [-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
-         -pp -pp  pp   pp  -pp -pp  pp   pp; # s
-         -pp -pp -pp  -pp   pp  pp  pp   pp] # t
+    G = SMatrix{3,8,Float64}([-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
+                              -pp -pp  pp   pp  -pp -pp  pp   pp; # s
+                              -pp -pp -pp  -pp   pp  pp  pp   pp]) # t
 
     # Matrix
     M = @MMatrix zeros(24,24)
 
     # Main loop
-    for i=1:8
+    @inbounds for i=1:8
 
         # Gauss points
         r,s,t = G[:,i]
@@ -256,15 +256,15 @@ function Volume_solid3D(mesh::Mesh,ele::Int64)
     
     # Gauss points
     pp = 1.0/sqrt(3.0)
-    G = [-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
-         -pp -pp  pp   pp  -pp -pp  pp   pp; # s
-         -pp -pp -pp  -pp   pp  pp  pp   pp] # t
+    G = SMatrix{3,8,Float64}([-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
+                              -pp -pp  pp   pp  -pp -pp  pp   pp; # s
+                              -pp -pp -pp  -pp   pp  pp  pp   pp]) # t
     
     # Coordinates
     x,y,z = Nodal_coordinates(mesh,ele)
 
     volume = 0.0
-    for i=1:8
+    @inbounds for i=1:8
 
         # Gauss points
         r,s,t = G[:,i]
