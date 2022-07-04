@@ -28,12 +28,12 @@ export Expand_vector, Expand_vector!, To_global, To_local
 export Constitutive
 export K_truss2D, M_truss2D, B_truss2D, Stress_truss2D
 export K_truss3D, M_truss3D, B_truss3D, Stress_truss3D
-export K_solid2D, M_solid2D, B_solid2D, Stress_solid2D
-export K_solid3D, M_solid3D, B_solid3D, Stress_solid3D
+export K_solid2D, M_solid2D, B_solid2D, Stress_solid2D, Volume_solid2D
+export K_solid3D, M_solid3D, B_solid3D, Stress_solid3D, Volume_solid3D
 export Global_K, Global_M
 export Solve_linear, Solve_modal, Solve_harmonic, Solve_newmark
 export Stress, Local_K, Local_M
-export Stresses
+export Stresses, Volume_truss, Volume_ele
 export plot
 export Gmsh_init, Gmsh_nodal_scalar, Gmsh_element_scalar, Gmsh_nodal_vector
 export Gmsh_element_stress
