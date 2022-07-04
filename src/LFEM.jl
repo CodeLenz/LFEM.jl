@@ -38,5 +38,45 @@ export plot
 export Gmsh_init, Gmsh_nodal_scalar, Gmsh_element_scalar, Gmsh_nodal_vector
 export Gmsh_element_stress
 
+# Precompile some important functions
+precompile(dN_solid2D,(Float64,Float64))
+precompile(Jacobian_solid2D,(Vector{Float64},Vector{Float64},Matrix{Float64}))
+precompile(B_solid2D,(Float64,Float64,Vector{Float64},Vector{Float64}))
+precompile(N_solid2D,(Float64,Float64))
+
+precompile(dN_solid3D,(Float64,Float64,Float64))
+precompile(Jacobian_solid3D,(Vector{Float64},Vector{Float64},Vector{Float64},Matrix{Float64}))
+precompile(B_solid3D,(Float64,Float64,Float64,Vector{Float64},Vector{Float64},Vector{Float64}))
+precompile(N_solid3D,(Float64,Float64,Float64))
+
+precompile(Expand_vector!,(Vector{Float64},Vector{Float64},Vector{Int64}))
+precompile(Expand_vector,(Vector{Float64},Int64,Vector{Int64}))
+
+precompile(To_local,(SMatrix,Mesh2D,Int64))
+precompile(To_local,(SMatrix,Mesh3D,Int64))
+precompile(To_local,(MMatrix,Mesh2D,Int64))
+precompile(To_local,(MMatrix,Mesh3D,Int64))
+
+precompile(To_global,(SMatrix,Mesh2D,Int64))
+precompile(To_global,(SMatrix,Mesh3D,Int64))
+precompile(To_global,(MMatrix,Mesh2D,Int64))
+precompile(To_global,(MMatrix,Mesh3D,Int64))
+
+precompile(To_local,(SVector,Mesh2D,Int64))
+precompile(To_local,(SVector,Mesh3D,Int64))
+precompile(To_local,(MVector,Mesh2D,Int64))
+precompile(To_local,(MVector,Mesh3D,Int64))
+
+precompile(To_global,(SVector,Mesh2D,Int64))
+precompile(To_global,(SVector,Mesh3D,Int64))
+precompile(To_global,(MVector,Mesh2D,Int64))
+precompile(To_global,(MVector,Mesh3D,Int64))
+
+precompile(Volume_truss,(Mesh2D,Int64))
+precompile(Volume_truss,(Mesh3D,Int64))
+
+
+precompile(Volume_element,(Mesh2D,Int64))
+precompile(Volume_element,(Mesh3D,Int64))
 
 end # module
