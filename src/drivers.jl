@@ -195,8 +195,14 @@ function Volume_element(mesh::Mesh,ele::Int64)
 
    # Element type
    etype = Get_etype(mesh)
-
+  
+   volume = 0.0
    if etype==:truss2D || etype==:truss3D
-      return Volume_truss(mesh,ele)
-
+      volume =  Volume_truss(mesh,ele)
+   elseif etype==:solid2D
+      volume =  Volume_solid2D(mesh,ele)
+   else 
+      volume = Volume_solid3D(mesh,ele)
+   end
+   return volume
 end
