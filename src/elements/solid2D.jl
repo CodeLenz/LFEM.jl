@@ -266,7 +266,7 @@ function Volume_solid2D(mesh::Mesh2D,ele::Int64)
         J = Jacobian_solid2D(x,y,dNrs)
  
         # add
-        volume += det(J)*thickness 
+        volume += det(J)*thick
 
     end
     return volume
