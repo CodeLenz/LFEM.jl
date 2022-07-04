@@ -22,7 +22,7 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
     nn = Get_nn(mesh)
 
      # Basic test for xe
-     if isempty(xin)
+    if isempty(xin)
         x = ones(ne)
     else
         x = copy(xin)
@@ -37,33 +37,61 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
     # Tipo de elemento
     etype = Get_etype(mesh)
 
+    # Options
+    options = mesh.options
+
     # Primeira coisa é alocar a matriz K 
     ng = dim*nn
     K = spzeros(ng,ng)
 
-    # Loop pelos elementos, calculando a matriz local Ke de cada um
-    # e posicionando na K
-    for ele in mesh
-    
-        # Local stiffness matrix
-        Ke = Local_K(mesh,ele) 
+    # Chama dofs uma vez para depois reaproveitar 
+    # o acesso de memória
+    gls = DOFs(mesh,1) 
 
-        # Determina quais são os gls GLOBAIS que são "acessados"
-        # por esse elemento
-        gls = DOFs(mesh,ele) 
+    # Faz o mesmo para a matriz de rigidez
+    Keg = Local_K(mesh,1) 
+    Ke  = similar(Keg)
+ 
+    # Experimental!!
+    # If this key is set, than 
+    # use Keg from element 1 ONLY
+    if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
+ 
+       for ele in mesh
+            # Determina quais são os gls GLOBAIS que são "acessados"
+            # por esse elemento
+            gls .= DOFs(mesh,ele) 
 
-        # If needed, convert to global reference
-        Keg = To_global(Ke,mesh,ele)
+            # Adiciona a matriz do elemento (rotacionada) à matriz Global
+            @inbounds K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
+       end
+
+    else
+
+        # Loop pelos elementos, calculando a matriz local Ke de cada um
+        # e posicionando na K
+        for ele in mesh
         
-        # Adiciona a matriz do elemento (rotacionada) à matriz Global
-        @inbounds K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
+            # Local stiffness matrix
+            Ke .= Local_K(mesh,ele) 
 
-    end #ele
+            # Determina quais são os gls GLOBAIS que são "acessados"
+            # por esse elemento
+            gls .= DOFs(mesh,ele) 
+
+            # If needed, convert to global reference
+            Keg .= To_global(Ke,mesh,ele)
+            
+            # Adiciona a matriz do elemento (rotacionada) à matriz Global
+            @inbounds K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
+
+        end #ele
+
+    end # :IS_TOPO
 
     # Add options:: :Stiffness
     # If there are lumped stiffness, we add here
-    options = mesh.options
-
+   
     # If :Stiffness is defined
     if haskey(options,:Stiffness)
 
@@ -161,6 +189,9 @@ with [node dof value;]
         x = copy(xin)
     end
     
+    # Options
+    options = mesh.options
+
     # Vamos reforçar a ideia de que x tem a dimensão ne
     @assert length(x)==ne "Global_M::x deve ter dimensão igual o número de elementos"
 
@@ -174,25 +205,51 @@ with [node dof value;]
     ng = dim*nn
     M = spzeros(ng,ng)
 
-    # Loop pelos elementos, calculando a matriz local Me de cada um
-    # e posicionando na M
-    for ele in mesh
+    # Chama dofs uma vez para depois reaproveitar 
+    # o acesso de memória
+    gls = DOFs(mesh,1) 
 
-        # Local mass matrix
-        Me = Local_M(mesh,ele)
-           
-        # Determina quais são os gls GLOBAIS que são "acessados"
-        # por esse elemento
-        gls = DOFs(mesh,ele) 
+    # Faz o mesmo para a matriz de massa
+    Meg = Local_M(mesh,1) 
+    Me  = similar(Meg)
 
-        # If needed, convert to global reference
-        Meg = To_global(Me,mesh,ele)
+    # Experimental!!
+    # If this key is set, than 
+    # use Meg from element 1 ONLY
+    if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
+
+        for ele in mesh
+             # Determina quais são os gls GLOBAIS que são "acessados"
+             # por esse elemento
+             gls .= DOFs(mesh,ele) 
+ 
+             # Adiciona a matriz do elemento (rotacionada) à matriz Global
+             @inbounds M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
+        end
+ 
+    else
+ 
+        # Loop pelos elementos, calculando a matriz local Me de cada um
+        # e posicionando na M
+        for ele in mesh
+
+            # Local mass matrix
+            Me .= Local_M(mesh,ele)
+            
+            # Determina quais são os gls GLOBAIS que são "acessados"
+            # por esse elemento
+            gls .= DOFs(mesh,ele) 
+
+            # If needed, convert to global reference
+            Meg .= To_global(Me,mesh,ele)
+            
+            # Adiciona a matriz do elemento (rotacionada) a matriz Global
+            @inbounds M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
+
+        end #ele
+
+    end #IS_TOPO
         
-        # Adiciona a matriz do elemento (rotacionada) a matriz Global
-        @inbounds M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
-
-    end #ele
-
     # Add options:: :Mass
     # If there are lumped mass, we add here
     options = mesh.options
@@ -271,8 +328,8 @@ end
 """
 function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function)  where T
 
-   # Number of elements
-   ne = Get_ne(mesh)
+    # Number of elements
+    ne = Get_ne(mesh)
 
     # Basic test for xe
     if isempty(xin)
