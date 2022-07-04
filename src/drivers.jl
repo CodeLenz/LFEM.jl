@@ -159,3 +159,44 @@ end
 
 
 
+#
+# Volume for truss2D and truss2D
+#
+"""
+Return the volume of element ele
+
+   Volume_truss(mesh::Mesh,ele::Int64)
+
+Valid for :truss2D and :truss3D
+"""
+function Volume_truss(mesh::Mesh,ele::Int64)
+       
+   # Area
+   geometry = Get_geometry(mesh,ele) 
+   A = geometry.A
+
+   # Length
+   L = LMesh.Length(mesh,ele) 
+
+   return L*A
+end
+
+#
+# Return the volume
+#
+"""
+Return the volume of element ele
+
+   Volume_element(mesh::Mesh,ele::Int64)
+
+Valid for all elements.
+"""
+function Volume_element(mesh::Mesh,ele::Int64)
+
+   # Element type
+   etype = Get_etype(mesh)
+
+   if etype==:truss2D || etype==:truss3D
+      return Volume_truss(mesh,ele)
+
+end
