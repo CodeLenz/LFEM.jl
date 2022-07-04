@@ -107,6 +107,10 @@ M_solid2D
 Stress_solid2D
 ```
 
+```@docs
+Volume_solid2D
+```
+
 ## Solid3D
 
 ```@docs
@@ -137,3 +141,6 @@ M_solid3D
 Stress_solid3D
 ```
 
+```@docs
+Volume_solid2D
+```
