@@ -56,7 +56,7 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
         Keg = To_global(Ke,mesh,ele)
         
         # Adiciona a matriz do elemento (rotacionada) à matriz Global
-        K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
+        @inbounds K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
 
     end #ele
 
@@ -78,7 +78,7 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
        ncol==3 || throw("Global_K:: :Stiffness must have 3 columns")
 
        # Add stiffness
-       for s=1:nstiff
+       @inbounds for s=1:nstiff
  
            # Recover data for this stiffness
            node   = Int(stiffness[s,1])
@@ -189,7 +189,7 @@ with [node dof value;]
         Meg = To_global(Me,mesh,ele)
         
         # Adiciona a matriz do elemento (rotacionada) a matriz Global
-        M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
+        @inbounds M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
 
     end #ele
 
@@ -211,7 +211,7 @@ with [node dof value;]
        ncol==3 || throw("Global_M:: :Mass must have 3 columns")
 
        # Add mass
-       for m=1:nmass
+       @inbounds for m=1:nmass
  
            # Recover data for this stiffness
            node   = Int(mass[m,1])
@@ -293,12 +293,12 @@ function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function)
    end
 
    # Alocate
-   stresses = zeros(ne,ncol)
+   stresses = Matrix{Float64}(undef,ne,ncol)
 
    # Loop 
    for ele in mesh
       s = Stress(mesh,ele,U)
-      stresses[ele,:].=s[:]*sparam(x[ele])
+      @inbounds stresses[ele,:].=s[:]*sparam(x[ele])
    end
 
    # Return stresses
