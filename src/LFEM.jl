@@ -5,6 +5,10 @@ using StaticArrays
 using Plots, Arpack
 using BMesh, LMesh
 
+# If possible, set optimization to 3
+if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@optlevel"))
+       @eval Base.Experimental.@optlevel 3
+end
 
 include("load.jl")
 include("base.jl")
