@@ -241,3 +241,47 @@ function Stress_solid3D(r::Float64,s::Float64,t::Float64,
     C*B[:,1:24]*ug
     
 end
+
+
+#
+# Volume 
+#
+"""
+Return the volume of element ele
+
+   Volume_solid3D(mesh::Mesh,ele::Int64)
+
+"""
+function Volume_solid3D(mesh::Mesh,ele::Int64)
+    
+    # Gauss points
+    pp = 1.0/sqrt(3.0)
+    G = [-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
+         -pp -pp  pp   pp  -pp -pp  pp   pp; # s
+         -pp -pp -pp  -pp   pp  pp  pp   pp] # t
+    
+    # Coordinates
+    x,y,z = Nodal_coordinates(mesh,ele)
+
+    volume = 0.0
+    for i=1:8
+
+        # Gauss points
+        r,s,t = G[:,i]
+
+        # N matrix
+        N = N_solid3D(r,s,t)
+
+        # Derivates of N
+        dNrst = dN_solid3D(r,s,t)
+
+        # Jacobian matrix
+        J = Jacobian_solid3D(x,y,z,dNrst)
+ 
+        # add
+        volume += det(J)
+
+    end
+    return volume
+    
+end

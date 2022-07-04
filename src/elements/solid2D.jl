@@ -227,3 +227,48 @@ function Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{
     C*B[:,1:8]*ug
     
 end
+
+#
+# Volume 
+#
+"""
+Return the volume of element ele
+
+   Volume_solid2D(mesh::Mesh,ele::Int64)
+
+"""
+function Volume_solid2D(mesh::Mesh,ele::Int64)
+    
+    # Gauss points
+    pp = 1.0/sqrt(3.0)
+    G = [-pp  pp pp -pp ; 
+        -pp -pp pp  pp]
+
+    # Coordinates
+    x,y = Nodal_coordinates(m,ele)
+
+    # Thickness
+    thick = Get_geometry(mesh,ele).thickness
+
+    volume = 0.0
+    for i=1:4
+
+        # Gauss points
+        r,s = G[:,i]
+
+        # N matrix
+        N = N_solid2D(r,s)
+
+        # Derivates of N
+        dNrs = dN_solid2D(r,s)
+
+        # Jacobian matrix
+        J = Jacobian_solid2D(x,y,dNrs)
+ 
+        # add
+        volume += det(J)*thickness 
+
+    end
+    return volume
+    
+end
