@@ -1,0 +1,74 @@
+@testset "Options=:IS_TOPO" begin
+
+    #                        Valid tests 2D 
+
+    # Load Simply supported 2D from TMeshes
+    mesh = Simply_supported2D(10,10,:solid2D)
+    
+    # Solve using all elements
+    U, _ = Solve_linear(mesh)
+
+    # Set option
+    mesh.options[:IS_TOPO] = ones(1,1)
+
+    # Solve using only one element
+    U2, _ = Solve_linear(mesh)
+
+    @test all(isapprox(U2,U))
+     
+
+    #                        Valid tests 3D 
+
+    # Load Simply supported 2D from TMeshes
+    mesh = Simply_supported3D(10,10,10,:solid3D)
+    
+    # Solve using all elements
+    U, _ = Solve_linear(mesh)
+
+    # Set option
+    mesh.options[:IS_TOPO] = ones(1,1)
+
+    # Solve using only one element
+    U2, _ = Solve_linear(mesh)
+
+    @test all(isapprox(U2,U))
+    
+
+    #                        Valid tests 2D 
+
+    # Load Simply supported 2D from TMeshes
+    mesh = Simply_supported2D(10,10,:solid2D)
+    
+    # Solve using all elements
+    w, _ = Solve_modal(mesh)
+
+    # Set option
+    mesh.options[:IS_TOPO] = ones(1,1)
+
+    # Solve using only one element
+    w2, _ = Solve_modal(mesh)
+
+    @test all(isapprox(w2,w))
+     
+
+    #                        Valid tests 3D 
+
+    # Load Simply supported 2D from TMeshes
+    mesh = Simply_supported3D(10,10,10,:solid3D)
+    
+    # Solve using all elements
+    w, _ = Solve_modal(mesh)
+
+    # Set option
+    mesh.options[:IS_TOPO] = ones(1,1)
+
+    # Solve using only one element
+    w2, _ = Solve_modal(mesh)
+
+    @test all(isapprox(w2,w))
+    
+
+
+
+end
+

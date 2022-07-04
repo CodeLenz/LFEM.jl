@@ -41,3 +41,6 @@ include("test_options_stiffness.jl")
 
 # Options :Mass
 include("test_options_mass.jl")
+
+# Options :IS_TOPO
+include("test_options_istopo.jl")
