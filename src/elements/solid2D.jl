@@ -245,7 +245,7 @@ function Volume_solid2D(mesh::Mesh2D,ele::Int64)
                               -pp -pp pp  pp])
 
     # Coordinates
-    x,y = Nodal_coordinates(m,ele)
+    x,y = Nodal_coordinates(mesh,ele)
 
     # Thickness
     thick = Get_geometry(mesh,ele).thickness
