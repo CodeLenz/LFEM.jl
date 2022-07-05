@@ -1,7 +1,8 @@
 """
 Solve the modal problem (M(x) - λK(x))ϕ(x) = 0
 
-  Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, mparam::Function, nev=4, which=:SM)
+  Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function; 
+              mparam::Function, nev=4, which=:SM)
 
 where 
 
@@ -10,23 +11,26 @@ where
     mparam(xe): R->R is the material parametrization for M (SIMP like)
     nev is the number of eigenvalues and eigenvectors to compute
     which is the range (:SM is smaller in magnitude, for example)
+    loadcase is the loadcase
 
 Returns:
 
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, mparam::Function, nev=4, which=:SM)
+function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
+                     mparam::Function; nev=4, which=:SM, loadcase::Int64=1)
   
-    # Basic assertion
+    # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")
+    0<=loadcase<=mesh.nload || throw("Solve_modal:: invalid loadcase")
 
     # Assembly K and M
     K = Global_K(mesh,x,kparam)
     M = Global_M(mesh,x,mparam)
 
     # Free dofs
-    free_dofs = mesh.free_dofs
+    free_dofs = mesh.free_dofs[loadcase]
     
     # Local views to the free dofs
     KV = @view  K[free_dofs, free_dofs]
@@ -51,18 +55,19 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, mparam::F
  """
 Solve the modal problem (M - λK)ϕ = 0
 
-  Solve_modal(mesh::Mesh,nev=4, which=:SM)
+  Solve_modal(mesh::Mesh ;nev=4, which=:SM, loadcase=1)
 
 where 
     nev is the number of eigenvalues and eigenvectors to compute
     which is the range (:SM is smaller in magnitude, for example)
+    loadcase is the loadcase
 
 Returns:
 
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh, nev=4, which=:SM)
+function Solve_modal(mesh::Mesh; nev=4, which=:SM, loadcase::Int64=1)
 
     # x->1.0 mapping
     dummy_f(x)=1.0
@@ -71,7 +76,7 @@ function Solve_modal(mesh::Mesh, nev=4, which=:SM)
     x = Vector{Float64}(undef,Get_ne(mesh))
 
     # Call Solve_modal
-    Solve_modal(mesh, x, dummy_f, dummy_f, nev, which)
+    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, which=which, loadcase=loadcase)
   
 end
   

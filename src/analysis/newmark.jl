@@ -4,23 +4,28 @@ using Newmark-beta method.
 
     Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
                   ts::Tuple{Float64, Float64}, Δt::Float64,
-                  x::Vector{Float64}, kparam::Function, mparam::Function;
-                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+                  x::Vector{Float64}, kparam::Function, mparam::Function,
+                  verbose=false;
+                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
+                  loadcase=1)
 
 where 
 
-    ts is Tupple with initial and end time (Ti,Tf)
-    Δt is (fixed) time step
-    x is a ne x 1 vector of design varibles 
-    kparam(xe): R->R is the material parametrization for K (SIMP like)
-    mparam(xe): R->R is the material parametrization for M (SIMP like)
+    ts is Tupple with initial and end time (Ti,Tf)  
+    Δt is (fixed) time step  
+    x is a ne x 1 vector of design varibles   
+    kparam(xe): R->R is the material parametrization for K (SIMP like)  
+    mparam(xe): R->R is the material parametrization for M (SIMP like)  
     verbose is false or true
-
-    f!(t,F,mesh) must be a function of t, mesh and F where F is dim*nn x 1,
+    U0 and V0 are the initial conditions  
+    β and γ are the parameters of the Newmar method
+    loadcase is the loadcase
+ 
+    f!(t,F,mesh,loadcase) must be a function of t, mesh and F where F is dim*nn x 1,
                 Example: 
     
-                function f!(t,F,mesh::Mesh)
-                            P = Point_load(mesh)
+                function f!(t,F,mesh::Mesh,loadcase=1)
+                            P = Point_load(mesh,loadcase)
                             F.= cos(2*t)*P 
                 end   
 
@@ -37,8 +42,12 @@ number of time steps (length of t0:Δt:tf)
     A_t is a vector of size nt x 1 with discrete times
     dofs is a vector with the (global) monitored dofs
 """
-function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64,
-                       x::Vector{Float64}, kparam::Function, mparam::Function, verbose=false; U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
+                      ts::Tuple{Float64, Float64}, Δt::Float64,
+                      x::Vector{Float64}, kparam::Function, 
+                      mparam::Function, verbose=false; 
+                      U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
+                      loadcase::Int64=1)
 
 
     #
@@ -56,9 +65,12 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
     ne = Get_ne(mesh)
     nn = Get_nn(mesh)
 
+    # Check if loadcase is valid
+    0<=loadcase<=mesh.nload || throw("Solve_newmark:: invalid loadcase")
+
     # free dofs
-    free_dofs = mesh.free_dofs
-    nfree = mesh.ngls
+    free_dofs = mesh.free_dofs[loadcase]
+    nfree = mesh.ngls[loadcase]
 
     # Dimension
     dim = Get_dim(mesh)
@@ -127,7 +139,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
     #
 
     # Initial force
-    f!(t0,F,mesh)
+    f!(t0,F,mesh,loadcase)
 
     # Lets make a final consistency test
     @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
@@ -155,7 +167,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
     for t in tspan
         
         # Force in the next time step
-        f!(t+Δt,F,mesh)  
+        f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
         b = F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
@@ -193,20 +205,24 @@ Solve the transient problem MA(t) + CV(t) + K(t)U(t) = F(t),
 using Newmark-beta method.
 
     Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
-                  ts::Tuple{Float64, Float64}, Δt::Float64;
-                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+                  ts::Tuple{Float64, Float64}, Δt::Float64,
+                  verbose=false;
+                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2,loadcase=1)
 
 where 
 
     ts is Tupple with initial and end time (Ti,Tf)
     Δt is (fixed) time steps
     verbose is false or true
+    U0 and V0 are the initial conditions  
+    β and γ are the parameters of the Newmar method
+    loadcase is the loadcase
 
-    f!(t,F,mesh) must be a function of t, mesh and F where F is dim*nn x 1,
+    f!(t,F,mesh,loadcase) must be a function of t, mesh and F where F is dim*nn x 1,
                 Example: 
     
-                function f!(t,F,mesh::Mesh)
-                            P = Point_load(mesh)
+                function f!(t,F,mesh::Mesh,loadcase=1)
+                            P = Point_load(mesh,loadcase)
                             F.= cos(2*t)*P 
                 end   
 
@@ -223,9 +239,11 @@ number of time steps (length of t0:Δt:tf)
     A_t is a vector of size nt x 1 with discrete times
     dofs is a vector with the (global) monitored dofs
 """
-function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{Float64, Float64}, Δt::Float64,
+function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
+                       ts::Tuple{Float64, Float64}, Δt::Float64,
                        verbose=false;
-                       U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+                       U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
+                       loadcase::Int64=1)
 
       # x->1.0 mapping
       dummy_f(x)=1.0
@@ -234,6 +252,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, ts::Tuple{F
       x = Vector{Float64}(undef,Get_ne(mesh))
 
       # Call Solve_newmark
-      Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,verbose,U0=U0,V0=V0,β=β,γ=γ)
+      Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,verbose,
+                    U0=U0,V0=V0,β=β,γ=γ,loadcase=loadcase)
  
 end   

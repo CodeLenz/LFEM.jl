@@ -2,7 +2,9 @@
 Solve the harmonic problem Kd(x,w)Ud(x,w) = F(w), 
 where Kd(x,w)= K(x)-M(x)w^2 + im*w*C(x)
 
-    Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64}, kparam::Function, mparam::Function)
+    Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64}, 
+                   kparam::Function, mparam::Function ; 
+                   loadcase=1)
 
 where 
 
@@ -10,17 +12,21 @@ where
     x is a ne x 1 vector of design varibles 
     kparam(xe): R->R is the material parametrization for K (SIMP like)
     mparam(xe): R->R is the material parametrization for M (SIMP like)
+    loadcase is the loadcase
 
 Returns:
 
     Ud = displacement vector (ComplexF64) of size dim*nn x 1
     LU = LU factorization of Kd(x,w) (just free positions)
+
 """
-function Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64}, kparam::Function, mparam::Function)
+function Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64},
+                        kparam::Function, mparam::Function; loadcase::Int64=1)
   
     # Basic checks
     w >= 0.0 || throw("Solve_harmonic:: angular frequency w must be >=0.0")
     length(x)==Get_ne(mesh) || throw("Solve_harmonic:: length of x must be ne")
+    0<=loadcase<=mesh.nload || throw("Solve_harmonic:: invalid loadcase")
 
     # Assembly K and M
     K = Global_K(mesh,x,kparam)
@@ -30,10 +36,10 @@ function Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64}, kparam::Func
     nfull = size(K,1)
   
     # Assembly F
-    F = Point_load(mesh)
+    F = Point_load(mesh,loadcase)
 
     # Free dofs
-    free_dofs = mesh.free_dofs
+    free_dofs = mesh.free_dofs[loadcase]
     
     # Local views to the free dofs
     KV = @view  K[free_dofs, free_dofs]
@@ -63,17 +69,19 @@ function Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64}, kparam::Func
 Solve the harmonic problem Kd(w)Ud(w) = F(w), 
 where Kd(w)= K-Mw^2 + im*w*C
 
-    Solve_harmonic(mesh::Mesh, w::Float64)
+    Solve_harmonic(mesh::Mesh, w::Float64; loadcase=1)
 
 where 
 
-    w is the angular frequency
+    w is the angular frequency  
+    loadcase is the loadcase  
+
 Returns:
 
-    Ud = displacement vector (ComplexF64) of size dim*nn x 1
-    LU = LU factorization of Kd(x,w) (just free positions)
+    Ud = displacement vector (ComplexF64) of size dim*nn x 1  
+    LU = LU factorization of Kd(x,w) (just free positions)  
 """
-function Solve_harmonic(mesh::Mesh, w::Float64)
+function Solve_harmonic(mesh::Mesh, w::Float64; loadcase::Int64=1)
 
       # x->1.0 mapping
       dummy_f(x)=1.0
@@ -82,6 +90,6 @@ function Solve_harmonic(mesh::Mesh, w::Float64)
       x = Vector{Float64}(undef,Get_ne(mesh))
   
      # Call Solve_harmonic
-     Solve_harmonic(mesh, w, x, dummy_f, dummy_f)
+     Solve_harmonic(mesh, w, x, dummy_f, dummy_f, loadcase=loadcase)
 
 end
