@@ -6,8 +6,8 @@
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -29,7 +29,7 @@
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f!,monitor,tspan,dt)
 
 
     # Load Simply supported 2D from TMeshes (solid)
@@ -38,8 +38,8 @@
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f1!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f1!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -61,7 +61,7 @@
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f1!,monitor,tspan,dt)
 
 
     # Load Simply supported 3D from TMeshes (truss)
@@ -70,8 +70,8 @@
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f2!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f2!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -93,7 +93,7 @@
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f2!,monitor,tspan,dt)
 
     # Load Simply supported 3D from TMeshes (solid)
     mesh = Simply_supported3D(2,2,2,:solid3D)
@@ -101,8 +101,8 @@
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f3!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f3!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -124,7 +124,7 @@
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f3!,monitor,tspan,dt)
     
 end
 
@@ -142,8 +142,8 @@ end
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f4!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f4!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -165,7 +165,7 @@ end
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f4!,monitor,tspan,dt)
 
 
     # Load Simply supported 2D from TMeshes (solid)
@@ -177,8 +177,8 @@ end
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f5!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f5!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -200,7 +200,7 @@ end
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f5!,monitor,tspan,dt)
 
 
     # Load Simply supported 3D from TMeshes (truss)
@@ -212,8 +212,8 @@ end
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f6!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f6!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -235,7 +235,7 @@ end
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f6!,monitor,tspan,dt)
 
     # Load Simply supported 3D from TMeshes (solid)
     mesh = Simply_supported3D(2,2,2,:solid3D)
@@ -246,8 +246,8 @@ end
     # We need to define a function that modifies a force
     # vector according to time t. Lets use the same point
     # load as the static example, but with a cos(2*t) 
-    function f7!(t,F,mesh)
-        P  = Point_load(mesh)
+    function f7!(t,F,mesh,loadcase=1)
+        P  = Point_load(mesh,loadcase)
         F .= cos(2*t)*P
     end
 
@@ -269,7 +269,7 @@ end
     catch err  
             false
     end
-    @isinferred Solve_harmonic(mesh,w)
+    @isinferred Solve_newmark(mesh,f7!,monitor,tspan,dt)
     
 end
 
