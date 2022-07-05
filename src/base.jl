@@ -20,6 +20,24 @@ function Expand_vector(v::Vector{T},dim::Int64,free_dofs::Vector{Int64}) where {
 
 end
 
+#
+# Function to consider the loadcase
+#
+function Expand_vector(v::Vector{T},mesh::Mesh,loadcase::Int64) where {T}
+
+  # Output vector
+  dimension = Get_nn(mesh)*Get_dim(mesh)
+  V = zeros(T,dimension)
+
+  # Free dofs for this loadcase
+  0<=loadcase<=mesh.nload || throw("Expand_vector:: invalid loadcase")
+  free_dofs = mesh.free_dofs[loadcase]
+
+  Expand_vector!(V,v,free_dofs)
+  return V
+
+end
+
 
  #
  # Change of reference Local to Global
