@@ -48,15 +48,15 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
     # o acesso de memória
     gls = DOFs(mesh,1) 
 
-    # Faz o mesmo para a matriz de rigidez
-    Keg = Local_K(mesh,1) 
-    Ke  = similar(Keg)
- 
+   
     # Experimental!!
     # If this key is set, than 
     # use Keg from element 1 ONLY
     if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
  
+       # Faz o mesmo para a matriz de rigidez
+       Keg = Local_K(mesh,1) 
+   
        for ele in mesh
             # Determina quais são os gls GLOBAIS que são "acessados"
             # por esse elemento
@@ -73,14 +73,14 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
         for ele in mesh
         
             # Local stiffness matrix
-            Ke .= Local_K(mesh,ele) 
+            Ke = Local_K(mesh,ele) 
 
             # Determina quais são os gls GLOBAIS que são "acessados"
             # por esse elemento
             gls .= DOFs(mesh,ele) 
 
             # If needed, convert to global reference
-            Keg .= To_global(Ke,mesh,ele)
+            Keg = To_global(Ke,mesh,ele)
             
             # Adiciona a matriz do elemento (rotacionada) à matriz Global
             @inbounds K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
@@ -209,14 +209,13 @@ with [node dof value;]
     # o acesso de memória
     gls = DOFs(mesh,1) 
 
-    # Faz o mesmo para a matriz de massa
-    Meg = Local_M(mesh,1) 
-    Me  = similar(Meg)
-
+   
     # Experimental!!
     # If this key is set, than 
     # use Meg from element 1 ONLY
     if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
+
+        Meg = Local_M(mesh,1) 
 
         for ele in mesh
              # Determina quais são os gls GLOBAIS que são "acessados"
@@ -234,14 +233,14 @@ with [node dof value;]
         for ele in mesh
 
             # Local mass matrix
-            Me .= Local_M(mesh,ele)
+            Me = Local_M(mesh,ele)
             
             # Determina quais são os gls GLOBAIS que são "acessados"
             # por esse elemento
             gls .= DOFs(mesh,ele) 
 
             # If needed, convert to global reference
-            Meg .= To_global(Me,mesh,ele)
+            Meg = To_global(Me,mesh,ele)
             
             # Adiciona a matriz do elemento (rotacionada) a matriz Global
             @inbounds M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
