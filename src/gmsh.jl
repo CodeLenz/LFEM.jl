@@ -1,11 +1,12 @@
 ################################################################################
 #####                           GMSH 2.1                                 ######
 ################################################################################
+
 #
 # Cria o cabecalho com informacoes da malha
 # para posterior adicao de vistas com saidas
 #
-function Gmsh_init(nome_arquivo::String,mesh::Mesh)
+function Gmsh_init(nome_arquivo::String,bmesh::Bmesh)
 
     # Verifica se já existe o arquivo, se sim, remove
     if isfile(nome_arquivo); rm(nome_arquivo); end
@@ -14,10 +15,16 @@ function Gmsh_init(nome_arquivo::String,mesh::Mesh)
     saida = open(nome_arquivo,"a")
 
     # Dimension (2/3)
-    dim = Get_dim(mesh)
+    dim = 2
+    if isa(bmesh,Bmesh3D)
+        dim = 3
+    end
     
     # Number of nodes
-    nn = Get_nn(mesh)
+    nn = bmesh.nn
+
+    # Number of elements
+    ne = bmesh.ne
 
     # Cabecalho do gmsh
     println(saida,"\$MeshFormat")
@@ -26,32 +33,32 @@ function Gmsh_init(nome_arquivo::String,mesh::Mesh)
 
     # Nodes
     println(saida,"\$Nodes")
-    println(saida,mesh.bmesh.nn)
+    println(saida,nn)
     if dim==2
         for i=1:nn
-            println(saida,i," ",mesh.bmesh.coord[i,1]," ",mesh.bmesh.coord[i,2]," 0.0 ")
+            println(saida,i," ",bmesh.coord[i,1]," ",bmesh.coord[i,2]," 0.0 ")
         end
     else
         for i=1:nn
-            println(saida,i," ",mesh.bmesh.coord[i,1]," ",mesh.bmesh.coord[i,2]," ",mesh.bmesh.coord[i,3])
+            println(saida,i," ",bmesh.coord[i,1]," ",bmesh.coord[i,2]," ",bmesh.coord[i,3])
         end
     end    
     println(saida,"\$EndNodes")
 
     # Element type (gmsh code)
     tipo_elemento = 1
-    if mesh.bmesh.etype==:solid2D
+    if bmesh.etype==:solid2D
         tipo_elemento = 3
-    elseif mesh.bmesh.etype==:solid3D
+    elseif bmesh.etype==:solid3D
         tipo_elemento = 5    
     end
 
     println(saida,"\$Elements")
-    println(saida,mesh.bmesh.ne)
-    for i in mesh 
-        con = string(i)*" "*string(tipo_elemento)*" 0 "*string(mesh.bmesh.connect[i,1])
-        for j=2:size(mesh.bmesh.connect,2)
-            con = con * " " * string(mesh.bmesh.connect[i,j])
+    println(saida,bmesh.ne)
+    for i=1:ne 
+        con = string(i)*" "*string(tipo_elemento)*" 0 "*string(bmesh.connect[i,1])
+        for j=2:size(bmesh.connect,2)
+            con = con * " " * string(bmesh.connect[i,j])
         end
         println(saida,con)
     end
@@ -62,6 +69,14 @@ function Gmsh_init(nome_arquivo::String,mesh::Mesh)
 
 
 end # Gera_Malha_Gmsh
+
+#
+# Overload to use Mesh
+#
+function Gmsh_init(nome_arquivo::String,mesh::Mesh)
+         BMesh.Gmsh_init(nome_arquivo,mesh.bmesh)
+end
+
 
 
 #
