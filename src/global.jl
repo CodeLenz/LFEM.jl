@@ -313,13 +313,13 @@ end
 """
 Assembly the global damping matrix  C = α_c M + β_c K
 
-     Global_C(K,M,mesh::Mesh,α_c=0.0,β_c=0.0)
+     Global_C(M,K,mesh::Mesh,α_c=0.0,β_c=0.0)
 
 This function also considers entries :Damper in mesh.options
 with [node dof value;]
     
 """
-function Global_C(K,M,mesh::Mesh,α_c=0.0,β_c=1E-6)
+function Global_C(M,K,mesh::Mesh,α_c=0.0,β_c=1E-6)
 
     # Damping matrix
     C = α_c*M + β_c*K
@@ -368,6 +368,7 @@ function Global_C(K,M,mesh::Mesh,α_c=0.0,β_c=1E-6)
 end
 
 
+########################## Static Stresses ###################
 
 #
 # Evaluate stresses for the entire mesh (central points only)
@@ -438,4 +439,54 @@ function Stresses(mesh::Mesh,U::Vector{T})  where T
 
     # Call function
     Stresses(mesh,U,Float64[],dummy_f)
+end
+
+
+########################## Harmonic Stresses ###################
+
+#
+# Evaluate stresses for the entire mesh (central points only)
+#
+"""
+Return (harmonic) stresses for the entire mesh. This version evaluates only in the central point.
+
+  Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64,
+                    x=Float64[],sparam::Function)
+
+where w is the angular frequency and β_c is the damping parameter.
+
+The output is a matrix ne x ncol, where ncol is 1 for :truss2D and 3D, 3 for :solid2D and 6 for :solid3D
+
+Function sparam(x) is used to parametrize stress. One possibility is 
+
+function sparam(x,p=1.0,q=0.0) 
+       x^(p=q)
+end
+
+"""
+function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64,
+                           x::Vector{Float64},sparam::Function)  where T
+
+
+        Stresses(mesh,U,x,sparam).*(1+im*w*β_c)
+
+end
+"""
+Return stresses for the entire mesh. This version evaluates only in the central point.
+
+    Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64)
+
+
+where w is the angular frequency and β_c is the damping parameter.
+
+The output is a matrix ne x ncol, where ncol is 1 for :truss2D and 3D, 3 for :solid2D and 6 for :solid3D
+
+"""
+function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64)  where T
+
+    # Dummy function
+    dummy_f(x)=1.0
+
+    # Call function
+    Harmonic_stresses(mesh,U,Float64[],dummy_f, w, β_c)
 end

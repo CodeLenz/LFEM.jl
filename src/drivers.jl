@@ -1,7 +1,7 @@
 #
 # Driver for stress (2D)
 #
-function Stress(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+function Stress(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{T}) where T
   
    etype = Get_etype(mesh)
   
@@ -16,7 +16,7 @@ function Stress(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64}
 end
 
 # Default  (r=s=0.0)
-function Stress(mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+function Stress(mesh::Mesh2D,ele::Int64,U::Vector{T}) where T
    Stress(0.0,0.0,mesh,ele,U)
 end
 
@@ -25,7 +25,7 @@ end
 # Driver for stress (3D)
 #
 function Stress(r::Float64,s::Float64,t::Float64,
-                mesh::Mesh3D,ele::Int64,U::Vector{Float64})
+                mesh::Mesh3D,ele::Int64,U::Vector{T}) where T
   
    etype = Get_etype(mesh)
   
@@ -41,7 +41,7 @@ end
 
 
 # Default  (r=s=t=0.0)
-function Stress(mesh::Mesh3D,ele::Int64,U::Vector{Float64})
+function Stress(mesh::Mesh3D,ele::Int64,U::Vector{T}) where T
    Stress(0.0,0.0,0.0,mesh,ele,U)
 end
 
