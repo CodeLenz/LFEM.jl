@@ -2,13 +2,14 @@
 Solve the harmonic problem Kd(x,w)Ud(x,w) = F(w), 
 where Kd(x,w)= K(x)-M(x)w^2 + im*w*C(x)
 
-    Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64}, 
+    Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64, x::Vector{Float64}, 
                    kparam::Function, mparam::Function ; 
                    loadcase=1)
 
 where 
 
     w is the angular frequency
+    α_c and  β_c are the parameters for proportional damping
     x is a ne x 1 vector of design varibles 
     kparam(xe): R->R is the material parametrization for K (SIMP like)
     mparam(xe): R->R is the material parametrization for M (SIMP like)
@@ -20,7 +21,8 @@ Returns:
     LU = LU factorization of Kd(x,w) (just free positions)
 
 """
-function Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64},
+function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
+                        x::Vector{Float64},
                         kparam::Function, mparam::Function; loadcase::Int64=1)
   
     # Basic checks
@@ -46,7 +48,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64},
     MV = @view  M[free_dofs, free_dofs]
 
     # Local damping
-    CV = 1E-6*KV
+    CV = Global_C(KV,MV,mesh,α_c,β_c)
 
     # Harmonic matrix
     KD = KV + w*im*CV - (w^2)*MV
@@ -69,11 +71,12 @@ function Solve_harmonic(mesh::Mesh, w::Float64, x::Vector{Float64},
 Solve the harmonic problem Kd(w)Ud(w) = F(w), 
 where Kd(w)= K-Mw^2 + im*w*C
 
-    Solve_harmonic(mesh::Mesh, w::Float64; loadcase=1)
+    Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64 ; loadcase=1)
 
 where 
 
     w is the angular frequency  
+    α_c and  β_c are the parameters for proportional damping
     loadcase is the loadcase  
 
 Returns:
@@ -81,7 +84,8 @@ Returns:
     Ud = displacement vector (ComplexF64) of size dim*nn x 1  
     LU = LU factorization of Kd(x,w) (just free positions)  
 """
-function Solve_harmonic(mesh::Mesh, w::Float64; loadcase::Int64=1)
+function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64
+                        ; loadcase::Int64=1)
 
       # x->1.0 mapping
       dummy_f(x)=1.0
@@ -90,6 +94,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64; loadcase::Int64=1)
       x = Vector{Float64}(undef,Get_ne(mesh))
   
      # Call Solve_harmonic
-     Solve_harmonic(mesh, w, x, dummy_f, dummy_f, loadcase=loadcase)
+     
+     Solve_harmonic(mesh, w, α_c, β_c, x, dummy_f, dummy_f, loadcase=loadcase)
 
 end
