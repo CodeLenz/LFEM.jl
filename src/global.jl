@@ -332,6 +332,10 @@ function Global_C(M,K,mesh::Mesh,α_c=0.0,β_c=1E-6)
     # If :Damper is defined
     if haskey(options,:Damper)
 
+       # Alias
+       dim = Get_dim(mesh) 
+       nn = Get_nn(mesh)
+
        # Alias 
        damper = options[:Damper]
 
