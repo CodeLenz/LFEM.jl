@@ -33,7 +33,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     # Assembly K, M and C
     K = Global_K(mesh,x,kparam)
     M = Global_M(mesh,x,mparam)
-    CV = Global_C(M,K,mesh,α_c,β_c)
+    C = Global_C(M,K,mesh,α_c,β_c)
 
     # total size
     nfull = size(K,1)
@@ -47,7 +47,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     # Local views to the free dofs
     KV = @view  K[free_dofs, free_dofs]
     MV = @view  M[free_dofs, free_dofs]
-    VV = @view  V[free_dofs, free_dofs]
+    CV = @view  C[free_dofs, free_dofs]
 
     # Harmonic matrix
     KD = KV + w*im*CV - (w^2)*MV
