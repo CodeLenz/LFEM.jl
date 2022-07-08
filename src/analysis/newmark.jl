@@ -6,7 +6,9 @@ using Newmark-beta method.
                   ts::Tuple{Float64, Float64}, Δt::Float64,
                   x::Vector{Float64}, kparam::Function, mparam::Function,
                   verbose=false;
-                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
+                  U0=Float64[], V0=Float64[],
+                  β=1/4, γ=1/2, 
+                  α_c=0.0, β_c=1E-6
                   loadcase=1)
 
 where 
@@ -18,7 +20,8 @@ where
     mparam(xe): R->R is the material parametrization for M (SIMP like)  
     verbose is false or true
     U0 and V0 are the initial conditions  
-    β and γ are the parameters of the Newmar method
+    β and γ are the parameters of the Newmark method
+    α_c and  β_c are the coefficients for proportional damping C=α_cM + β_c*K
     loadcase is the loadcase
  
     f!(t,F,mesh,loadcase) must be a function of t, mesh and F where F is dim*nn x 1,
@@ -47,6 +50,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
                       x::Vector{Float64}, kparam::Function, 
                       mparam::Function, verbose=false; 
                       U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
+                      α_c=0.0, β_c=1E-6,
                       loadcase::Int64=1)
 
 
@@ -125,8 +129,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Global mass matrix
     M = Global_M(mesh, x, mparam)
 
-    # Just to play a little bit
-    C = 1E-6*K
+    # Global damping matrix
+    C = Global_C(K,M,mesh,α_c,β_c)
 
     # Newmark operator
     MN = M .+ β*K*Δt^2 .+ γ*C*Δt
