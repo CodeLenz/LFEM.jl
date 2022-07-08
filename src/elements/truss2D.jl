@@ -52,11 +52,11 @@ end
 
 """
 Local stress for truss2D
-       Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+       Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{T})
        
 It returns stress as [sxx] for compatibility with solid elements.
 """
-function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{T}) where T
 
        # Descobre os dados do elemento
        mat = mesh.mat_ele[ele]
@@ -69,7 +69,7 @@ function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{Float64})
        gls = DOFs(mesh,ele) 
 
        # Element displacements in global reference
-       ug = SVector{4,Float64}(U[gls])
+       ug = SVector{4,T}(U[gls])
        
        # Element displacements in local reference
        u = To_local(ug,mesh,ele)

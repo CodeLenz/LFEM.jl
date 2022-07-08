@@ -217,10 +217,10 @@ end
 
 """
 Local stress for solid 3D ((Not expanding bubble DOFs)
-    Stress_solid3D(r::Float64,s::Float64,t::Float64,mesh::Mesh2D,ele::Int64,U::Vector{Float64})
+    Stress_solid3D(r::Float64,s::Float64,t::Float64,mesh::Mesh2D,ele::Int64,U::Vector{T})
 """
 function Stress_solid3D(r::Float64,s::Float64,t::Float64,
-                        mesh::Mesh3D,ele::Int64,U::Vector{Float64})
+                        mesh::Mesh3D,ele::Int64,U::Vector{T}) where T
 
     # Consitutive relation
     C = Constitutive(mesh,ele)
@@ -235,7 +235,7 @@ function Stress_solid3D(r::Float64,s::Float64,t::Float64,
     gls = DOFs(mesh,ele) 
 
     # Element displacements
-    ug = SVector{24,Float64}(U[gls])
+    ug = SVector{24,T}(U[gls])
     
     # Stress
     C*B[:,1:24]*ug
