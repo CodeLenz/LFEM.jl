@@ -2,6 +2,7 @@
 #####                           GMSH 2.1                                 ######
 ################################################################################
 
+import BMesh:Gmsh_init
 """
 (Overloaded from BMesh)
 Initialize a gmsh mesh for post processing.
@@ -9,7 +10,6 @@ Initialize a gmsh mesh for post processing.
     Gmsh_init(nome_arquivo::String,mesh::Mesh)
 
 """
-import BMesh:Gmsh_init
 function Gmsh_init(nome_arquivo::String,mesh::Mesh)
          BMesh.Gmsh_init(nome_arquivo,mesh.bmesh)
 end
