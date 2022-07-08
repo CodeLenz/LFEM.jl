@@ -14,7 +14,7 @@ https://github.com/CodeLenz/TMeshes.jl
 ## Linear elastic analysis in 2D - truss 
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -28,7 +28,7 @@ U, F, Chol = Solve_linear(mesh)
 ## Linear elastic analysis in 2D - Plane Stress 
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -52,7 +52,7 @@ Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
 ## Linear elastic analysis in 3D (truss) 
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 3D from TMeshes
@@ -69,7 +69,7 @@ plot(mesh;U=U)
 ## Linear elastic analysis in 3D 
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -92,7 +92,7 @@ Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
 Evaluation and gmsh export are automatic for each element type
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -121,7 +121,7 @@ Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
 Evaluation and gmsh export are automatic for each element type
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -148,7 +148,7 @@ Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
 ## Modal analysis 
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 3D from TMeshes
@@ -170,7 +170,7 @@ Gmsh_nodal_vector(mesh,vec(ϕ[:,1]),name,"First mode, w=$w1 [rad/s]")
 ## Harmonic analysis 
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -196,7 +196,7 @@ Gmsh_nodal_vector(mesh,abs.(Ud),name,"Harmonic displacement - abs")
 ## Harmonic analysis with stress
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -234,7 +234,7 @@ Gmsh_element_stress(mesh,abs.(sigma_h),name,"Harmonic stress [Pa] - abs")
 ## Transient  analysis - Newmark method 
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -295,7 +295,7 @@ function of xe (scalar) only.
 ## Linear Elastic Analysis with material parametrization
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -323,7 +323,7 @@ Gmsh_element_scalar(mesh,x,name,"Design variables")
 ## Stresses with material parametrization
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
@@ -356,7 +356,7 @@ Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
 ## Modal analysis with material parametrization
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 3D from TMeshes
@@ -383,7 +383,7 @@ Gmsh_nodal_vector(mesh,vec(ϕ[:,1]),name,"First mode, w=$w1 [rad/s]")
 ## Harmonic analysis with material parametrization
 ```julia
 
-using BMesh, LMesh, TMeshes, Plots
+using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
