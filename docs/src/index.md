@@ -30,9 +30,16 @@ Global_M
 ```
 
 ```@docs
+Global_C
+```
+
+```@docs
 Stresses
 ```
 
+```@docs
+Harmonic_stresses
+```
 
 ## Truss2D
 
@@ -142,5 +149,27 @@ Stress_solid3D
 ```
 
 ```@docs
-Volume_solid2D
+Volume_solid3D
+```
+
+## Gmsh
+
+```@docs
+Gmsh_init
+```
+
+```@docs
+Gmsh_nodal_scalar
+```
+
+```@docs
+Gmsh_element_scalar
+```
+
+```@docs
+Gmsh_nodal_vector
+```
+
+```@docs
+Gmsh_element_stress
 ```
