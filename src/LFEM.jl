@@ -23,7 +23,7 @@ include("analysis/linear.jl")
 include("analysis/modal.jl")
 include("analysis/harmonic.jl")
 include("analysis/newmark.jl")
-include("show.jl")
+#include("show.jl")
 include("gmsh.jl")
 
 
@@ -38,7 +38,7 @@ export Global_K, Global_M, Global_C
 export Solve_linear, Solve_modal, Solve_harmonic, Solve_newmark
 export Stress, Local_K, Local_M
 export Stresses, Volume_truss, Volume_element
-export plot
+#export plot
 export Gmsh_init, Gmsh_nodal_scalar, Gmsh_element_scalar, Gmsh_nodal_vector
 export Gmsh_element_stress
 export Harmonic_stresses
