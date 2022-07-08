@@ -2,9 +2,13 @@
 #####                           GMSH 2.1                                 ######
 ################################################################################
 
-#
-# Overload to use Mesh
-#
+"""
+(Overloaded from BMesh)
+Initialize a gmsh mesh for post processing.
+
+    Gmsh_init(nome_arquivo::String,mesh::Mesh)
+
+"""
 import BMesh:Gmsh_init
 function Gmsh_init(nome_arquivo::String,mesh::Mesh)
          BMesh.Gmsh_init(nome_arquivo,mesh.bmesh)
@@ -12,10 +16,13 @@ end
 
 
 
-#
-# Adiciona uma vista escalar nodal a um arquivo (que ja deve ter o cabecalho)
-# O vetor que contem os valores nodais deve ter dimensao nnos
-#
+"""
+Export a nodal scalar view to gmsh
+
+    Gmsh_nodal_scalar(mesh::Mesh,escalares::Vector,nome_arquivo::String,
+                      nome_vista::String,tempo=0.0)
+
+"""
 function Gmsh_nodal_scalar(mesh::Mesh,escalares::Vector,nome_arquivo::String,
                           nome_vista::String,tempo=0.0)
 
@@ -54,10 +61,13 @@ function Gmsh_nodal_scalar(mesh::Mesh,escalares::Vector,nome_arquivo::String,
 
 end
 
-#
-# Adiciona uma vista escalar a um arquivo (que ja deve ter o cabecalho)
-# O vetor que contem os valores centroidais deve ter dimensao nelems
-#
+"""
+Export an element (centroidal) scalar view to gmsh
+
+    Gmsh_element_scalar(mesh::Mesh,escalares::Vector,nome_arquivo::String,
+                        nome_vista::String,tempo=0.0)
+
+"""
 function Gmsh_element_scalar(mesh::Mesh,escalares::Vector,nome_arquivo::String,
                              nome_vista::String,tempo=0.0)
 
@@ -100,11 +110,13 @@ function Gmsh_element_scalar(mesh::Mesh,escalares::Vector,nome_arquivo::String,
 end
 
 
-#
-# Adiciona uma vista vetorial nodal a um arquivo (que ja deve ter o cabecalho)
-# O vetor que contem os valores nodais deve ser expandido, ou seja,
-# deve ter sido criado por
-#
+"""
+Export an nodal vectorial view to gmsh
+
+    Gmsh_nodal_vector(mesh::Mesh,vetor::Vector,nome_arquivo::String,
+                      nome_vista::String,tempo=0.0)
+
+"""
 function Gmsh_nodal_vector(mesh::Mesh,vetor::Vector,nome_arquivo::String,
                            nome_vista::String,tempo=0.0)
 
@@ -157,6 +169,14 @@ end
 # O vetor que contem os valores centroidais deve ter dimensao nelems e o número de 
 # colunas depende do tipo de elemento
 #
+"""
+Export a tensorial element view to gmsh
+
+    Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
+                        nome_vista::String,tempo=0.0)
+
+"""
+
 function Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
                              nome_vista::String,tempo=0.0)
 
