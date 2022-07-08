@@ -30,9 +30,10 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     length(x)==Get_ne(mesh) || throw("Solve_harmonic:: length of x must be ne")
     0<=loadcase<=mesh.nload || throw("Solve_harmonic:: invalid loadcase")
 
-    # Assembly K and M
+    # Assembly K, M and C
     K = Global_K(mesh,x,kparam)
     M = Global_M(mesh,x,mparam)
+    CV = Global_C(M,K,mesh,α_c,β_c)
 
     # total size
     nfull = size(K,1)
@@ -46,9 +47,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     # Local views to the free dofs
     KV = @view  K[free_dofs, free_dofs]
     MV = @view  M[free_dofs, free_dofs]
-
-    # Local damping
-    CV = Global_C(MV,KV,mesh,α_c,β_c)
+    VV = @view  V[free_dofs, free_dofs]
 
     # Harmonic matrix
     KD = KV + w*im*CV - (w^2)*MV
