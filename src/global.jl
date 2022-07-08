@@ -492,5 +492,5 @@ function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64)  
     dummy_f(x)=1.0
 
     # Call function
-    Harmonic_stresses(mesh,U,Float64[],dummy_f, w, β_c)
+    Harmonic_stresses(mesh,U,w, β_c,Float64[],dummy_f)
 end
