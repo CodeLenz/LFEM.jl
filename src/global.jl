@@ -308,6 +308,67 @@ function Global_M(mesh::Mesh)
     # Call function
     Global_M(mesh, Float64[], dummy_f)
 end
+
+
+"""
+Assembly the global damping matrix  C = α_c M + β_c K
+
+     Global_C(K,M,mesh::Mesh,α_c=0.0,β_c=0.0)
+
+This function also considers entries :Damper in mesh.options
+with [node dof value;]
+    
+"""
+function Global_C(K,M,mesh::Mesh,α_c=0.0,β_c=1E-6)
+
+    # Damping matrix
+    C = α_c*M + β_c*K
+
+    # Add lumped dampers
+    # Add options:: :Damper
+    # If there are lumped mass, we add here
+    options = mesh.options
+
+    # If :Damper is defined
+    if haskey(options,:Damper)
+
+       # Alias 
+       damper = options[:Damper]
+
+       # Dimensions
+       ndamper,ncol = size(damper)
+
+       # Check if ncols==3
+       # node gl value
+       ncol==3 || throw("Global_C:: :Damper must have 3 columns")
+
+       # Add damper
+       @inbounds for m=1:ndamper
+ 
+           # Recover data for this damper
+           node   = Int(damper[m,1])
+           dof    = Int(damper[m,2])
+           gl     = dim*(node-1)+dof
+           value  = damper[m,3]
+           
+           # Assert if valid gl
+           0<node<=nn   || throw("Global_C:: :Damper :: invalid node")
+           0<dof<=dim   || throw("Global_C:: :Damper :: invalid dof")
+           value >= 0.0 || throw("Global_C:: :Damper :: invalid value")
+
+           # Add damper
+           C[gl,gl] += value
+
+       end # damper
+
+    end # if :Damper
+
+    return Symmetric(C)
+
+end
+
+
+
 #
 # Evaluate stresses for the entire mesh (central points only)
 #
