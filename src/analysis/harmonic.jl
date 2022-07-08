@@ -48,7 +48,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     MV = @view  M[free_dofs, free_dofs]
 
     # Local damping
-    CV = Global_C(KV,MV,mesh,α_c,β_c)
+    CV = Global_C(MV,KV,mesh,α_c,β_c)
 
     # Harmonic matrix
     KD = KV + w*im*CV - (w^2)*MV

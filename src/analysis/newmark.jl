@@ -8,7 +8,7 @@ using Newmark-beta method.
                   verbose=false;
                   U0=Float64[], V0=Float64[],
                   β=1/4, γ=1/2, 
-                  α_c=0.0, β_c=1E-6,
+                  α_c=0.0, β_c=1E-6
                   loadcase=1)
 
 where 
@@ -130,7 +130,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     M = Global_M(mesh, x, mparam)
 
     # Global damping matrix
-    C = Global_C(K,M,mesh,α_c,β_c)
+    C = Global_C(M,K,mesh,α_c,β_c)
 
     # Newmark operator
     MN = M .+ β*K*Δt^2 .+ γ*C*Δt
@@ -211,10 +211,7 @@ using Newmark-beta method.
     Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
                   ts::Tuple{Float64, Float64}, Δt::Float64,
                   verbose=false;
-                  U0=Float64[], V0=Float64[],
-                  β=1/4, γ=1/2,
-                  α_c=0.0, β_c=1E-6,
-                  loadcase=1)
+                  U0=Float64[], V0=Float64[], β=1/4, γ=1/2,loadcase=1)
 
 where 
 
@@ -222,8 +219,7 @@ where
     Δt is (fixed) time steps
     verbose is false or true
     U0 and V0 are the initial conditions  
-    β and γ are the parameters of the Newmark method
-    α_c and  β_c are the parameters to the proportional damping 
+    β and γ are the parameters of the Newmar method
     loadcase is the loadcase
 
     f!(t,F,mesh,loadcase) must be a function of t, mesh and F where F is dim*nn x 1,
@@ -251,7 +247,6 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
                        ts::Tuple{Float64, Float64}, Δt::Float64,
                        verbose=false;
                        U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
-                       α_c=0.0, β_c=1E-6,
                        loadcase::Int64=1)
 
       # x->1.0 mapping
@@ -262,7 +257,6 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
 
       # Call Solve_newmark
       Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,verbose,
-                    U0=U0,V0=V0,β=β,γ=γ,α_c=α_c,β_c=β_c,
-                    loadcase=loadcase)
+                    U0=U0,V0=V0,β=β,γ=γ,loadcase=loadcase)
  
 end   
