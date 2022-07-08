@@ -196,6 +196,44 @@ Gmsh_nodal_vector(mesh,abs.(Ud),name,"Harmonic displacement - abs")
 
 ```
 
+## Harmonic analysis with stress
+```julia
+
+using BMesh, LMesh, TMeshes, Plots
+using LFEM
+
+# Load Simply supported 2D from TMeshes
+mesh = Simply_supported2D(6,6)
+
+# Angular frequency [rad/s]
+w = 20.0
+
+# Structural damping
+α_c = 0.0
+β_c = 1E-6
+
+# Solve the harmonic problem
+Ud,LU = Solve_harmonic(mesh,w,α_c,β_c)
+
+# Harmonic stresses
+sigma_h = Harmonic_stresses(mesh,Ud,w,β_c)
+
+# Initilize an output file
+name = "output.pos"
+Gmsh_init(name,mesh)
+
+# Export to gmsh
+Gmsh_nodal_vector(mesh,real.(Ud),name,"Harmonic displacement [m] - real part")
+Gmsh_nodal_vector(mesh,imag.(Ud),name,"Harmonic displacement [m] - imag part")
+Gmsh_nodal_vector(mesh,abs.(Ud),name,"Harmonic displacement [m] - abs")
+
+Gmsh_element_stress(mesh,real.(sigma_h),name,"Harmonic stress [Pa] - real part")
+Gmsh_element_stress(mesh,imag.(sigma_h),name,"Harmonic stress [Pa] - imag part")
+Gmsh_element_stress(mesh,abs.(sigma_h),name,"Harmonic stress [Pa] - abs")
+
+```
+
+
 ## Transient  analysis - Newmark method 
 ```julia
 
@@ -357,13 +395,20 @@ mesh = Simply_supported2D(6,6)
 # Angular frequency [rad/s]
 w = 20.0
 
+# Structural damping
+α_c = 0.0
+β_c = 1E-6
+
 # Define x, kparam and mparam
 x = ones(Get_ne(mesh))
 kparam(xe::Float64,p=3.0)= xe^p
 mparam(xe::Float64,p=2.0,cut=0.1)= ifelse(xe>=cut,xe,xe^p)
 
 # Solve the harmonic problem
-Ud,LU = Solve_harmonic(mesh,w,x,kparam,mparam)
+Ud,LU = Solve_harmonic(mesh,w,α_c,β_c,x,kparam,mparam)
+
+# Array with harmonic stresses
+sigma_h = Harmonic_stresses(mesh,U,w,β_c,x,sparam)
 
 # Initilize an output file
 name = "output.pos"
@@ -373,5 +418,10 @@ Gmsh_init(name,mesh)
 Gmsh_nodal_vector(mesh,real.(Ud),name,"Harmonic displacement - real part")
 Gmsh_nodal_vector(mesh,imag.(Ud),name,"Harmonic displacement - imag part")
 Gmsh_nodal_vector(mesh,abs.(Ud),name,"Harmonic displacement - abs")
+
+Gmsh_element_stress(mesh,real.(sigma_h),name,"Harmonic stress [Pa] - real part")
+Gmsh_element_stress(mesh,imag.(sigma_h),name,"Harmonic stress [Pa] - imag part")
+Gmsh_element_stress(mesh,abs.(sigma_h),name,"Harmonic stress [Pa] - abs")
+
 
 ```
