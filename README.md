@@ -23,9 +23,6 @@ mesh = Simply_supported2D(6,6)
 # Solve the linear static equilibrium
 U, F, Chol = Solve_linear(mesh)
 
-# Show displacements
-plot(mesh;U=U)
-
 ```
 
 ## Linear elastic analysis in 2D - Plane Stress 
