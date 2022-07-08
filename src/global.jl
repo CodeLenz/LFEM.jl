@@ -415,7 +415,7 @@ function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function)
    end
 
    # Alocate
-   stresses = Matrix{Float64}(undef,ne,ncol)
+   stresses = Matrix{T}(undef,ne,ncol)
 
    # Loop 
    for ele in mesh
