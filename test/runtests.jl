@@ -44,3 +44,6 @@ include("test_options_mass.jl")
 
 # Options :IS_TOPO
 include("test_options_istopo.jl")
+
+# Options :Damper
+include("test_options_damper.jl")
