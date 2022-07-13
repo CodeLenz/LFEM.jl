@@ -62,3 +62,44 @@ function Constitutive(mesh::Mesh,ele::Int64)
 
 
 end
+
+
+###################################################################################################
+#                        von Mises stress matrix
+###################################################################################################
+function Voigt_equivalent(mesh::Mesh)
+
+    # Get element classe (truss/solid)
+    eclass = Get_eclass(mesh)
+
+    if eclass===:truss
+
+        return Smatrix{1,1}([1.0])
+
+    else    
+
+        # Get element type
+        etype = Get_etype(mesh)
+
+        if etype===:solid3D
+
+            error("Voigt_equivalent::3D - implementar")
+
+        else 
+            
+            if model===:EPT
+            
+                return SMatrix{3,3}(  [1.0 -0.5 0.0;
+                                      -0.5  1.0 0.0;
+                                       0.0  0.0 3.0] )
+            else
+
+                error("Voigt_equivalent::EPD - implementar")
+
+            end
+
+        end
+
+    end 
+
+end
