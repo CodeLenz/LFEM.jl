@@ -17,8 +17,13 @@ function Constitutive(mesh::Mesh,ele::Int64)
    νxy = mat.νxy
    model = mat.model
 
+   # Special (simpler) case
+   if etype===:truss2D || etype===:truss3D
+      return SMatrix{1,1}([Ex])
+   end
+
    # For custom material
-   if model==:Custom
+   if model===:Custom
    
       # Size of input matrix    
       S1,S2 = size(mat.custom)
@@ -26,7 +31,7 @@ function Constitutive(mesh::Mesh,ele::Int64)
       # Convert to StaticMatrix      
       C = SMatrix{S1,S2}(mat.custom)
 
-   elseif etype==:solid3D
+   elseif etype===:solid3D
 
         G = Ex/(2*(1+νxy))
         c0 = 1-2*νxy^2-νxy
@@ -40,7 +45,7 @@ function Constitutive(mesh::Mesh,ele::Int64)
                                     0.0  0.0  0.0 0.0 0.0  G])
 
 
-   elseif model==:EPT && etype==:solid2D
+   elseif model===:EPT && etype===:solid2D
 
         G = Ex/(2*(1+νxy))
         c = Ex/(1-νxy^2)
@@ -48,7 +53,7 @@ function Constitutive(mesh::Mesh,ele::Int64)
                                 νxy*c  c    0.0 ;
                                 0.0  0.0    G ]   )
 
-   elseif  model==:EPD && etype==:solid2D
+   elseif  model===:EPD && etype===:solid2D
 
        throw("Constitutive::EPD not implemented")
 
