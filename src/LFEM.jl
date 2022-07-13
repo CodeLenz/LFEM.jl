@@ -39,6 +39,6 @@ export Stress, Local_K, Local_M
 export Stresses, Volume_truss, Volume_element
 export Gmsh_init, Gmsh_nodal_scalar, Gmsh_element_scalar, Gmsh_nodal_vector
 export Gmsh_element_stress
-export Harmonic_stresses
+export Harmonic_stresses, Voigt_equivalent
 
 end # module
