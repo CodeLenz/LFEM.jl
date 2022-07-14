@@ -79,7 +79,7 @@ function Voigt_equivalent(mesh::Mesh)
 
     if eclass===:truss
 
-        return Smatrix{1,1}([1.0])
+        return SMatrix{1,1}([1.0])
 
     else    
 
