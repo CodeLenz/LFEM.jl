@@ -210,6 +210,7 @@ end
 
 """
 Return the B matrix of element ele - in the center
+AND WITH NO BUBBLE
 
    B_element(mesh::Mesh,ele::Int64)
 
@@ -226,10 +227,10 @@ function B_element(mesh::Mesh,ele::Int64)
       B =  B_truss3D(mesh,ele)
    elseif etype===:solid2D
       x,y = Nodal_coordinates(m,ele)
-      B = B_solid2D(0.0,0.0,x,y)
+      B = B_solid2D(0.0,0.0,x,y)[:,1:8]
    elseif etype===:solid3D
       x,y,z = Nodal_coordinates(m,ele)
-      B = B_solid3D(0.0,0.0,0.0,x,y,z)
+      B = B_solid3D(0.0,0.0,0.0,x,y,z)[:,1:24]
    else
      error("B_element::element type not defined")
    end
