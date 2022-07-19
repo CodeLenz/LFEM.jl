@@ -72,7 +72,7 @@ end
 ###################################################################################################
 #                        von Mises stress matrix
 ###################################################################################################
-function Voigt_equivalent(mesh::Mesh)
+function Voigt_equivalent(mesh::Mesh,ele::Int64)
 
     # Get element classe (truss/solid)
     eclass = Get_eclass(mesh)
