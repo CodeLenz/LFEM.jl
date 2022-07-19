@@ -206,3 +206,34 @@ function Volume_element(mesh::Mesh,ele::Int64)
    end
    return volume
 end
+
+
+"""
+Return the B matrix of element ele - in the center
+
+   B_element(mesh::Mesh,ele::Int64)
+
+Valid for all elements.
+"""
+function B_element(mesh::Mesh,ele::Int64)
+
+   # Element type
+   etype = Get_etype(mesh)
+  
+   if etype===:truss2D 
+      B =  B_truss2D(mesh,ele)
+   elseif etype===:truss3D
+      B =  B_truss3D(mesh,ele)
+   elseif etype===:solid2D
+      x,y = Nodal_coordinates(m,ele)
+      B = B_solid2D(0.0,0.0,x,y)
+   elseif etype===:solid3D
+      x,y,z = Nodal_coordinates(m,ele)
+      B = B_solid3D(0.0,0.0,0.0,x,y,z)
+   else
+     error("B_element::element type not defined")
+   end
+  
+  return B
+  
+end
