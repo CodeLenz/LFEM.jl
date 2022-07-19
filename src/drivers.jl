@@ -227,10 +227,12 @@ function B_element(mesh::Mesh,ele::Int64)
       B =  B_truss3D(mesh,ele)
    elseif etype===:solid2D
       x,y = Nodal_coordinates(mesh,ele)
-      B = B_solid2D(0.0,0.0,x,y)[:,1:8]
+      B_,_ = B_solid2D(0.0,0.0,x,y)
+      B = @view B_[:,1:8]
    elseif etype===:solid3D
       x,y,z = Nodal_coordinates(mesh,ele)
-      B = B_solid3D(0.0,0.0,0.0,x,y,z)[:,1:24]
+      B_,_= B_solid3D(0.0,0.0,0.0,x,y,z)
+      B = @view B_[:,1:24]
    else
      error("B_element::element type not defined")
    end
