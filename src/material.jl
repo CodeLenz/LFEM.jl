@@ -92,6 +92,10 @@ function Voigt_equivalent(mesh::Mesh)
 
         else 
             
+            # Get model
+            mat = Get_material(mesh,ele)
+            model = mat.model
+            
             if model===:EPT
             
                 return SMatrix{3,3}(  [1.0 -0.5 0.0;
