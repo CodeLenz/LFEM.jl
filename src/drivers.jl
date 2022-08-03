@@ -46,6 +46,25 @@ function Stress(mesh::Mesh3D,ele::Int64,U::Vector{T}) where T
 end
 
 
+# von-Mises Equivalent stress
+function Equivalent_stress(sigma, mesh::Mesh, eps=1E-5)
+
+   # Voigt matrix
+   V = Voigt_equivalent(mesh,1)
+
+   sqrt(real(dot(sigma,V,sigma))+eps^2)
+
+end
+
+# von-Mises Equivalent stress
+# V is the Voigt matrix
+function Equivalent_stress(sigma,V,eps=1E-5)
+   
+   sqrt(real(dot(sigma,V,sigma))+eps^2)
+   
+end
+
+
 #
 # Driver for Stiffness (2D)
 #
