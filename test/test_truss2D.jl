@@ -94,7 +94,7 @@
    @test all(Kse.==refer)
 
    # Test the driver
-   Kse = Local_Ks(m2,1,S)
+   Kse = Local_Ks(m2,1,s)
    @test all(Kse.==refer)
 
 end
