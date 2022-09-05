@@ -372,6 +372,65 @@ function Global_C(M,K,mesh::Mesh,α_c=0.0,β_c=1E-6)
 end
 
 
+"""
+Assembly the global geometric stiffness matrix.
+
+    Global_Ks(mesh::Mesh, stress::Array{Float64})
+
+"""
+function Global_Ks(mesh::Mesh, stress::Array{Float64})
+
+    # Alias
+    ne = Get_ne(mesh)
+    nn = Get_nn(mesh)
+
+    # Dimensão do problema
+    dim = Get_dim(mesh)
+    
+    # Tipo de elemento
+    etype = Get_etype(mesh)
+
+    # Options
+    options = mesh.options
+
+    # Primeira coisa é alocar a matriz Ks
+    ng = dim*nn
+    Ks = spzeros(ng,ng)
+
+    # Chama dofs uma vez para depois reaproveitar 
+    # o acesso de memória
+    gls = DOFs(mesh,1) 
+
+    # Loop pelos elementos, calculando a matriz local Ke de cada um
+    # e posicionando na K
+    for ele in mesh
+        
+        # Stress for element ele
+        sigma = stress[ele,:]
+
+        # Local geometric stiffness matrix
+        Kse = Local_Ks(mesh,ele,sigma) 
+
+        # Determina quais são os gls GLOBAIS que são "acessados"
+        # por esse elemento
+        gls .= DOFs(mesh,ele) 
+
+        # If needed, convert to global reference
+        Kseg = To_global(Kse,mesh,ele)
+            
+        # Adiciona a matriz do elemento (rotacionada) à matriz Global
+        @inbounds Ks[gls,gls] .= Ks[gls,gls] .+ Kseg
+
+    end #ele
+
+    # Retorna a matriz global
+    return Symmetric(Ks)
+
+end
+
+
+
+
 ########################## Static Stresses ###################
 
 #

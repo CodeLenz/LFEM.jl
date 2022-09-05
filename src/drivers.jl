@@ -120,6 +120,64 @@ function Local_K(mesh::Mesh3D,ele::Int64)
 end
 
 
+#
+# Driver for Geometric Stiffness (2D)
+#
+function Local_Ks(mesh::Mesh2D,ele::Int64,stress)
+
+   # Element type
+   etype = Get_etype(mesh)
+  
+   # If solid
+   if etype==:solid2D 
+
+      error("Local_Ks:: não implementado para elasticidade 2D")
+
+   elseif etype==:truss2D
+
+      Ke = Ks_truss2D(mesh,ele,stress)
+
+   else
+      
+      throw("Local_Ks:: etype $etype is invalid")
+
+   end
+   
+   return Ke
+
+end
+
+#
+# Driver for Geometric Stiffness (3D)
+#
+function Local_Ks(mesh::Mesh3D,ele::Int64, stress)
+
+   # Element type
+   etype = Get_etype(mesh)
+  
+   # If solid
+   if etype==:solid3D 
+
+      
+      error("Local_Ks:: não implementado para elasticidade 3D")
+
+
+   elseif etype==:truss3D  
+      
+       
+      error("Local_Ks:: não implementado para truss 3D")
+
+
+   else
+      
+      throw("Local_Ks:: etype $etype is invalid")
+
+   end
+   
+   return Ke
+
+end
+
 
 #
 # Driver for Mass (2D)
