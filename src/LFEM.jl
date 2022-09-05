@@ -29,11 +29,11 @@ include("gmsh.jl")
 export Point_load
 export Expand_vector, Expand_vector!, To_global, To_local
 export Constitutive, Equivalent_stress
-export K_truss2D, M_truss2D, B_truss2D, Stress_truss2D
+export K_truss2D, Ks_truss2D, M_truss2D, B_truss2D, Stress_truss2D
 export K_truss3D, M_truss3D, B_truss3D, Stress_truss3D
 export K_solid2D, M_solid2D, B_solid2D, Stress_solid2D, Volume_solid2D
 export K_solid3D, M_solid3D, B_solid3D, Stress_solid3D, Volume_solid3D
-export Global_K, Global_M, Global_C
+export Global_K, Global_Ks, Global_M, Global_C
 export Solve_linear, Solve_modal, Solve_harmonic, Solve_newmark
 export Stress, Local_K, Local_M
 export Stresses, Volume_truss, Volume_element
