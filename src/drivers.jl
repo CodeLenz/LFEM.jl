@@ -123,7 +123,7 @@ end
 #
 # Driver for Geometric Stiffness (2D)
 #
-function Local_Ks(mesh::Mesh2D,ele::Int64,stress::Vector)
+function Local_Ks(mesh::Mesh2D,ele::Int64,stress::AbstractVector)
 
    # Element type
    etype = Get_etype(mesh)
@@ -150,7 +150,7 @@ end
 #
 # Driver for Geometric Stiffness (3D)
 #
-function Local_Ks(mesh::Mesh3D,ele::Int64, stress)
+function Local_Ks(mesh::Mesh3D,ele::Int64, stress::AbstractVector)
 
    # Element type
    etype = Get_etype(mesh)

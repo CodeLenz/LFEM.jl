@@ -23,7 +23,7 @@ end
 Geometric Local stiffness matrix for truss2D
        Ks_truss2D(mesh::Mesh2D,ele::Int64, s::Float64)
 """
-function Ks_truss2D(mesh::Mesh2D,ele::Int64,s::Vector{Float64})
+function Ks_truss2D(mesh::Mesh2D,ele::Int64,s::AbstractVector{Float64})
   
        # Element properties
        mat = mesh.mat_ele[ele]
