@@ -123,7 +123,7 @@ end
 #
 # Driver for Geometric Stiffness (2D)
 #
-function Local_Ks(mesh::Mesh2D,ele::Int64,stress)
+function Local_Ks(mesh::Mesh2D,ele::Int64,stress::Vector)
 
    # Element type
    etype = Get_etype(mesh)

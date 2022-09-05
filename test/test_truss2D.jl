@@ -81,4 +81,20 @@
 
     @test all(M.==refer)
 
+   # Test local geometric stiffness matrix
+   Kse = Ks_truss2D(m2,1,s)
+
+   # Reference
+   cte = (100*1.0)/0.1
+   refer = cte*[ 0.0  0.0  0.0  0.0 ;
+                 0.0  1.0  0.0 -1.0 ;
+                 0.0  0.0  0.0  0.0 ;
+                 0.0 -1.0  0.0  1.0]
+
+   @test all(Kse.==refer)
+
+   # Test the driver
+   Kse = Local_Ks(m2,1,S)
+   @test all(Kse.==refer)
+
 end

@@ -405,7 +405,7 @@ function Global_Ks(mesh::Mesh, stress::Array{Float64})
     # e posicionando na K
     for ele in mesh
         
-        # Stress for element ele
+        # Stress for element ele (returns a vector)
         sigma = stress[ele,:]
 
         # Local geometric stiffness matrix

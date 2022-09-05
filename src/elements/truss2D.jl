@@ -23,7 +23,7 @@ end
 Geometric Local stiffness matrix for truss2D
        Ks_truss2D(mesh::Mesh2D,ele::Int64, s::Float64)
 """
-function Ks_truss2D(mesh::Mesh2D,ele::Int64,s::Float64)
+function Ks_truss2D(mesh::Mesh2D,ele::Int64,s::Vector{Float64})
   
        # Element properties
        mat = mesh.mat_ele[ele]
@@ -33,10 +33,10 @@ function Ks_truss2D(mesh::Mesh2D,ele::Int64,s::Float64)
        Ae = mesh.geometries[geo].A
        Le = LMesh.Length(mesh,ele)
 
-       SMatrix{4,4,Float64}( (s*Ae/Le)*[ 0.0  0.0  0.0  0.0 ;
-                                         0.0  1.0  0.0 -1.0 ; 
-                                         0.0  0.0  0.0  0.0 ;
-                                         0.0 -1.0  0.0  1.0 ] )
+       SMatrix{4,4,Float64}( (s[1]*Ae/Le)*[ 0.0  0.0  0.0  0.0 ;
+                                            0.0  1.0  0.0 -1.0 ; 
+                                            0.0  0.0  0.0  0.0 ;
+                                            0.0 -1.0  0.0  1.0 ] )
 end
 
 
