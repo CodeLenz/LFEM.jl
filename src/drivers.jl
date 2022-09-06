@@ -165,7 +165,7 @@ function Local_Ks(mesh::Mesh3D,ele::Int64, stress::AbstractVector)
    elseif etype==:truss3D  
       
        
-      error("Local_Ks:: não implementado para truss 3D")
+      Ke = Ks_truss3D(mesh,ele,stress)
 
 
    else
