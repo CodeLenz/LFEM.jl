@@ -23,6 +23,30 @@ function K_truss3D(mesh::Mesh3D,ele::Int64)
 end
 
 """
+Local geometric stiffness matrix for truss3D
+       Ks_truss3D(mesh::Mesh3D,ele::Int64,s::AbstractVector{Float64})
+"""
+function Ks_truss3D(mesh::Mesh3D,ele::Int64,s::AbstractVector{Float64})
+  
+        # Element properties
+        mat = mesh.mat_ele[ele]
+        geo = mesh.geo_ele[ele]
+
+        # Material and geometric properties
+        Ae = mesh.geometries[geo].A
+        Le = LMesh.Length(mesh,ele)
+
+        SMatrix{6,6,Float64}((s[1]*Ae/Le)*[  0.0  0.0  0.0   0.0  0.0  0.0;
+                                             0.0  1.0  0.0   0.0 -1.0  0.0; 
+                                             0.0  0.0  1.0   0.0  0.0 -1.0;
+                                             0.0  0.0  0.0   0.0  0.0  0.0;
+                                             0.0 -1.0  0.0   0.0  1.0  0.0;
+                                             0.0  0.0 -1.0   0.0  0.0  1.0] )
+
+end
+
+
+"""
 Local mass matrix for truss3D (lumped)
        M_truss3D(mesh::Mesh3D,ele::Int64)
 """
