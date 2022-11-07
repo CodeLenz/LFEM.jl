@@ -243,7 +243,7 @@ mesh = Simply_supported2D(6,6)
 # We need to define a function that modifies a force
 # vector according to time t. Lets use the same point
 # load as the static example, but with a cos(2*t) 
-function f!(t,F,mesh)
+function f!(t,F,mesh,load=1)
          P  = Point_load(mesh)
          F .= cos(2*t)*P
 end
