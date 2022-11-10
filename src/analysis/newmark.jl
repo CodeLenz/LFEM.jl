@@ -60,7 +60,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
 
     # Tspan    
     t0,tf = ts
-    tspan = t0:Δt:tf
+    tspan = t0+Δt:Δt:tf
 
     # Number of time steps
     nt = length(tspan)
@@ -155,10 +155,10 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     A0 = Expand_vector(A0f,nfull,free_dofs)
 
     # Arrays to monitor the solution
-    A_t = Vector{Float64}(undef,nt+1)
-    A_U = Array{Float64}(undef,nt+1,ndofs)
-    A_V = Array{Float64}(undef,nt+1,ndofs)
-    A_A = Array{Float64}(undef,nt+1,ndofs)
+    A_t = Vector{Float64}(undef,nt)
+    A_U = Array{Float64}(undef,nt,ndofs)
+    A_V = Array{Float64}(undef,nt,ndofs)
+    A_A = Array{Float64}(undef,nt,ndofs)
 
     # Store initial values
     A_t[1]    = t0
