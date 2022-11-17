@@ -396,7 +396,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     end
 
     # Return the values 
-    return A_t, A_U, A_V, A_A
+    return A_U, A_V, A_A, A_t
 
 end
 
