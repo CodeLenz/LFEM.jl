@@ -60,7 +60,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
 
     # Tspan    
     t0,tf = ts
-    tspan = t0+Δt:Δt:tf
+    tspan = t0:Δt:tf-Δt
 
     # Number of time steps
     nt = length(tspan)
@@ -154,30 +154,31 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Expand A0f 
     A0 = Expand_vector(A0f,nfull,free_dofs)
 
-    # Arrays to monitor the solution
-    A_t = Vector{Float64}(undef,nt)
-    A_U = Array{Float64}(undef,nt,ndofs)
-    A_V = Array{Float64}(undef,nt,ndofs)
-    A_A = Array{Float64}(undef,nt,ndofs)
+    # Arrays to monitor the solution. The number of time points is 
+    # tspan / dt + 1.
+    A_t = Vector{Float64}(undef,nt+1)
+    A_U = Array{Float64}(undef,nt+1,ndofs)
+    A_V = Array{Float64}(undef,nt+1,ndofs)
+    A_A = Array{Float64}(undef,nt+1,ndofs)
 
-    # Store initial values
+    # Store initial values (time zero)
     A_t[1]    = t0
     A_U[1,:] .= U0[dofs]
     A_V[1,:] .= V0[dofs]
     A_A[1,:] .= A0[dofs]
 
-    # Main Loop. tspan starts from dt, such that we are always evaluating t+dt 
-    # in the following loop
+    # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
+    # t + Δt.
     count = 2
     for t in tspan
         
         # Force in the next time step
-        f!(t,F,mesh,loadcase)  
+        f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
         b = F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
 
-        # Solve for A
+        # Solve for A in t+Δt
         Af = CMN\b[free_dofs]
 
         # Expand A0f 
@@ -187,16 +188,18 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         V = V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
         U = U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
 
+        # Store values at t+Δt
+        A_t[count]    = t + Δt
+        A_U[count,:] .= U[dofs]
+        A_V[count,:] .= V[dofs]
+        A_A[count,:] .= A[dofs]
+        count += 1
+
         # translation
         A0 .= A
         V0 .= V
         U0 .= U
 
-        A_t[count]    = t
-        A_U[count,:] .= U0[dofs]
-        A_V[count,:] .= V0[dofs]
-        A_A[count,:] .= A0[dofs]
-        count += 1
 
     end #t
 
