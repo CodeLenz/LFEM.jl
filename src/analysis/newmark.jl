@@ -374,7 +374,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     A_A[1,:] .= A0[gls]
 
     # Main loop
-    cont = 2
+    count = 2
     for t in tspan
 
             f!(t+Δt,F)
