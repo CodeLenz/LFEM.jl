@@ -37,7 +37,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     MV = @view  M[free_dofs, free_dofs]
 
     # Solve using Arpack
-    λ, ϕ = eigs(Symmetric(KV),Symmetric(MV),nev=nev,which=which)
+    λ, ϕ = eigs(Hermitian(KV),Hermitian(MV),nev=nev,which=which)
 
     # Expand the modes to the full mesh
     dim = Get_dim(mesh)
