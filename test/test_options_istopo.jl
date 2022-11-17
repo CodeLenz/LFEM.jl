@@ -5,6 +5,9 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported2D(10,10,:solid2D)
     
+    # Set option
+    mesh.options[:IS_TOPO] = zeros(1,1)
+
     # Solve using all elements
     U, _ = Solve_linear(mesh)
 
@@ -22,6 +25,9 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported3D(10,10,10,:solid3D)
     
+    # Set option
+    mesh.options[:IS_TOPO] = zeros(1,1)
+
     # Solve using all elements
     U, _ = Solve_linear(mesh)
 
@@ -39,6 +45,9 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported2D(10,10,:solid2D)
     
+    # Set option
+    mesh.options[:IS_TOPO] = zeros(1,1)
+
     # Solve using all elements
     w, _ = Solve_modal(mesh)
 
@@ -56,14 +65,17 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported3D(10,10,10,:solid3D)
     
+    # Set option
+    mesh.options[:IS_TOPO] = zeros(1,1)
+
     # Solve using all elements
-    w, _ = Solve_modal(mesh)
+    w, _ = Solve_modal(mesh,nev=1)
 
     # Set option
     mesh.options[:IS_TOPO] = ones(1,1)
 
     # Solve using only one element
-    w2, _ = Solve_modal(mesh)
+    w2, _ = Solve_modal(mesh,nev=1)
 
     @test all(isapprox(w2,w))
     
