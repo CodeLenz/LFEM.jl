@@ -33,11 +33,11 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     free_dofs = mesh.free_dofs[loadcase]
     
     # Local views to the free dofs
-    KV = @view  K[free_dofs, free_dofs]
-    MV = @view  M[free_dofs, free_dofs]
+    KV = Symmetric(K[free_dofs, free_dofs])
+    MV = Symmetric(M[free_dofs, free_dofs])
 
     # Solve using Arpack
-    λ, ϕ = eigs(Hermitian(KV),Hermitian(MV),nev=nev,which=which)
+    λ, ϕ = eigs(KV,MV,nev=nev,which=which)
 
     # Expand the modes to the full mesh
     dim = Get_dim(mesh)
