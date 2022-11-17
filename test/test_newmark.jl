@@ -274,3 +274,30 @@ end
 end
 
    
+
+@testset "Solve_newmark with given matrices" begin
+
+        K = [ 2.0 -1.0 ; 
+             -1.0  3.0]
+
+        M = [1.0 0.0 ;
+        0.0 2.0]
+
+        C = 1E-2*K
+
+        function f!(t,F)
+                P = [0.0;10.0]
+                F.= cos(2*t)*P 
+        end 
+
+        Δt = 0.1
+
+        @test try A_t, A_U, A_V, A_A = Solve_newmark(M,C,K,f!,[1,2],(0.0,50.0),Δt)
+                true
+        catch err
+                false
+        end
+
+        @isinferred Solve_newmark(M,C,K,f!,[1,2],(0.0,50.0),Δt)
+
+end
