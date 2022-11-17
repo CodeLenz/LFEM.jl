@@ -166,12 +166,13 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     A_V[1,:] .= V0[dofs]
     A_A[1,:] .= A0[dofs]
 
-    # Main Loop
+    # Main Loop. tspan starts from dt, such that we are always evaluating t+dt 
+    # in the following loop
     count = 2
     for t in tspan
         
         # Force in the next time step
-        f!(t+Δt,F,mesh,loadcase)  
+        f!(t,F,mesh,loadcase)  
 
         # R.H.S in t+dt
         b = F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
@@ -191,7 +192,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         V0 .= V
         U0 .= U
 
-        A_t[count]    = t+Δt
+        A_t[count]    = t
         A_U[count,:] .= U0[dofs]
         A_V[count,:] .= V0[dofs]
         A_A[count,:] .= A0[dofs]
