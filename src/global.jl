@@ -157,7 +157,7 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
 
     end # if :Stiffness
 
-    K = sparse(I,J,K)
+    K = sparse(I,J,V)
     dropzeros!(K)
 
     # Retorna a matriz global
