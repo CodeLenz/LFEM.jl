@@ -463,11 +463,16 @@ function Global_Ks(mesh::Mesh, stress::Array{Float64})
 
     # Primeira coisa é alocar a matriz Ks
     ng = dim*nn
-    Ks = spzeros(ng,ng)
+
+    I = Int64[]; sizehint!(I,2*ng)
+    J = Int64[]; sizehint!(J,2*ng)
+    V = Float64[]; sizehint!(V,2*ng)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
     gls = DOFs(mesh,1) 
+
+    s_gl = length(gls)
 
     # Loop pelos elementos, calculando a matriz local Ke de cada um
     # e posicionando na K
@@ -487,9 +492,20 @@ function Global_Ks(mesh::Mesh, stress::Array{Float64})
         Kseg = To_global(Kse,mesh,ele)
             
         # Adiciona a matriz do elemento (rotacionada) à matriz Global
-        @inbounds Ks[gls,gls] .= Ks[gls,gls] .+ Kseg
+        for i=1:s_gl
+            gi = gls[i]
+            for j=1:s_gl
+                gj = gls[j]
+                push!(I,gi)
+                push!(J,gj)
+                push!(V, Kseg[i,j])
+            end #j
+        end #i
 
     end #ele
+
+    Ks = sparse(I,J,V)
+    dropzeros!(Ks)
 
     # Retorna a matriz global
     return Symmetric(Ks)
