@@ -297,9 +297,9 @@ with [node dof value;]
             mx = mparam(x[ele])
 
             # Adiciona a matriz do elemento (rotacionada) à matriz Global
-            for i=1:s_gl
+            for i=1:s_gls
                gi = gls[i]
-               for j=1:s_gl
+               for j=1:s_gls
                    gj = gls[j]
                    push!(I,gi)
                    push!(J,gj)
