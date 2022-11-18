@@ -42,18 +42,24 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
 
     # Primeira coisa é alocar a matriz K 
     ng = dim*nn
-    K = spzeros(ng,ng)
+
+    # Aloca arrays para usar o sparse
+    I = Int64[]; sizehint!(I,2*ng)
+    J = Int64[]; sizehint!(J,2*ng)
+    V = Float64[]; sizehint!(V,2*ng)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
     gls = DOFs(mesh,1) 
 
-   
+    # Comprimento do vetor gls
+    s_gls = length(gls)
+
     # Experimental!!
     # If this key is set, than 
     # use Keg from element 1 ONLY
     if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
- 
+
        # Faz o mesmo para a matriz de rigidez
        Keg = Local_K(mesh,1) 
    
@@ -62,9 +68,20 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
             # por esse elemento
             gls .= DOFs(mesh,ele) 
 
-            # Adiciona a matriz do elemento (rotacionada) à matriz Global
-            @inbounds K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
-       end
+            # Parametrização para esse elemento
+            kx = kparam(x[ele])
+
+            # Adiciona a matriz do elemento à matriz Global
+            for i=1:s_gl
+                gi = gls[i]
+                for j=1:s_gl
+                    gj = gls[j]
+                    push!(I,gi)
+                    push!(J,gj)
+                    push!(V, Keg[i,j]*kx)
+                end #j
+            end #i       
+        end #ele
 
     else
 
@@ -83,7 +100,19 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
             Keg = To_global(Ke,mesh,ele)
             
             # Adiciona a matriz do elemento (rotacionada) à matriz Global
-            @inbounds K[gls,gls] .= K[gls,gls] .+ Keg*kparam(x[ele])
+            # Parametrização para esse elemento
+            kx = kparam(x[ele])
+
+            # Adiciona a matriz do elemento à matriz Global
+            for i=1:s_gl
+                gi = gls[i]
+                for j=1:s_gl
+                    gj = gls[j]
+                    push!(I,gi)
+                    push!(J,gj)
+                    push!(V, Keg[i,j]*kx)
+                end #j
+            end #i
 
         end #ele
 
@@ -120,11 +149,16 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
            0<dof<=dim   || throw("Global_K:: :Stiffness :: invalid dof")
            value >= 0.0 || throw("Global_K:: :Stiffness :: invalid value")
 
-           K[gl,gl] += value
+           push!(I,gl)
+           push!(J,gl)
+           push!(V,value)
 
        end #Stiff
 
     end # if :Stiffness
+
+    K = sparse(I,J,K)
+    dropzeros!(K)
 
     # Retorna a matriz global
     return Symmetric(K)
