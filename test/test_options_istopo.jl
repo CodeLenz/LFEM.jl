@@ -25,8 +25,8 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported3D(10,10,10,:solid3D)
     
-    # Set option
-    mesh.options[:IS_TOPO] = zeros(1,1)
+    # Unset option
+    delete!(mesh.options,:IS_TOPO)
 
     # Solve using all elements
     U, _ = Solve_linear(mesh)
@@ -45,8 +45,8 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported2D(10,10,:solid2D)
     
-    # Set option
-    mesh.options[:IS_TOPO] = zeros(1,1)
+    # Unset option
+    delete!(mesh.options,:IS_TOPO)
 
     # Solve using all elements
     w, _ = Solve_modal(mesh)
@@ -65,8 +65,8 @@
     # Load Simply supported 2D from TMeshes
     mesh = Simply_supported3D(10,10,10,:solid3D)
     
-    # Set option
-    mesh.options[:IS_TOPO] = zeros(1,1)
+    # Unset option
+    delete!(mesh.options,:IS_TOPO)
 
     # Solve using all elements
     w, _ = Solve_modal(mesh,nev=1)
