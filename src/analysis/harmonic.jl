@@ -53,7 +53,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     KD = KV + w*im*CV - (w^2)*MV
 
     # Lu decomposition
-    LU = lu(KD)
+    LU = lu(Symmetric(KD))
     
     # Harmonic displacement
     Ul = LU\F[free_dofs]
