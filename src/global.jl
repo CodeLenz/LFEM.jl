@@ -72,9 +72,9 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
             kx = kparam(x[ele])
 
             # Adiciona a matriz do elemento à matriz Global
-            for i=1:s_gl
+            for i=1:s_gls
                 gi = gls[i]
-                for j=1:s_gl
+                for j=1:s_gls
                     gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
@@ -161,7 +161,7 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
     dropzeros!(K)
 
     # Retorna a matriz global
-    return Symmetric(K)
+    return K
 
 end
 
@@ -237,12 +237,16 @@ with [node dof value;]
 
     # Primeira coisa é alocar a matriz M 
     ng = dim*nn
-    M = spzeros(ng,ng)
+    
+    I = Int64[]; sizehint!(I,2*ng)
+    J = Int64[]; sizehint!(J,2*ng)
+    V = Float64[]; sizehint!(V,2*ng)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
     gls = DOFs(mesh,1) 
 
+    s_gls = length(gls)
    
     # Experimental!!
     # If this key is set, than 
@@ -256,8 +260,20 @@ with [node dof value;]
              # por esse elemento
              gls .= DOFs(mesh,ele) 
  
+             # Parametrização do material
+             mx = mparam(x[ele])
+
              # Adiciona a matriz do elemento (rotacionada) à matriz Global
-             @inbounds M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
+             for i=1:s_gl
+                gi = gls[i]
+                for j=1:s_gl
+                    gj = gls[j]
+                    push!(I,gi)
+                    push!(J,gj)
+                    push!(V, Meg[i,j]*mx)
+                end #j
+            end #i
+
         end
  
     else
@@ -277,7 +293,20 @@ with [node dof value;]
             Meg = To_global(Me,mesh,ele)
             
             # Adiciona a matriz do elemento (rotacionada) a matriz Global
-            @inbounds M[gls,gls] .= M[gls,gls] .+ Meg*mparam(x[ele])
+            # Parametrização do material
+            mx = mparam(x[ele])
+
+            # Adiciona a matriz do elemento (rotacionada) à matriz Global
+            for i=1:s_gl
+               gi = gls[i]
+               for j=1:s_gl
+                   gj = gls[j]
+                   push!(I,gi)
+                   push!(J,gj)
+                   push!(V, Meg[i,j]*mx)
+               end #j
+           end #i
+
 
         end #ele
 
@@ -314,14 +343,19 @@ with [node dof value;]
            0<dof<=dim   || throw("Global_M:: :Mass :: invalid dof")
            value >= 0.0 || throw("Global_M:: :Mass :: invalid value")
 
-           M[gl,gl] += value
+           push!(I,gl)
+           push!(J,gl)
+           push!(V,value)
 
        end # Mass
 
     end # if :Mass
 
+    M = sparse(I,J,V)
+    dropzeros!(M)
+
     # Retorna a matriz global
-    return Symmetric(M)
+    return M
 
 end
 
