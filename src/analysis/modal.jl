@@ -49,7 +49,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     ngls = dim*nn
   
     # Make sure the eigenvalues are in the correct order
-    λe, ϕe = Organize_Eigen(λ,ϕ,nev,ngls,free_dofs)
+    λe, ϕe = Organize_Eigen(λ,ϕ,ngls,free_dofs)
   
     # Return the eigenvalues and the eigenvectors
     return λe, ϕe
@@ -95,7 +95,7 @@ end
 #
 #
 #
-function Organize_Eigen(lambda::Vector,phi::Matrix,nev::Int64,ngls::Int64,free_dofs::Vector)
+function Organize_Eigen(lambda::Vector,phi::Matrix,ngls::Int64,free_dofs::Vector)
 
     # Convert to real numbers
     lamb_before = real.(lambda)
@@ -141,7 +141,7 @@ function Organize_Eigen(lambda::Vector,phi::Matrix,nev::Int64,ngls::Int64,free_d
 
     # Return the positive eigenvalues and their eigenvectors
     # but just the nev requested ones
-    return lamb[1:nev], PHI[:,1:nev]
+    return lamb, PHI
 
 end
 
