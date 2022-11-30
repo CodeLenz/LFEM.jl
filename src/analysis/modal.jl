@@ -2,7 +2,7 @@
 Solve the modal problem (M(x) - λK(x))ϕ(x) = 0
 
   Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function; 
-              mparam::Function, nev=4, which=:SM)
+              mparam::Function, nev=4, which=:SM,  σ=1.0, loadcase::Int64=1)
 
 where 
 
@@ -11,6 +11,7 @@ where
     mparam(xe): R->R is the material parametrization for M (SIMP like)
     nev is the number of eigenvalues and eigenvectors to compute
     which is the range (:SM is smaller in magnitude, for example)
+    σ = 1.0 is the shift
     loadcase is the loadcase
 
 Returns:
@@ -19,7 +20,7 @@ Returns:
     modes = matrix dim*nn x nev with the eigenvectors
 """
 function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
-                     mparam::Function; nev=4, which=:SM, loadcase::Int64=1)
+                     mparam::Function; nev=4, which=:LM, σ=1.0, loadcase::Int64=1)
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")
@@ -37,29 +38,30 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     MV = Symmetric(M[free_dofs, free_dofs])
 
     # Solve using Arpack
-    λ, ϕ = eigs(KV,MV,nev=nev,which=which)
+    λ, ϕ = eigs(KV,MV,nev=nev,which=which,sigma=σ)
 
-    # Expand the modes to the full mesh
+    # Total number of dofs
     dim = Get_dim(mesh)
     nn  = Get_nn(mesh)
-    modes = zeros(dim*nn,nev)
-    @inbounds for j=1:nev
-      modes[free_dofs,j] .= ϕ[:,j]
-    end
-
+    ngls = dim*nn
+  
+    # Make sure the eigenvalues are in the correct order
+    λe, ϕe = Organize_Eigen(λ,ϕ,ngls,free_dofs)
+  
     # Return the eigenvalues and the eigenvectors
-    return λ, modes
+    return λe, ϕe
     
  end
 
  """
 Solve the modal problem (M - λK)ϕ = 0
 
-  Solve_modal(mesh::Mesh ;nev=4, which=:SM, loadcase=1)
+  Solve_modal(mesh::Mesh ;nev=4, which=:LM, σ=1.0, loadcase=1)
 
 where 
     nev is the number of eigenvalues and eigenvectors to compute
     which is the range (:SM is smaller in magnitude, for example)
+    σ is the shift
     loadcase is the loadcase
 
 Returns:
@@ -67,7 +69,7 @@ Returns:
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh; nev=4, which=:SM, loadcase::Int64=1)
+function Solve_modal(mesh::Mesh; nev=4, which=:LM, σ=1.0, loadcase::Int64=1)
 
     # x->1.0 mapping
     dummy_f(x)=1.0
@@ -76,7 +78,66 @@ function Solve_modal(mesh::Mesh; nev=4, which=:SM, loadcase::Int64=1)
     x = Vector{Float64}(undef,Get_ne(mesh))
 
     # Call Solve_modal
-    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, which=which, loadcase=loadcase)
+    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, which=which, σ=σ, loadcase=loadcase)
   
 end
   
+
+
+#
+#
+#
+# Organize the eigenvalues and eigenvector . To be used as a post-processor
+# for the Modal Analysis.
+#
+#
+#
+function Organize_Eigen(lambda::Vector,phi::Matrix,ngls::Int64,free_dofs::Vector)
+
+    # Convert to real numbers
+    lamb_before = real.(lambda)
+
+    # Number of eigenvalues
+    nev = length(lamb_before)
+
+    # Make sure to get only the positive eigenvalues
+    # in crescent order
+    n_effective = 0
+    lamb_a  = Float64[]
+    pos_lamb = Int64[]
+    for i=1:nev
+        if lamb_before[i] > 0.0
+            push!(lamb_a,lamb_before[i])
+            push!(pos_lamb,i) 
+            n_effective += 1
+        end
+    end
+
+    # Avoid the situation of no positive eigenvalue
+    n_effective >=1 || error("Organize_Eigen:: there is no valid positive solution")
+
+    # sort
+    ordem = sortperm(lamb_a)
+    lamb = lamb_a[ordem]
+
+    # Convert the eigenvectors to real numbers
+    phi_real = real.(phi[:,pos_lamb[ordem]])
+
+    # Alocate the matrix (full number of dofs)
+    PHI = zeros(ngls,n_effective)
+
+    # Expand the eigenvectores
+    for i=1:n_effective
+
+        # Expande esse modo para os gls globais
+        Usf  = zeros(ngls)
+        Expand_vector!(Usf,real.(phi_real[:,i]),free_dofs)
+        PHI[:,i] .= Usf
+
+    end
+
+    # Return the positive eigenvalues and their eigenvectors
+    return lamb, PHI
+
+end
+
