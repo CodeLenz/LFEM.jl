@@ -2,7 +2,6 @@ module LFEM
 
 using LinearAlgebra, SparseArrays
 using StaticArrays
-using Arpack
 using BMesh, LMesh
 
 # If possible, set optimization to 3
