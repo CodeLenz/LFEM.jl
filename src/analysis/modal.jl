@@ -2,7 +2,7 @@
 Solve the modal problem (M(x) - λK(x))ϕ(x) = 0
 
   Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function; 
-              mparam::Function, nev=4, which=:SM)
+              mparam::Function, nev=4, which=:SM,  σ=1.0, loadcase::Int64=1)
 
 where 
 
@@ -38,7 +38,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     MV = Symmetric(M[free_dofs, free_dofs])
 
     # Solve using Arpack
-    λ, ϕ = eigs(KV,MV,nev=nev,which=which,siga=σ)
+    λ, ϕ = eigs(KV,MV,nev=nev,which=which,sigma=σ)
 
     # Expand the modes to the full mesh
     dim = Get_dim(mesh)
