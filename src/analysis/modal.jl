@@ -34,11 +34,14 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     free_dofs = mesh.free_dofs[loadcase]
     
     # Local views to the free dofs
-    KV = Symmetric(K[free_dofs, free_dofs])
-    MV = Symmetric(M[free_dofs, free_dofs])
+    # Not using ARPACK by now
+    KV = Array(K[free_dofs, free_dofs])
+    MV = Array(M[free_dofs, free_dofs])
 
     # Solve using Arpack
-    λ, ϕ = eigs(KV,MV,nev=nev,which=which,sigma=σ)
+    # We are curently not using ARPACK
+    #λ, ϕ = eigs(KV,MV,nev=nev,which=which,sigma=σ)
+    λ, ϕ = eigen(KV,MV)
 
     # Total number of dofs
     dim = Get_dim(mesh)
@@ -46,7 +49,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     ngls = dim*nn
   
     # Make sure the eigenvalues are in the correct order
-    λe, ϕe = Organize_Eigen(λ,ϕ,ngls,free_dofs)
+    λe, ϕe = Organize_Eigen(λ,ϕ,nev,ngls,free_dofs)
   
     # Return the eigenvalues and the eigenvectors
     return λe, ϕe
@@ -92,20 +95,20 @@ end
 #
 #
 #
-function Organize_Eigen(lambda::Vector,phi::Matrix,ngls::Int64,free_dofs::Vector)
+function Organize_Eigen(lambda::Vector,phi::Matrix,nev::Int64,ngls::Int64,free_dofs::Vector)
 
     # Convert to real numbers
     lamb_before = real.(lambda)
 
     # Number of eigenvalues
-    nev = length(lamb_before)
+    nev_before = length(lamb_before)
 
     # Make sure to get only the positive eigenvalues
     # in crescent order
     n_effective = 0
     lamb_a  = Float64[]
     pos_lamb = Int64[]
-    for i=1:nev
+    for i=1:nev_before
         if lamb_before[i] > 0.0
             push!(lamb_a,lamb_before[i])
             push!(pos_lamb,i) 
@@ -113,7 +116,7 @@ function Organize_Eigen(lambda::Vector,phi::Matrix,ngls::Int64,free_dofs::Vector
         end
     end
 
-    # Avoid the situation of no positive eigenvalue
+    # Avoid the situation of no positive eigenvalues
     n_effective >=1 || error("Organize_Eigen:: there is no valid positive solution")
 
     # sort
@@ -137,7 +140,8 @@ function Organize_Eigen(lambda::Vector,phi::Matrix,ngls::Int64,free_dofs::Vector
     end
 
     # Return the positive eigenvalues and their eigenvectors
-    return lamb, PHI
+    # but just the nev requested ones
+    return lamb[1:nev], PHI[:,1:nev]
 
 end
 
