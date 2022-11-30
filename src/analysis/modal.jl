@@ -11,6 +11,7 @@ where
     mparam(xe): R->R is the material parametrization for M (SIMP like)
     nev is the number of eigenvalues and eigenvectors to compute
     which is the range (:SM is smaller in magnitude, for example)
+    σ = 1.0 is the shift
     loadcase is the loadcase
 
 Returns:
@@ -19,7 +20,7 @@ Returns:
     modes = matrix dim*nn x nev with the eigenvectors
 """
 function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
-                     mparam::Function; nev=4, which=:SM, loadcase::Int64=1)
+                     mparam::Function; nev=4, which=:LM, σ=1.0, loadcase::Int64=1)
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")
@@ -37,7 +38,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     MV = Symmetric(M[free_dofs, free_dofs])
 
     # Solve using Arpack
-    λ, ϕ = eigs(KV,MV,nev=nev,which=which,maxiter=1000)
+    λ, ϕ = eigs(KV,MV,nev=nev,which=which,siga=σ)
 
     # Expand the modes to the full mesh
     dim = Get_dim(mesh)
@@ -55,11 +56,12 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
  """
 Solve the modal problem (M - λK)ϕ = 0
 
-  Solve_modal(mesh::Mesh ;nev=4, which=:SM, loadcase=1)
+  Solve_modal(mesh::Mesh ;nev=4, which=:LM, σ=1.0, loadcase=1)
 
 where 
     nev is the number of eigenvalues and eigenvectors to compute
     which is the range (:SM is smaller in magnitude, for example)
+    σ is the shift
     loadcase is the loadcase
 
 Returns:
@@ -67,7 +69,7 @@ Returns:
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh; nev=4, which=:SM, loadcase::Int64=1)
+function Solve_modal(mesh::Mesh; nev=4, which=:LM, σ=1.0, loadcase::Int64=1)
 
     # x->1.0 mapping
     dummy_f(x)=1.0
@@ -76,7 +78,7 @@ function Solve_modal(mesh::Mesh; nev=4, which=:SM, loadcase::Int64=1)
     x = Vector{Float64}(undef,Get_ne(mesh))
 
     # Call Solve_modal
-    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, which=which, loadcase=loadcase)
+    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, which=which, σ=σ, loadcase=loadcase)
   
 end
   
