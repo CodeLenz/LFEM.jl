@@ -9,6 +9,8 @@ https://github.com/CodeLenz/BMesh.jl
 https://github.com/CodeLenz/LMesh.jl  
 https://github.com/CodeLenz/TMeshes.jl  
 
+# PLEASE BE AWARE THAT ARPACK IS NOW BROKEN. I AM WORKING ON A REPLACEMENT. THUS, DO NOT USE Solve_modal by now.
+
 # Examples 
 
 ## Linear elastic analysis in 2D - truss 
