@@ -43,7 +43,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     # Total number of dofs
     dim = Get_dim(mesh)
     nn  = Get_nn(mesh)
-    ngl = dim*nn
+    ngls = dim*nn
   
     # Make sure the eigenvalues are in the correct order
     λe, ϕe = Organize_Eigen(λ,ϕ,ngls,free_dofs)
