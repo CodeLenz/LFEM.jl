@@ -23,7 +23,7 @@
     #                        Valid tests 3D 
 
     # Load Simply supported 2D from TMeshes
-    mesh = Simply_supported3D(10,10,10,:solid3D)
+    mesh = Simply_supported3D(4,4,4,:solid3D)
     
     # Unset option
     delete!(mesh.options,:IS_TOPO)
@@ -63,7 +63,7 @@
     #                        Valid tests 3D 
 
     # Load Simply supported 2D from TMeshes
-    mesh = Simply_supported3D(10,10,10,:solid3D)
+    mesh = Simply_supported3D(4,4,4,:solid3D)
     
     # Unset option
     delete!(mesh.options,:IS_TOPO)
