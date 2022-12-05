@@ -32,7 +32,6 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     free_dofs = mesh.free_dofs[loadcase]
     
     # Local views to the free dofs
-    # Not using ARPACK by now
     KV = K[free_dofs, free_dofs]
     MV = M[free_dofs, free_dofs]
 
@@ -71,7 +70,7 @@ Returns:
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh; nev=4, which=:LM, σ=1.0, loadcase::Int64=1)
+function Solve_modal(mesh::Mesh; nev=4,  loadcase::Int64=1)
 
     # x->1.0 mapping
     dummy_f(x)=1.0
@@ -80,7 +79,7 @@ function Solve_modal(mesh::Mesh; nev=4, which=:LM, σ=1.0, loadcase::Int64=1)
     x = Vector{Float64}(undef,Get_ne(mesh))
 
     # Call Solve_modal
-    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, which=which, σ=σ, loadcase=loadcase)
+    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, loadcase=loadcase)
   
 end
   
