@@ -46,23 +46,31 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     nn  = Get_nn(mesh)
     ngls = dim*nn
   
-    # Make sure the eigenvalues are in the correct order
-    #λe, ϕe = Organize_Eigen(λ,ϕ,ngls,free_dofs)
-  
+    # Alocate the matrix (full number of dofs)
+    PHI = zeros(ngls,nev)
+
+    # Expand the eigenvectores
+    for i=1:nev
+ 
+        # Expande esse modo para os gls globais
+        Usf  = zeros(ngls)
+        Expand_vector!(Usf,real.(ϕ[:,i]),free_dofs)
+        PHI[:,i] .= Usf
+
+    end
+ 
     # Return the eigenvalues and the eigenvectors
-    return λ, ϕ
+    return λ, PHI
     
  end
 
  """
 Solve the modal problem (M - λK)ϕ = 0
 
-  Solve_modal(mesh::Mesh ;nev=4, which=:LM, σ=1.0, loadcase=1)
+  Solve_modal(mesh::Mesh ;nev=4, loadcase=1)
 
 where 
     nev is the number of eigenvalues and eigenvectors to compute
-    which is the range (:SM is smaller in magnitude, for example)
-    σ is the shift
     loadcase is the loadcase
 
 Returns:
