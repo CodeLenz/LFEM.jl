@@ -15,7 +15,7 @@ function (M::ShiftAndInvert)(y,x)
 end
 
 function construct_linear_map(A,B)
-    a = ShiftAndInvert(factorize(Symmetric(A)),B,Vector{eltype(A)}(undef, size(A,1)))
+    a = ShiftAndInvert(factorize(A),B,Vector{eltype(A)}(undef, size(A,1)))
     LinearMap{eltype(A)}(a, size(A,1), ismutating=true)
 end
 
