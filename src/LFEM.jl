@@ -1,6 +1,7 @@
 module LFEM
 
 using LinearAlgebra, SparseArrays
+using ArnoldiMethod, LinearMaps
 using StaticArrays
 using BMesh, LMesh
 
@@ -25,6 +26,7 @@ include("analysis/newmark.jl")
 include("gmsh.jl")
 
 
+export Solve_Eigen_
 export Point_load
 export Expand_vector, Expand_vector!, To_global, To_local
 export Constitutive, Equivalent_stress
