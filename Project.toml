@@ -4,17 +4,19 @@ authors = ["CodeLenz <eduardobarplenz@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+ArnoldiMethod = "ec485272-7323-5ecc-a04f-4719b315124d"
 BMesh = "91fb467a-ecbd-11ec-0e64-1b9c3501232a"
 LMesh = "d047fe3d-8f3f-49d5-9d8c-6d96a24d56f7"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+LinearMaps = "7a12625a-238d-50fd-b39a-03d52299707e"
 SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
 TMeshes = "00e613e3-3517-4068-b432-60b6a85c0988"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-julia = "1.7"
-StaticArrays = "1.5"
 BMesh = "0.2"
 LMesh = "0.1"
+StaticArrays = "1.5"
 TMeshes = "0.1"
+julia = "1.7"
