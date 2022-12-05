@@ -13,6 +13,7 @@ end
 include("load.jl")
 include("base.jl")
 include("material.jl")
+include("solve_arnoldi.jl")
 include("elements/truss2D.jl")
 include("elements/truss3D.jl")
 include("elements/solid2D.jl")
