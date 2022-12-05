@@ -28,8 +28,8 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
         x = copy(xin)
     end
 
-    # Vamos reforçar a ideia de que x tem a dimensão ne
-    @assert length(x)==ne "Global_K::x deve ter dimensão igual o número de elementos"
+    # Basic check
+    length(x)==ne || throw("Global_K::x must have the same dimensions as the number of elements")
 
     # Dimensão do problema
     dim = Get_dim(mesh)
@@ -43,10 +43,13 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
     # Primeira coisa é alocar a matriz K 
     ng = dim*nn
 
+    # Vamos usar um sizehint de 0.2% de esparsividade
+    hint = round(Int64,0.2*(ng^2))
+
     # Aloca arrays para usar o sparse
-    I = Int64[]; sizehint!(I,2*ng)
-    J = Int64[]; sizehint!(J,2*ng)
-    V = Float64[]; sizehint!(V,2*ng)
+    I = Int64[]; sizehint!(I,hint)
+    J = Int64[]; sizehint!(J,hint)
+    V = Float64[]; sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -73,9 +76,9 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
 
             # Adiciona a matriz do elemento à matriz Global
             for i=1:s_gls
-                gi = gls[i]
+                @inbounds gi = gls[i]
                 for j=1:s_gls
-                    gj = gls[j]
+                    @inbounds gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
                     push!(V, Keg[i,j]*kx)
@@ -105,9 +108,9 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
 
             # Adiciona a matriz do elemento à matriz Global
             for i=1:s_gls
-                gi = gls[i]
+                @inbounds gi = gls[i]
                 for j=1:s_gls
-                    gj = gls[j]
+                    @inbounds gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
                     push!(V, Keg[i,j]*kx)
@@ -157,10 +160,11 @@ function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
 
     end # if :Stiffness
 
+    # Generate the sparse matrix
     K = sparse(I,J,V)
     dropzeros!(K)
 
-    # Retorna a matriz global
+    # Return the global matrix
     return K
 
 end
@@ -226,8 +230,8 @@ with [node dof value;]
     # Options
     options = mesh.options
 
-    # Vamos reforçar a ideia de que x tem a dimensão ne
-    @assert length(x)==ne "Global_M::x deve ter dimensão igual o número de elementos"
+    # Basic check
+    length(x)==ne || throw("Stresses::x must have the same dimensions as the number of elements")
 
     # Dimensão do problema
     dim = Get_dim(mesh)
@@ -238,9 +242,12 @@ with [node dof value;]
     # Primeira coisa é alocar a matriz M 
     ng = dim*nn
     
-    I = Int64[]; sizehint!(I,2*ng)
-    J = Int64[]; sizehint!(J,2*ng)
-    V = Float64[]; sizehint!(V,2*ng)
+    # Vamos usar um sizehint de 0.2% de esparsividade
+    hint = round(Int64,0.2*(ng^2))
+
+    I = Int64[]; sizehint!(I,hint)
+    J = Int64[]; sizehint!(J,hint)
+    V = Float64[]; sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -265,9 +272,9 @@ with [node dof value;]
 
              # Adiciona a matriz do elemento (rotacionada) à matriz Global
              for i=1:s_gls
-                gi = gls[i]
+                @inbounds gi = gls[i]
                 for j=1:s_gls
-                    gj = gls[j]
+                    @inbounds gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
                     push!(V, Meg[i,j]*mx)
@@ -351,10 +358,11 @@ with [node dof value;]
 
     end # if :Mass
 
+    # Generate the sparse matrix
     M = sparse(I,J,V)
     dropzeros!(M)
 
-    # Retorna a matriz global
+    # Return the global mass matrix
     return M
 
 end
@@ -435,7 +443,7 @@ function Global_C(M,K,mesh::Mesh,α_c=0.0,β_c=1E-6)
 
     end # if :Damper
 
-    return Symmetric(C)
+    return C
 
 end
 
@@ -464,9 +472,12 @@ function Global_Ks(mesh::Mesh, stress::Array{Float64})
     # Primeira coisa é alocar a matriz Ks
     ng = dim*nn
 
-    I = Int64[]; sizehint!(I,2*ng)
-    J = Int64[]; sizehint!(J,2*ng)
-    V = Float64[]; sizehint!(V,2*ng)
+    # Vamos usar um sizehint de 0.2% de esparsividade
+    hint = round(Int64,0.2*(ng^2))
+
+    I = Int64[]; sizehint!(I,hint)
+    J = Int64[]; sizehint!(J,hint)
+    V = Float64[]; sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -504,11 +515,12 @@ function Global_Ks(mesh::Mesh, stress::Array{Float64})
 
     end #ele
 
+    # Generate the sparse matrix
     Ks = sparse(I,J,V)
     dropzeros!(Ks)
 
-    # Retorna a matriz global
-    return Symmetric(Ks)
+    # Return the global matrix 
+    return Ks
 
 end
 
@@ -545,6 +557,9 @@ function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function)
     else
         x = copy(xin)
     end
+
+    # Basic check
+    length(x)==ne || throw("Stresses::x must have the same dimensions as the number of elements")
 
    # Alocate the output array. It depends on the number of stresses 
    # for each element type
