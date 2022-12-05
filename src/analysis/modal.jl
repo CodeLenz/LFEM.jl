@@ -10,8 +10,6 @@ where
     kparam(xe): R->R is the material parametrization for K (SIMP like)
     mparam(xe): R->R is the material parametrization for M (SIMP like)
     nev is the number of eigenvalues and eigenvectors to compute
-    which is the range (:SM is smaller in magnitude, for example)
-    σ = 1.0 is the shift
     loadcase is the loadcase
 
 Returns:
@@ -20,7 +18,7 @@ Returns:
     modes = matrix dim*nn x nev with the eigenvectors
 """
 function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
-                     mparam::Function; nev=4, which=:LM, σ=1.0, loadcase::Int64=1)
+                     mparam::Function; nev=4, loadcase::Int64=1)
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")
@@ -35,13 +33,14 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     
     # Local views to the free dofs
     # Not using ARPACK by now
-    KV = Array(K[free_dofs, free_dofs])
-    MV = Array(M[free_dofs, free_dofs])
+    KV = K[free_dofs, free_dofs]
+    MV = M[free_dofs, free_dofs]
 
     # Solve using Arpack
     # We are curently not using ARPACK
     #λ, ϕ = eigs(KV,MV,nev=nev,which=which,sigma=σ)
-    λ, ϕ = eigen(KV,MV)
+    #λ, ϕ = eigen(KV,MV)
+    λ, ϕ = Solve_Eigen_(KV,MV,nev)
 
     # Total number of dofs
     dim = Get_dim(mesh)
@@ -49,10 +48,10 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     ngls = dim*nn
   
     # Make sure the eigenvalues are in the correct order
-    λe, ϕe = Organize_Eigen(λ,ϕ,ngls,free_dofs)
+    #λe, ϕe = Organize_Eigen(λ,ϕ,ngls,free_dofs)
   
     # Return the eigenvalues and the eigenvectors
-    return λe, ϕe
+    return λ, ϕ
     
  end
 
