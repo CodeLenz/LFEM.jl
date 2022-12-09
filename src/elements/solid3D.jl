@@ -1,4 +1,21 @@
 """
+#D Gauss points for the trilinear element
+
+    Gauss_3D()
+
+return a 3x8 matrix with eigth Gauss points
+
+"""
+function Gauss_3D()
+
+    pp = 1.0/sqrt(3.0)
+    G = SMatrix{3,8,Float64}([-pp  pp  pp  -pp  -pp  pp  pp  -pp;  # r
+                            -pp -pp  pp   pp  -pp -pp  pp   pp;  # s
+                            -pp -pp -pp  -pp   pp  pp  pp   pp]) # t
+
+end
+
+"""
 Derivative of N with respect to r,  s and t
     dN_solid3D(r::T,s::T,t::T) where T
 """
@@ -113,10 +130,7 @@ function K_solid3D(m::Mesh3D,ele::Int64)
     C = Constitutive(m,ele)
     
     # Gauss points
-    pp = 1.0/sqrt(3.0)
-    G = SMatrix{3,8,Float64}([-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
-                              -pp -pp  pp   pp  -pp -pp  pp   pp; # s
-                              -pp -pp -pp  -pp   pp  pp  pp   pp]) # t
+    G = Gauss_3D()
 
     # Matrix
     K = @MMatrix zeros(33,33)
@@ -181,10 +195,7 @@ function M_solid3D(m::Mesh3D,ele::Int64,lumped=false)
     dens = m.materials[mat].density
     
     # Gauss points
-    pp = 1.0/sqrt(3.0)
-    G = SMatrix{3,8,Float64}([-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
-                              -pp -pp  pp   pp  -pp -pp  pp   pp; # s
-                              -pp -pp -pp  -pp   pp  pp  pp   pp]) # t
+    G = Gauss_3D()
 
     # Matrix
     M = @MMatrix zeros(24,24)
@@ -255,10 +266,7 @@ Return the volume of element ele
 function Volume_solid3D(mesh::Mesh,ele::Int64)
     
     # Gauss points
-    pp = 1.0/sqrt(3.0)
-    G = SMatrix{3,8,Float64}([-pp  pp  pp  -pp  -pp  pp  pp  -pp; # r
-                              -pp -pp  pp   pp  -pp -pp  pp   pp; # s
-                              -pp -pp -pp  -pp   pp  pp  pp   pp]) # t
+    G = Gauss_3D()
     
     # Coordinates
     x,y,z = Nodal_coordinates(mesh,ele)

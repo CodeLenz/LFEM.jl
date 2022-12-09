@@ -1,3 +1,19 @@
+
+"""
+2D Gauss points for the bilinear element
+
+    Gauss_2D()
+
+return a 2x4 matrix with four Gauss points
+
+"""
+function Gauss_2D()
+
+    pp = 1.0/sqrt(3.0)
+    G = SMatrix{2,4,Float64}([-pp  pp pp -pp ; 
+                              -pp -pp pp  pp])
+end
+
 """
 Derivative of N with respect to r and s
     dN_solid2D(r::T,s::T) where T
@@ -65,7 +81,8 @@ function B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
     B = @MMatrix zeros(T,3,12)
     @inbounds for j=1:6
 
-        # xx
+        # xx 
+        
         B[1,2*(j-1)+1]=dNxy[1,j]
         # yy
         B[2,2*(j-1)+2]=dNxy[2,j]
@@ -100,9 +117,7 @@ function K_solid2D(m::Mesh2D,ele::Int64)
     C = Constitutive(m,ele)
     
     # Gauss points
-    pp = 1.0/sqrt(3.0)
-    G = SMatrix{2,4,Float64}([-pp  pp pp -pp ; 
-                              -pp -pp pp  pp])
+    G = Gauss_2D()
 
     # Matrix
     K = @MMatrix zeros(12,12)
@@ -169,9 +184,7 @@ function M_solid2D(m::Mesh2D,ele::Int64,lumped=false)
     thick = m.geometries[geo].thickness
 
     # Gauss points
-    pp = 1.0/sqrt(3.0)
-    G = SMatrix{2,4,Float64}([-pp  pp pp -pp ; 
-                              -pp -pp pp  pp])
+    G = Gauss_2D()
 
     # Matrix
     M = @MMatrix zeros(8,8)
@@ -240,9 +253,7 @@ Return the volume of element ele
 function Volume_solid2D(mesh::Mesh2D,ele::Int64)
     
     # Gauss points
-    pp = 1.0/sqrt(3.0)
-    G = SMatrix{2,4,Float64}([-pp  pp pp -pp ; 
-                              -pp -pp pp  pp])
+    G = Gauss_2D()
 
     # Coordinates
     x,y = Nodal_coordinates(mesh,ele)
