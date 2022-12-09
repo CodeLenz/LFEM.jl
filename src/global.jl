@@ -535,9 +535,11 @@ end
 """
 Return stresses for the entire mesh. This version evaluates only in the central point.
 
-  Stresses(mesh::Mesh,U::Vector{T};x=Float64[],sparam::Function)
+  Stresses(mesh::Mesh,U::Vector{T};x=Float64[],sparam::Function; center=true)
 
 The output is a matrix ne x ncol, where ncol is 1 for :truss2D and 3D, 3 for :solid2D and 6 for :solid3D
+if center = true and ncol = 3*4 for 2D and 6*8 for 3D if center = false since we return stresses for 
+each superconvergent (Gauss) point in the incompatible elements
 
 Function sparam(x) is used to parametrize stress. One possibility is 
 
@@ -546,7 +548,7 @@ function sparam(x,p=1.0,q=0.0)
 end
 
 """
-function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function)  where T
+function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function; center=true)  where T
 
     # Number of elements
     ne = Get_ne(mesh)
@@ -562,24 +564,65 @@ function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function)
     length(x)==ne || throw("Stresses::x must have the same dimensions as the number of elements")
 
    # Alocate the output array. It depends on the number of stresses 
-   # for each element type
+   # for each element type and the number of Gauss Points
    etype = Get_etype(mesh)
 
    ncol = 1
    if etype==:solid2D
-      ncol = 3
+      ncol= ifelse(center,3,3*4)
    elseif etype==:solid3D
-      ncol = 6
+      ncol = ifelse(center,6,6*8)
    end
 
    # Alocate
    stresses = Matrix{T}(undef,ne,ncol)
 
-   # Loop 
-   for ele in mesh
-      s = Stress(mesh,ele,U)
-      @inbounds stresses[ele,:].=s[:]*sparam(x[ele])
-   end
+   # If center, solve and bail out 
+   if center || ncol==1
+        # Loop 
+        for ele in mesh
+            s = Stress(mesh,ele,U)
+            @inbounds stresses[ele,:].=s[:]*sparam(x[ele])
+        end
+
+    else
+
+        # Solid 2D,four Gauss Points        
+        if etype==:solid2D
+       
+            # Gauss Points
+            G = Gauss_2D()
+
+            # For each element,also loop at the Gauss Points
+            for ele in mesh
+                xp = sparam(x[ele])
+                for j=1:4
+                    s = Stress(G[1,j],G[2,j],mesh,ele,U)
+                    p1 = 3*(j-1)+1
+                    p2 = 3*(j-1)+3
+                    @inbounds stresses[ele,p1:p2].=s[:]*xp
+                end
+            end
+        elseif etype==:solid3D
+
+             # Gauss Points
+             G = Gauss_3D()
+
+             # For each element,also loop at the Gauss Points
+             for ele in mesh
+                 xp = sparam(x[ele])
+                 for j=1:8
+                     s = Stress(G[1,j],G[2,j],G[3,j],mesh,ele,U)
+                     p1 = 6*(j-1)+1
+                     p2 = 6*(j-1)+6
+                     @inbounds stresses[ele,p1:p2].=s[:]*xp
+                 end
+             end
+            
+        else
+            error("Should not happen")
+        end
+    end   
 
    # Return stresses
    return stresses
@@ -589,18 +632,21 @@ end
 """
 Return stresses for the entire mesh. This version evaluates only in the central point.
 
-  Stresses(mesh::Mesh,U::Vector{T})
+  Stresses(mesh::Mesh,U::Vector{T}; center=true)
 
 The output is a matrix ne x ncol, where ncol is 1 for :truss2D and 3D, 3 for :solid2D and 6 for :solid3D
+if center = true and ncol = 3*4 for 2D and 6*8 for 3D if center = false since we return stresses for 
+each superconvergent (Gauss) point in the incompatible elements
+    
 
 """
-function Stresses(mesh::Mesh,U::Vector{T})  where T
+function Stresses(mesh::Mesh,U::Vector{T};center=true)  where T
 
     # Dummy function
     dummy_f(x)=1.0
 
     # Call function
-    Stresses(mesh,U,Float64[],dummy_f)
+    Stresses(mesh,U,Float64[],dummy_f,center=center)
 end
 
 
@@ -613,11 +659,14 @@ end
 Return (harmonic) stresses for the entire mesh. This version evaluates only in the central point.
 
   Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64,
-                    x=Float64[],sparam::Function)
+                    x=Float64[],sparam::Function; center=true)
 
 where w is the angular frequency and β_c is the damping parameter.
 
 The output is a matrix ne x ncol, where ncol is 1 for :truss2D and 3D, 3 for :solid2D and 6 for :solid3D
+if center = true and ncol = 3*4 for 2D and 6*8 for 3D if center = false since we return stresses for 
+each superconvergent (Gauss) point in the incompatible elements
+    
 
 Function sparam(x) is used to parametrize stress. One possibility is 
 
@@ -627,10 +676,10 @@ end
 
 """
 function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64,
-                           x::Vector{Float64},sparam::Function)  where T
+                           x::Vector{Float64},sparam::Function;center=true)  where T
 
 
-        Stresses(mesh,U,x,sparam).*(1+im*w*β_c)
+        Stresses(mesh,U,x,sparam,center=center).*(1+im*w*β_c)
 
 end
 """
@@ -642,13 +691,16 @@ Return stresses for the entire mesh. This version evaluates only in the central 
 where w is the angular frequency and β_c is the damping parameter.
 
 The output is a matrix ne x ncol, where ncol is 1 for :truss2D and 3D, 3 for :solid2D and 6 for :solid3D
+if center = true and ncol = 3*4 for 2D and 6*8 for 3D if center = false since we return stresses for 
+each superconvergent (Gauss) point in the incompatible elements
+    
 
 """
-function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64)  where T
+function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64; center=true)  where T
 
     # Dummy function
     dummy_f(x)=1.0
 
     # Call function
-    Harmonic_stresses(mesh,U,w, β_c,Float64[],dummy_f)
+    Harmonic_stresses(mesh,U,w, β_c,Float64[],dummy_f,center=center)
 end
