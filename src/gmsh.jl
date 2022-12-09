@@ -290,7 +290,7 @@ end
 
 # Se processado for true, então os valores já são os nodais. Do contrário,
 # extrapolamos os valores para os nós intermente.
-function Gmsh_element_stresses(mesh::Mesh,stress::Matrix,nome_arquivo::String,
+function Gmsh_element_stresses(mesh::Mesh,stresses::Matrix,nome_arquivo::String,
                                nome_vista::String,tempo=0.0,processado::Bool=true)
 
 
@@ -331,8 +331,8 @@ function Gmsh_element_stresses(mesh::Mesh,stress::Matrix,nome_arquivo::String,
     for i=1:ne
 
             
-            tensoes_elemento = vcat(transpose(tensoes[i,1:3]),transpose(tensoes[i,4:6]),
-                                  transpose(tensoes[i,7:9]),transpose(tensoes[i,10:12]))
+            tensoes_elemento = vcat(transpose(stresses[i,1:3]),transpose(stresses[i,4:6]),
+                                  transpose(stresses[i,7:9]),transpose(stresses[i,10:12]))
 
             texto = Map_stress2nodes_Quad(tensoes_elemento,processado)
             println(saida,i," 4 ", texto)
