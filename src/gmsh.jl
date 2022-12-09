@@ -308,12 +308,12 @@ function Gmsh_element_stresses(mesh::Mesh,stresses::Matrix,nome_arquivo::String,
 
 
     # Verifica se a dimensao esta correta
-    if length(stresses,1) != ne
+    if size(stresses,1) != ne
         error("ERROR::Gmsh_element_stresses:: number of rows must be $ne")
     end
 
     # Verifica se a dimensao esta correta
-    if length(stresses,2) != 4*3
+    if size(stresses,2) != 4*3
         error("ERROR::Gmsh_element_stresses:: number of cols must be 12")
     end
 
