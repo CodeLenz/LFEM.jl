@@ -294,7 +294,7 @@ function Gmsh_element_stresses(mesh::Mesh,stresses::Matrix,nome_arquivo::String,
                                nome_vista::String,tempo=0.0,processado::Bool=true)
 
 
-    isa(mesh,Mesh3D) || trhow("Gmsh_element_stresses:: 3D not implemented yet..")                           
+    isa(mesh,Mesh3D) || throw("Gmsh_element_stresses:: 3D not implemented yet..")                           
 
     # Alias
     ne = mesh.bmesh.ne
