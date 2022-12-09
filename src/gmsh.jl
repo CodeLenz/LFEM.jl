@@ -133,7 +133,7 @@ function Gmsh_nodal_vector(mesh::Mesh,vetor::Vector,nome_arquivo::String,
     # Verifica se a dimensao esta correta
     dim_total = dim*mesh.bmesh.nn
     if size(vetor,1)!= dim_total
-        error("ERROR::Adiciona_Vista_Nodal_Vetorial_Gmsh:: vetor com escalares deve ter dimensao $dim_total")
+        error("ERROR::Adiciona_Vista_Nodal_Vetorial_Gmsh:: vetor deve ter dimensao $dim_total")
     end
 
     #
@@ -170,7 +170,7 @@ end
 # colunas depende do tipo de elemento
 #
 """
-Export a tensorial element view to gmsh
+Export a tensorial element view to gmsh -> to be used when center=true 
 
     Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
                         nome_vista::String,tempo=0.0)
@@ -180,6 +180,15 @@ Export a tensorial element view to gmsh
 function Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
                              nome_vista::String,tempo=0.0)
 
+
+
+    
+    #
+    # Hint for the user
+    #
+    if isa(mesh,Mesh2D) && size(stress,2)==4*3
+        trhow("Gmesh_element_stress:: this subroutine considers that stresses were evaluated with center=true. Use Gmsh_element_stresses.")
+    end
 
     # Alias
     nelems = Get_ne(mesh)
@@ -194,7 +203,7 @@ function Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
 
     # Verifica se a dimensao esta correta
     if size(stress,1)!=nelems
-        error("ERROR::Gmesh_element_stress:: vetor com escalares deve ter dimensao nnos")
+        error("ERROR::Gmesh_element_stress:: entrada deve ter dimensao nnos")
     end
 
     # Now we have to proccess the input. Each element type has different number of
@@ -233,6 +242,103 @@ function Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
         println(saida,i," ",comp[1], " ", comp[6], " ", comp[5], " ", comp[6], " ",comp[2]," ",comp[4], " ",comp[5], " ",comp[4]," ",comp[3])
     end
     println(saida,"\$EndElementData")
+
+    # Fecha por hora
+    close(saida)
+
+end
+
+
+########################################################################################################################################
+
+#
+# Tensoes é uma matrizinha com 4 linhas (pto de gauss) por 3 colunas (tensão)
+#
+
+function Map_stress2nodes_Quad(tensoes::Matrix,processado::Bool=false)
+
+    # Esta matriz foi obtida no maxima e os cálculos estão
+    # na pasta de documentação.
+
+    c1 = 1.866025403784438
+    c2 = -0.5
+    c3 = 0.1339745962155612
+
+    invA  = [   c1 c2 c3 c2 ;
+                c2 c1 c2 c3 ;
+                c3 c2 c1 c2 ;
+                c2 c3 c2 c1 ]
+
+    # e calcula os valores nodais - se processado for true, usa uma cópia direta das tensões
+    S = copy(tensoes)
+    if !processado
+       S .= invA*tensoes
+    end
+
+    # Já que estamos nos ocupando da visualização,
+    # vamos montar a string para o gmsh
+    # Cada nó vai ter que conter uma sequência como a
+    # comp[1], " ", comp[3], " ", 0.0, " ", comp[3], " ",comp[2]," ",0.0, " ",0.0, " ",0.0," ",0.0
+    saida = " "
+    for i=1:4
+        saida = saida * " " * string(S[i,1]) * " " * string(S[i,3]) * " 0.0 " * string(S[i,3]) * " " * string(S[i,2]) *  " 0.0 " *  " 0.0 " * " 0.0 "  * " 0.0 "
+    end
+
+    return saida
+end
+
+
+# Se processado for true, então os valores já são os nodais. Do contrário,
+# extrapolamos os valores para os nós intermente.
+function Gmsh_element_stresses(mesh::Mesh,stress::Matrix,nome_arquivo::String,
+                               nome_vista::String,tempo=0.0,processado::Bool=true)
+
+
+    isa(mesh,Mesh3D) || trhow("Gmsh_element_stresses:: 3D not implemented yet..")                           
+
+    # Alias
+    ne = mesh.bmesh.ne
+
+    # Tenta abrir o arquivo para append
+    saida = try
+                open(nome_arquivo,"a")
+    catch
+        error("ERROR::Gmsh_element_stresses:: $(nome_arquivo) not found")
+    end
+
+
+    # Verifica se a dimensao esta correta
+    if length(stresses,1) != ne
+        error("ERROR::Gmsh_element_stresses:: number of rows must be $ne")
+    end
+
+    # Verifica se a dimensao esta correta
+    if length(stresses,2) != 4*3
+        error("ERROR::Gmsh_element_stresses:: number of cols must be 12")
+    end
+
+    #
+    #
+    println(saida,"\$ElementNodeData")
+    println(saida,"1")
+    println(saida,"\" $nome_vista\"")
+    println(saida,"1")
+    println(saida,tempo)
+    println(saida,"3")
+    println(saida,"0")
+    println(saida,"9")
+    println(saida,ne)
+    for i=1:ne
+
+            
+            tensoes_elemento = vcat(transpose(tensoes[i,1:3]),transpose(tensoes[i,4:6]),
+                                  transpose(tensoes[i,7:9]),transpose(tensoes[i,10:12]))
+
+            texto = Map_stress2nodes_Quad(tensoes_elemento,processado)
+            println(saida,i," 4 ", texto)
+
+    end
+    println(saida,"\$EndElementNodeData")
 
     # Fecha por hora
     close(saida)

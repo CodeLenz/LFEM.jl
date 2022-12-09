@@ -42,7 +42,7 @@ export Organize_Eigen
 export Stress, Local_K, Local_M, Local_Ks
 export Stresses, Volume_truss, Volume_element
 export Gmsh_init, Gmsh_nodal_scalar, Gmsh_element_scalar, Gmsh_nodal_vector
-export Gmsh_element_stress
+export Gmsh_element_stress, Map_stress2nodes_Quad, Gmsh_element_stresses
 export Harmonic_stresses, Voigt_equivalent
 export B_element
 
