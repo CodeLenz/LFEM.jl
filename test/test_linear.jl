@@ -115,55 +115,66 @@ end
     mesh = Simply_supported2D(6,6)
 
     # Solve the linear static equilibrium
-    @test try  U,_ = Solve_linear(mesh)
+    @test try   Solve_linear(mesh)
             true
     catch err  
             false
     end
     @isinferred LFEM.Solve_linear(mesh)
 
+    U,_ = Solve_linear(mesh)
+    
     # Stresses- center
-    @test try sigma = Stresses(mesh,U,center=true)
+    @test try Stresses(mesh,U,center=true)
              true
     catch err  
             false
     end
-    @test size(sigma,2)==1
     @isinferred LFEM.Stresses(mesh,U,center=true)
+    
+    # Test output size
+    sigma = Stresses(mesh,U,center=true)
+    @test size(sigma,2)==1
     
 
     # Stresses- Gauss points (for bars is the same)
-    @test try sigma = Stresses(mesh,U,center=false)
+    @test try Stresses(mesh,U,center=false)
         true
     catch err  
         false
     end
-    @test size(sigma,2)==1
     @isinferred LFEM.Stresses(mesh,U,center=false)
-
+    
+    sigma = Stresses(mesh,U,center=false)
+    @test size(sigma,2)==1
+    
     ####################
 
     # Load Simply supported 2D from TMeshes (solid)
     mesh = Simply_supported2D(6,6,:solid2D)
 
     # Solve the linear static equilibrium
-    @test try  U,_ = Solve_linear(mesh)
+    @test try   Solve_linear(mesh)
             true
     catch err  
             false
     end
     @isinferred Solve_linear(mesh)
 
-
+    U,_ = Solve_linear(mesh)
+    
     # Stresses- center
-    @test try sigma = Stresses(mesh,U,center=true)
+    @test try Stresses(mesh,U,center=true)
         true
     catch err  
-    false
+        false
     end
-    @test size(sigma,2)==3
+
     @isinferred LFEM.Stresses(mesh,U,center=true)
 
+    sigma = Stresses(mesh,U,center=true)
+    @test size(sigma,2)==3
+    
 
     # Stresses- Gauss points 
     @test try sigma = Stresses(mesh,U,center=false)
@@ -171,72 +182,85 @@ end
     catch err  
         false
     end
-    @test size(sigma,2)==3*4
     @isinferred LFEM.Stresses(mesh,U,center=false)
 
+    sigma = Stresses(mesh,U,center=false)
+    @test size(sigma,2)==3*4
+    
     #######################
 
     # Load Simply supported 3D from TMeshes (truss)
     mesh = Simply_supported3D(2,2,2)
 
     # Solve the linear static equilibrium
-    @test try  U,_  = Solve_linear(mesh)
+    @test try   Solve_linear(mesh)
         true
     catch err  
         false   
     end
     @isinferred Solve_linear(mesh)
 
+    U,_ = Solve_linear(mesh)
+
     # Stresses- center
     @test try sigma = Stresses(mesh,U,center=true)
         true
     catch err  
         false
     end
-    @test size(sigma,2)==1
     @isinferred LFEM.Stresses(mesh,U,center=true)
+
+    sigma = sigma = Stresses(mesh,U,center=true)
+    @test size(sigma,2)==1
 
 
     # Stresses- Gauss points (for bars is the same)
-    @test try sigma = Stresses(mesh,U,center=false)
+    @test try Stresses(mesh,U,center=false)
         true
     catch err  
         false
     end
-    @test size(sigma,2)==1
     @isinferred LFEM.Stresses(mesh,U,center=false)
 
+    sigma = Stresses(mesh,U,center=false)
+    @test size(sigma,2)==1
+    
     #######################
 
     # Load Simply supported 3D from TMeshes (solid)
     mesh = Simply_supported3D(2,2,2,:solid3D)
 
     # Solve the linear static equilibrium
-    @test try  U,_  = Solve_linear(mesh)
+    @test try  Solve_linear(mesh)
         true
     catch err  
         false
     end
     @isinferred Solve_linear(mesh)
 
+    U,_  = Solve_linear(mesh)
 
     # Stresses- center
-    @test try sigma = Stresses(mesh,U,center=true)
+    @test try Stresses(mesh,U,center=true)
         true
     catch err  
         false
     end
-    @test size(sigma,2)==6
     @isinferred LFEM.Stresses(mesh,U,center=true)
 
+    sigma = Stresses(mesh,U,center=true)
+    @test size(sigma,2)==6
+    
 
     # Stresses- Gauss points
-    @test try sigma = Stresses(mesh,U,center=false)
+    @test try Stresses(mesh,U,center=false)
         true
     catch err  
         false
     end
-    @test size(sigma,2)==6*8
     @isinferred LFEM.Stresses(mesh,U,center=false)
 
+    sigma = Stresses(mesh,U,center=false)
+    @test size(sigma,2)==6*8
+    
 end
