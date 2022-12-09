@@ -155,7 +155,7 @@ using BMesh, LMesh, TMeshes
 using LFEM
 
 # Load Simply supported 2D from TMeshes
-mesh = Simply_supported3D(6,6,:solid2D)
+mesh = Simply_supported2D(6,6,:solid2D)
 
 # Solve the linear static equilibrium
 U, F, Chol = Solve_linear(mesh)
