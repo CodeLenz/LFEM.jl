@@ -143,6 +143,36 @@ Gmsh_element_stress(mesh,sigma,name,"Stress [Pa]")
 # Export displacements
 Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
 
+```
+
+
+## Stresses (solid) 
+
+Evaluation and gmsh export are automatic for each element type
+```julia
+
+using BMesh, LMesh, TMeshes
+using LFEM
+
+# Load Simply supported 2D from TMeshes
+mesh = Simply_supported3D(6,6,:solid2D)
+
+# Solve the linear static equilibrium
+U, F, Chol = Solve_linear(mesh)
+
+# Array with stresses - Default is at the center of the element
+sigma = Stresses(mesh,U)
+
+# Initilize an output file
+name = "output.pos"
+Gmsh_init(name,mesh)
+
+# Export stresses
+Gmsh_element_stress(mesh,sigma,name,"Stress [Pa]")
+
+# Export displacements
+Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
+
 # It is also possible to evaluate stresses at the superconvergent
 # points (since 2D and 3D elasticity elements are nonconforming)
 sigma_g = Stresses(mesh,U,center=false)
