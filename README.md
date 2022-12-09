@@ -130,7 +130,7 @@ mesh = Simply_supported3D(6,6,6,:solid3D)
 # Solve the linear static equilibrium
 U, F, Chol = Solve_linear(mesh)
 
-# Array with stresses
+# Array with stresses - Default is at the center of the element
 sigma = Stresses(mesh,U)
 
 # Initilize an output file
@@ -142,6 +142,16 @@ Gmsh_element_stress(mesh,sigma,name,"Stress [Pa]")
 
 # Export displacements
 Gmsh_nodal_vector(mesh,U,name,"Displacement [m]")
+
+# It is also possible to evaluate stresses at the superconvergent
+# points (since 2D and 3D elasticity elements are nonconforming)
+sigma_g = Stresses(mesh,U,center=false)
+
+# Export stresses. In this case, stresses are interpolated to the 
+# nodes to be complatible with gmsh.
+# Note that the function has a different name!
+Gmsh_element_stresses(mesh,sigma_g,name,"Stress [Pa]")
+
 
 ```
 
