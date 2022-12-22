@@ -56,7 +56,7 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4, positive=true
         λp = λs[λs.>0.0] 
 
         # Verify if we have at least one positive eigenvalues
-        length(λp)>=1 || throw("Solve_Eigen_:: there are no positive eigenvalues ")
+        length(λp)>=1 || throw("Solve_Eigen_:: there are no positive eigenvalues - $(λs)")
     else
         λp = λs
     end
