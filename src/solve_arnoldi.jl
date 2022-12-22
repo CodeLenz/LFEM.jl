@@ -51,10 +51,12 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4, positive=true
     # There is no guarantee that eigenvalues are positive and are in crescent order. Thus, we 
     # can enforce this situation
     if positive
+        
+        # Extract just the positive values
         λp = λs[λs.>0.0] 
 
         # Verify if we have at least nev positive eigenvalues
-        length(λp)>=nev || throw("Solve_Eigen_:: there are not enougth positive eigenvalues")
+        length(λp)>=nev || throw("Solve_Eigen_:: there are not enough positive eigenvalues $(length(λp)) of $nev")
     else
         λp = λs
     end
