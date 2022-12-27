@@ -172,7 +172,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     V = similar(F)
     A = similar(F)
     b = similar(A0f)
-    Af = similar(FA0f)
+    Af = similar(A0f)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
     # t + Δt.
