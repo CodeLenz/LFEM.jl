@@ -50,7 +50,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     CV = @view  C[free_dofs, free_dofs]
 
     # Harmonic matrix
-    KD = KV + w*im*CV - (w^2)*MV
+    KD =  KV .+ w*im*CV .- (w^2)*MV
 
     # Lu decomposition
     LU = lu(Symmetric(KD))
