@@ -171,6 +171,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     U = similar(F)
     V = similar(F)
     A = similar(F)
+    b = similar(A0f)
+    Af = similar(FA0f)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
     # t + Δt.
@@ -181,10 +183,10 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
-        b = F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
+        b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
 
         # Solve for A in t+Δt
-        Af = CMN\b[free_dofs]
+        Af .= CMN\b[free_dofs]
 
         # Expand A0f 
         Expand_vector!(A,Af,nfull,free_dofs)
@@ -382,13 +384,14 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     U = similar(F)
     V = similar(F)
     A = similar(F)
+    b = similar(F)
 
     # Main loop
     count = 2
     for t in tspan
 
             f!(t+Δt,F)
-            b = F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
+            b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             A .= MN\b
             V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
             U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
