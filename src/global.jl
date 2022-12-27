@@ -37,7 +37,7 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     ng = dim*nn
 
     # Vamos usar um sizehint de 0.2% de esparsividade
-    hint = round(Int64,0.2*(ng^2))
+    hint = round(Int64,0.1*(ng^2))
 
     # Aloca arrays para usar o sparse
     I = Int64[]; sizehint!(I,hint)
@@ -186,7 +186,7 @@ function Global_K(mesh::Mesh)
 
     # Call Global_K
     Global_K(mesh, x, dummy_f)
-    
+
 end
 
 
@@ -234,7 +234,7 @@ with [node dof value;]
     ng = dim*nn
     
     # Vamos usar um sizehint de 0.2% de esparsividade
-    hint = round(Int64,0.2*(ng^2))
+    hint = round(Int64,0.1*(ng^2))
 
     I = Int64[]; sizehint!(I,hint)
     J = Int64[]; sizehint!(J,hint)
@@ -390,10 +390,10 @@ This function also considers entries :Damper in mesh.options
 with [node dof value;]
     
 """
-function Global_C(M,K,mesh::Mesh,α_c=0.0,β_c=1E-6)
+function Global_C(M::AbstractMatrix{T},K::AbstractMatrix{T},mesh::Mesh,α_c=0.0,β_c=1E-6) where T
 
     # Damping matrix
-    C = α_c*M + β_c*K
+    C = α_c*M .+ β_c*K
 
     # Add lumped dampers
     # Add options:: :Damper
@@ -449,7 +449,7 @@ Assembly the global geometric stiffness matrix.
     Global_Ks(mesh::Mesh, stress::Array{Float64})
 
 """
-function Global_Ks(mesh::Mesh, stress::Array{Float64})
+function Global_Ks(mesh::Mesh, stress::Array{T}) where T
 
     # Alias
     ne = Get_ne(mesh)
@@ -467,8 +467,8 @@ function Global_Ks(mesh::Mesh, stress::Array{Float64})
     # Primeira coisa é alocar a matriz Ks
     ng = dim*nn
 
-    # Vamos usar um sizehint de 0.2% de esparsividade
-    hint = round(Int64,0.2*(ng^2))
+    # Vamos usar um sizehint de 10% de esparsividade
+    hint = round(Int64,0.1*(ng^2))
 
     I = Int64[]; sizehint!(I,hint)
     J = Int64[]; sizehint!(J,hint)
