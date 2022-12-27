@@ -21,7 +21,7 @@
     B = rand(100,100) + 200*I(100)
     av, AV = Solve_Eigen_(A,B,20)
 
-    @test isapprox(sum(A*AV - B*AV*diagm(av)),0.0)
+    @test isapprox(norm(A*AV - B*AV*Diagonal(av)),0.0)
 
 
 end
