@@ -15,18 +15,11 @@ This function also considers entries :Stiffness in mesh.options
 with [node dof value;]
 
 """
-function Global_K(mesh::Mesh, xin::Vector{Float64}, kparam::Function)
+function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
 
     # Alias
     ne = Get_ne(mesh)
     nn = Get_nn(mesh)
-
-     # Basic test for xe
-    if isempty(xin)
-        x = ones(ne)
-    else
-        x = copy(xin)
-    end
 
     # Basic check
     length(x)==ne || throw("Global_K::x must have the same dimensions as the number of elements")
@@ -187,8 +180,13 @@ function Global_K(mesh::Mesh)
     # Dummy function 
     dummy_f(x)=1.0
 
+    # x is ones
+    ne = Get_ne(mesh)
+    x = ones(ne)
+
     # Call Global_K
-    Global_K(mesh, Float64[], dummy_f)
+    Global_K(mesh, x, dummy_f)
+    
 end
 
 
@@ -214,18 +212,11 @@ This function also considers entries :Mass in mesh.options
 with [node dof value;]
     
 """
- function Global_M(mesh::Mesh, xin::Vector{Float64}, mparam::Function)
+ function Global_M(mesh::Mesh, x::Vector{T}, mparam::Function) where T
 
     # Alias
     ne = Get_ne(mesh)
     nn = Get_nn(mesh)
-
-    # Basic test for xe
-    if isempty(xin)
-        x = ones(ne)
-    else
-        x = copy(xin)
-    end
     
     # Options
     options = mesh.options
@@ -381,8 +372,12 @@ function Global_M(mesh::Mesh)
     # Dummy function
     dummy_f(x)=1.0
 
+    # x is ones
+    ne = Get_ne(mesh)
+    x = ones(ne)
+
     # Call function
-    Global_M(mesh, Float64[], dummy_f)
+    Global_M(mesh, x, dummy_f)
 end
 
 
@@ -548,17 +543,10 @@ function sparam(x,p=1.0,q=0.0)
 end
 
 """
-function Stresses(mesh::Mesh,U::Vector{T},xin::Vector{Float64},sparam::Function; center=true)  where T
+function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center=true)  where {T,T1}
 
     # Number of elements
     ne = Get_ne(mesh)
-
-    # Basic test for xe
-    if isempty(xin)
-        x = ones(ne)
-    else
-        x = copy(xin)
-    end
 
     # Basic check
     length(x)==ne || throw("Stresses::x must have the same dimensions as the number of elements")
@@ -645,8 +633,12 @@ function Stresses(mesh::Mesh,U::Vector{T};center=true)  where T
     # Dummy function
     dummy_f(x)=1.0
 
+    # x is ones
+    ne = Get_ne(mesh)
+    x = ones(ne)
+
     # Call function
-    Stresses(mesh,U,Float64[],dummy_f,center=center)
+    Stresses(mesh,U,x,dummy_f,center=center)
 end
 
 
@@ -676,7 +668,7 @@ end
 
 """
 function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64,
-                           x::Vector{Float64},sparam::Function;center=true)  where T
+                           x::Vector{T1},sparam::Function;center=true)  where {T,T1}
 
 
         Stresses(mesh,U,x,sparam,center=center).*(1+im*w*β_c)
@@ -701,6 +693,10 @@ function Harmonic_stresses(mesh::Mesh,U::Vector{T}, w::Float64, β_c::Float64; c
     # Dummy function
     dummy_f(x)=1.0
 
+    # x is ones
+    ne = Get_ne(mesh)
+    x = ones(ne)
+
     # Call function
-    Harmonic_stresses(mesh,U,w, β_c,Float64[],dummy_f,center=center)
+    Harmonic_stresses(mesh,U,w, β_c,x,dummy_f,center=center)
 end
