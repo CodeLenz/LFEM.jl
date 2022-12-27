@@ -36,7 +36,7 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     # Primeira coisa é alocar a matriz K 
     ng = dim*nn
 
-    # Vamos usar um sizehint de 0.2% de esparsividade
+    # Vamos usar um sizehint de 10% de esparsividade
     hint = round(Int64,0.1*(ng^2))
 
     # Aloca arrays para usar o sparse
@@ -233,7 +233,7 @@ with [node dof value;]
     # Primeira coisa é alocar a matriz M 
     ng = dim*nn
     
-    # Vamos usar um sizehint de 0.2% de esparsividade
+    # Vamos usar um sizehint de 10% de esparsividade
     hint = round(Int64,0.1*(ng^2))
 
     I = Int64[]; sizehint!(I,hint)
