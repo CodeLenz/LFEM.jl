@@ -50,10 +50,11 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     PHI = zeros(ngls,nev)
 
     # Expand the eigenvectores
+    Usf  = zeros(ngls)
     for i=1:nev
  
         # Expande esse modo para os gls globais
-        Usf  = zeros(ngls)
+        fill!(Usf,0.0)
         Expand_vector!(Usf,real.(ϕ[:,i]),free_dofs)
         PHI[:,i] .= Usf
 
@@ -136,10 +137,11 @@ function Organize_Eigen(lambda::Vector,phi::Matrix,ngls::Int64,free_dofs::Vector
     PHI = zeros(ngls,n_effective)
 
     # Expand the eigenvectores
+    Usf  = zeros(ngls)
     for i=1:n_effective
 
         # Expande esse modo para os gls globais
-        Usf  = zeros(ngls)
+        fill!(Usf,0.0)
         Expand_vector!(Usf,real.(phi_real[:,i]),free_dofs)
         PHI[:,i] .= Usf
 
