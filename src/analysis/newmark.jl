@@ -141,7 +141,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     MN = VM .+ β*VK*Δt^2 .+ γ*VC*Δt
 
     # Cholesky decomposition
-    CMN = cholesky(Symmetric(MN))
+    CMN = cholesky!(Symmetric(MN))
 
     #
     # Initial acceleration

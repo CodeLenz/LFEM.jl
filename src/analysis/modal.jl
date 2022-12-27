@@ -32,8 +32,8 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     free_dofs = mesh.free_dofs[loadcase]
     
     # Local views to the free dofs
-    KV = K[free_dofs, free_dofs]
-    MV = M[free_dofs, free_dofs]
+    KV = @view K[free_dofs, free_dofs]
+    MV = @view M[free_dofs, free_dofs]
 
     # Solve using Arpack
     # We are curently not using ARPACK
