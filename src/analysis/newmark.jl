@@ -132,11 +132,16 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Global damping matrix
     C = Global_C(M,K,mesh,α_c,β_c)
 
+    # Some views
+    VK = @view K[free_dofs,free_dofs]
+    VM = @view M[free_dofs,free_dofs]
+    VC = @view C[free_dofs,free_dofs]
+
     # Newmark operator
-    MN = M .+ β*K*Δt^2 .+ γ*C*Δt
+    MN = VM .+ β*VK*Δt^2 .+ γ*VC*Δt
 
     # Cholesky decomposition
-    CMN = cholesky(Symmetric(MN[free_dofs,free_dofs]))
+    CMN = cholesky(Symmetric(MN))
 
     #
     # Initial acceleration
@@ -148,8 +153,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Lets make a final consistency test
     @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
 
-    rhs = F .- K*U0 .- C*V0
-    A0f = M[free_dofs,free_dofs]\rhs[free_dofs]
+    rhs = F[free_dofs] .- VK*U0[free_dofs] .- VC*V0[free_dofs]
+    A0f = VM\rhs
 
     # Expand A0f 
     A0 = Expand_vector(A0f,nfull,free_dofs)
@@ -171,7 +176,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     U = similar(F)
     V = similar(F)
     A = similar(F)
-    b = similar(A0f)
+    b = similar(F)
     Af = similar(A0f)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
@@ -183,10 +188,10 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
-        b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
+        b .= F[free_dofs] .- VK*U0[free_dofs] .-(VC .+Δt*VK)*V0[free_dofs] .- (VC*Δt*(1-γ) .+ VK*(1/2-β)*Δt^2)*A0[free_dofs]   
 
         # Solve for A in t+Δt
-        Af .= CMN\b[free_dofs]
+        Af .= CMN\b
 
         # Expand A0f 
         Expand_vector!(A,Af,nfull,free_dofs)
