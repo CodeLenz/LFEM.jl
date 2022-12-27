@@ -23,12 +23,12 @@
     b3 = Bmesh3D(etype,nn,ne,coord,connect,Lx,Ly,Lz,nx,ny,nz)
 
     # Essential boundary conditions
-    nebc = 5
-    ebc = [1 1 0.0 ; 
-           1 2 0.0 ;  
-           1 3 0.0 ;
-           2 2 0.0 ; 
-           2 3 0.0 ]
+    nhebc = 5
+    hebc = [1 1 ; 
+           1 2  ;  
+           1 3  ;
+           2 2  ; 
+           2 3  ]
 
     # Natural boundary conditions
     nbc = [2 1 100.0]
@@ -38,7 +38,7 @@
     geometries = [Geometry(A=1.0)]
            
     # Mesh
-    m3 = Mesh3D(b3,materials,geometries,ebc,nbc)
+    m3 = Mesh3D(b3,materials,geometries,hebc,nbc)
 
                  
     # Point load

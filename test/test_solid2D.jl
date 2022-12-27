@@ -26,10 +26,10 @@
     b2 = Bmesh2D(etype,nn,ne,coord,connect,Lx,Ly,nx,ny)
 
     # Essential boundary conditions
-    ebc = [1 1 0.0 ; 
-           1 2 0.0 ; 
-           2 2 0.0 ;
-           4 1 0.0]
+    hebc = [1 1  ; 
+           1 2  ; 
+           2 2  ;
+           4 1 ]
 
     # Natural boundary conditions
     nbc = [2 1 50.0 ; 
@@ -40,7 +40,7 @@
     geometries = [Geometry(thickness=0.1)]
            
     # Mesh
-    m2 = Mesh2D(b2,materials,geometries,ebc,nbc)
+    m2 = Mesh2D(b2,materials,geometries,hebc,nbc)
 
     # Total mass is density*volume
     mass = 10.0*5*2*0.1

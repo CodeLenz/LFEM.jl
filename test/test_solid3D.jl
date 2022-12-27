@@ -37,16 +37,16 @@
     b3 = Bmesh3D(etype,nn,ne,coord,connect,Lx,Ly,Lz,nx,ny,nz)
 
     # Essential boundary conditions
-    ebc = [1 1 0.0 ;  # support in z (plane z=0)
-           1 2 0.0 ;
-           1 3 0.0 ; 
-           2 2 0.0 ;
-           2 3 0.0 ;
-           3 3 0.0 ;
-           4 1 0.0;
-           4 3 0.0 ; 
-           5 1 0.0 ;
-           8 1 0.0]
+    hebc = [1 1  ;  # support in z (plane z=0)
+           1 2  ;
+           1 3  ; 
+           2 2  ;
+           2 3  ;
+           3 3  ;
+           4 1  ;
+           4 3  ; 
+           5 1  ;
+           8 1 ]
 
     # Natural boundary conditions
     nbc = [2 1 25.0 ; 
@@ -59,7 +59,7 @@
     geometries = [Geometry()]
            
     # Mesh
-    m3 = Mesh3D(b3,materials,geometries,ebc,nbc)
+    m3 = Mesh3D(b3,materials,geometries,hebc,nbc)
 
     # Total mass is density*volume
     mass = 10.0*5*2*1

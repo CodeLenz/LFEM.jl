@@ -20,9 +20,9 @@
     b2 = Bmesh2D(etype,nn,ne,coord,connect,Lx,Ly,nx,ny)
 
     # Essential boundary conditions
-    ebc = [1 1 0.0 ; 
-           1 2 0.0 ; 
-           2 2 0.0 ]
+    hebc = [1 1  ; 
+           1 2  ; 
+           2 2  ]
 
     # Natural boundary conditions
     nbc = [2 1 100.0]
@@ -32,7 +32,7 @@
     geometries = [Geometry(A=1.0)]
            
     # Mesh
-    m2 = Mesh2D(b2,materials,geometries,ebc,nbc)
+    m2 = Mesh2D(b2,materials,geometries,hebc,nbc)
 
     # Point load
     F = Point_load(m2)
