@@ -194,7 +194,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         Af .= CMN\b
 
         # Expand A0f 
-        Expand_vector!(A,Af,nfull,free_dofs)
+        Expand_vector!(A,Af,free_dofs)
 
         # Velocity and displacement at t+Δt
         V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
