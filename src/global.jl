@@ -579,9 +579,10 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
    # If center, solve and bail out 
    if center || ncol==1
         # Loop 
-        for ele in mesh
-            s = Stress(mesh,ele,U)
-            @inbounds stresses[ele,:].=s[:]*sparam(x[ele])
+        s = Stress(mesh,1,U)
+        @ibounds for ele in mesh
+            s .= Stress(mesh,ele,U)
+            stresses[ele,:].=s[:]*sparam(x[ele])
         end
 
     else
@@ -616,7 +617,7 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
              # For each element,also loop at the Gauss Points
              @inbounds for ele in mesh
                  xp = sparam(x[ele])
-                 #inbounds for j=1:8
+                 @inbounds for j=1:8
                      s .= Stress(G[1,j],G[2,j],G[3,j],mesh,ele,U)
                      p1 = 6*(j-1)+1
                      p2 = 6*(j-1)+6
