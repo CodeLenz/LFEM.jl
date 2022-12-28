@@ -40,9 +40,9 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     # hint = round(Int64,0.01*(ng^2))
 
     # Aloca arrays para usar o sparse
-    I = Int64[]; #sizehint!(I,hint)
-    J = Int64[]; #sizehint!(J,hint)
-    V = Float64[]; #sizehint!(V,hint)
+    VI = Int64[]; #sizehint!(I,hint)
+    VJ = Int64[]; #sizehint!(J,hint)
+    VV = Float64[]; #sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -76,9 +76,9 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
                 gi = gls[i]
                 @inbounds for j=1:s_gls
                     gj = gls[j]
-                    push!(I,gi)
-                    push!(J,gj)
-                    push!(V, Ke[i,j]*kx)
+                    push!(VI,gi)
+                    push!(VJ,gj)
+                    push!(VV, Ke[i,j]*kx)
                 end #j
             end #i       
         end #ele
@@ -108,9 +108,9 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
                 gi = gls[i]
                 @inbounds for j=1:s_gls
                     gj = gls[j]
-                    push!(I,gi)
-                    push!(J,gj)
-                    push!(V, Keg[i,j]*kx)
+                    push!(VI,gi)
+                    push!(VJ,gj)
+                    push!(VV, Keg[i,j]*kx)
                 end #j
             end #i
 
@@ -149,16 +149,16 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
            0<dof<=dim   || throw("Global_K:: :Stiffness :: invalid dof")
            value >= 0.0 || throw("Global_K:: :Stiffness :: invalid value")
 
-           push!(I,gl)
-           push!(J,gl)
-           push!(V,value)
+           push!(VI,gl)
+           push!(VJ,gl)
+           push!(VV,value)
 
        end #Stiff
 
     end # if :Stiffness
 
     # Generate the sparse matrix
-    K = sparse(I,J,V)
+    K = sparse(VI,VJ,VV)
     dropzeros!(K)
 
     # Return the global matrix
@@ -240,9 +240,9 @@ with [node dof value;]
     # Vamos usar um sizehint de 1% de esparsividade
     # hint = round(Int64,0.01*(ng^2))
 
-    I = Int64[]; #sizehint!(I,hint)
-    J = Int64[]; #sizehint!(J,hint)
-    V = Float64[]; #sizehint!(V,hint)
+    VI = Int64[]; #sizehint!(I,hint)
+    VJ = Int64[]; #sizehint!(J,hint)
+    VV = Float64[]; #sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -271,9 +271,9 @@ with [node dof value;]
                 gi = gls[i]
                 @inbounds for j=1:s_gls
                     gj = gls[j]
-                    push!(I,gi)
-                    push!(J,gj)
-                    push!(V, Me[i,j]*mx)
+                    push!(VI,gi)
+                    push!(VJ,gj)
+                    push!(VV, Me[i,j]*mx)
                 end #j
             end #i
 
@@ -304,9 +304,9 @@ with [node dof value;]
                gi = gls[i]
                @inbounds for j=1:s_gls
                    gj = gls[j]
-                   push!(I,gi)
-                   push!(J,gj)
-                   push!(V, Meg[i,j]*mx)
+                   push!(VI,gi)
+                   push!(VJ,gj)
+                   push!(VV, Meg[i,j]*mx)
                end #j
            end #i
 
@@ -346,16 +346,16 @@ with [node dof value;]
            0<dof<=dim   || throw("Global_M:: :Mass :: invalid dof")
            value >= 0.0 || throw("Global_M:: :Mass :: invalid value")
 
-           push!(I,gl)
-           push!(J,gl)
-           push!(V,value)
+           push!(VI,gl)
+           push!(VJ,gl)
+           push!(VV,value)
 
        end # Mass
 
     end # if :Mass
 
     # Generate the sparse matrix
-    M = sparse(I,J,V)
+    M = sparse(VI,VJ,VV)
     dropzeros!(M)
 
     # Return the global mass matrix
@@ -475,9 +475,9 @@ function Global_Ks(mesh::Mesh, stress::Array{T}) where T
     # Vamos usar um sizehint de 1% de esparsividade
     # hint = round(Int64,0.01*(ng^2))
 
-    I = Int64[]; #sizehint!(I,hint)
-    J = Int64[]; #sizehint!(J,hint)
-    V = Float64[]; #sizehint!(V,hint)
+    VI = Int64[]; #sizehint!(I,hint)
+    VJ = Int64[]; #sizehint!(J,hint)
+    VV = Float64[]; #sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -513,16 +513,16 @@ function Global_Ks(mesh::Mesh, stress::Array{T}) where T
             gi = gls[i]
             @inbounds for j=1:s_gls
                 gj = gls[j]
-                push!(I,gi)
-                push!(J,gj)
-                push!(V, Kseg[i,j])
+                push!(VI,gi)
+                push!(VJ,gj)
+                push!(VV, Kseg[i,j])
             end #j
         end #i
 
     end #ele
 
     # Generate the sparse matrix
-    Ks = sparse(I,J,V)
+    Ks = sparse(VI,VJ,VV)
     dropzeros!(Ks)
 
     # Return the global matrix 
