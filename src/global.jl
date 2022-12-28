@@ -36,13 +36,13 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     # Primeira coisa é alocar a matriz K 
     ng = dim*nn
 
-    # Vamos usar um sizehint de 10% de esparsividade
-    hint = round(Int64,0.1*(ng^2))
+    # Vamos usar um sizehint de 1% de esparsividade
+    # hint = round(Int64,0.01*(ng^2))
 
     # Aloca arrays para usar o sparse
-    I = Int64[]; sizehint!(I,hint)
-    J = Int64[]; sizehint!(J,hint)
-    V = Float64[]; sizehint!(V,hint)
+    I = Int64[]; #sizehint!(I,hint)
+    J = Int64[]; #sizehint!(J,hint)
+    V = Float64[]; #sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -51,15 +51,19 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     # Comprimento do vetor gls
     s_gls = length(gls)
 
+    # Chama o primeiro elemento aqui para podermos
+    # reaproveitar nos loops
+    Ke = Local_K(mesh,1) 
+
+    # Mesma coisa
+    Keg = similar(Ke)
+
     # Experimental!!
     # If this key is set, than 
     # use Keg from element 1 ONLY
     if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
 
-       # Faz o mesmo para a matriz de rigidez
-       Keg = Local_K(mesh,1) 
-   
-       for ele in mesh
+       @inbounds for ele in mesh
             # Determina quais são os gls GLOBAIS que são "acessados"
             # por esse elemento
             gls .= DOFs(mesh,ele) 
@@ -68,13 +72,13 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
             kx = kparam(x[ele])
 
             # Adiciona a matriz do elemento à matriz Global
-            for i=1:s_gls
-                @inbounds gi = gls[i]
-                for j=1:s_gls
-                    @inbounds gj = gls[j]
+            @inbounds for i=1:s_gls
+                gi = gls[i]
+                @inbounds for j=1:s_gls
+                    gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
-                    push!(V, Keg[i,j]*kx)
+                    push!(V, Ke[i,j]*kx)
                 end #j
             end #i       
         end #ele
@@ -83,27 +87,27 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
 
         # Loop pelos elementos, calculando a matriz local Ke de cada um
         # e posicionando na K
-        for ele in mesh
+        @inbounds for ele in mesh
         
             # Local stiffness matrix
-            Ke = Local_K(mesh,ele) 
+            Ke .= Local_K(mesh,ele) 
 
             # Determina quais são os gls GLOBAIS que são "acessados"
             # por esse elemento
             gls .= DOFs(mesh,ele) 
 
             # If needed, convert to global reference
-            Keg = To_global(Ke,mesh,ele)
+            Keg .= To_global(Ke,mesh,ele)
             
             # Adiciona a matriz do elemento (rotacionada) à matriz Global
             # Parametrização para esse elemento
             kx = kparam(x[ele])
 
             # Adiciona a matriz do elemento à matriz Global
-            for i=1:s_gls
-                @inbounds gi = gls[i]
-                for j=1:s_gls
-                    @inbounds gj = gls[j]
+            @inbounds for i=1:s_gls
+                gi = gls[i]
+                @inbounds for j=1:s_gls
+                    gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
                     push!(V, Keg[i,j]*kx)
@@ -233,25 +237,26 @@ with [node dof value;]
     # Primeira coisa é alocar a matriz M 
     ng = dim*nn
     
-    # Vamos usar um sizehint de 10% de esparsividade
-    hint = round(Int64,0.1*(ng^2))
+    # Vamos usar um sizehint de 1% de esparsividade
+    # hint = round(Int64,0.01*(ng^2))
 
-    I = Int64[]; sizehint!(I,hint)
-    J = Int64[]; sizehint!(J,hint)
-    V = Float64[]; sizehint!(V,hint)
+    I = Int64[]; #sizehint!(I,hint)
+    J = Int64[]; #sizehint!(J,hint)
+    V = Float64[]; #sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
     gls = DOFs(mesh,1) 
-
     s_gls = length(gls)
    
+    # Aloca M aqui para aproveitar depois
+    Me = Local_M(mesh,1) 
+    Meg = similar(Me)
+
     # Experimental!!
     # If this key is set, than 
     # use Meg from element 1 ONLY
     if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
-
-        Meg = Local_M(mesh,1) 
 
         for ele in mesh
              # Determina quais são os gls GLOBAIS que são "acessados"
@@ -268,7 +273,7 @@ with [node dof value;]
                     @inbounds gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
-                    push!(V, Meg[i,j]*mx)
+                    push!(V, Me[i,j]*mx)
                 end #j
             end #i
 
@@ -281,23 +286,23 @@ with [node dof value;]
         for ele in mesh
 
             # Local mass matrix
-            Me = Local_M(mesh,ele)
+            Me .= Local_M(mesh,ele)
             
             # Determina quais são os gls GLOBAIS que são "acessados"
             # por esse elemento
             gls .= DOFs(mesh,ele) 
 
             # If needed, convert to global reference
-            Meg = To_global(Me,mesh,ele)
+            Meg .= To_global(Me,mesh,ele)
             
             # Adiciona a matriz do elemento (rotacionada) a matriz Global
             # Parametrização do material
             mx = mparam(x[ele])
 
             # Adiciona a matriz do elemento (rotacionada) à matriz Global
-            for i=1:s_gls
+            @inbounds for i=1:s_gls
                gi = gls[i]
-               for j=1:s_gls
+               @inbounds for j=1:s_gls
                    gj = gls[j]
                    push!(I,gi)
                    push!(J,gj)
@@ -467,40 +472,46 @@ function Global_Ks(mesh::Mesh, stress::Array{T}) where T
     # Primeira coisa é alocar a matriz Ks
     ng = dim*nn
 
-    # Vamos usar um sizehint de 10% de esparsividade
-    hint = round(Int64,0.1*(ng^2))
+    # Vamos usar um sizehint de 1% de esparsividade
+    # hint = round(Int64,0.01*(ng^2))
 
-    I = Int64[]; sizehint!(I,hint)
-    J = Int64[]; sizehint!(J,hint)
-    V = Float64[]; sizehint!(V,hint)
+    I = Int64[]; #sizehint!(I,hint)
+    J = Int64[]; #sizehint!(J,hint)
+    V = Float64[]; #sizehint!(V,hint)
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
     gls = DOFs(mesh,1) 
-
     s_gls = length(gls)
+
+    # Pré-aloca
+    sigma = stress[1,:]
+
+    # Local geometric stiffness matrix
+    Kse = Local_Ks(mesh,1,sigma) 
+    Kseg = similar(Kse)
 
     # Loop pelos elementos, calculando a matriz local Ke de cada um
     # e posicionando na K
     for ele in mesh
         
         # Stress for element ele (returns a vector)
-        sigma = stress[ele,:]
+        sigma .= stress[ele,:]
 
         # Local geometric stiffness matrix
-        Kse = Local_Ks(mesh,ele,sigma) 
+        Kse .= Local_Ks(mesh,ele,sigma) 
 
         # Determina quais são os gls GLOBAIS que são "acessados"
         # por esse elemento
         gls .= DOFs(mesh,ele) 
 
         # If needed, convert to global reference
-        Kseg = To_global(Kse,mesh,ele)
+        Kseg .= To_global(Kse,mesh,ele)
             
         # Adiciona a matriz do elemento (rotacionada) à matriz Global
-        for i=1:s_gls
+        @inbounds for i=1:s_gls
             gi = gls[i]
-            for j=1:s_gls
+            @inbounds for j=1:s_gls
                 gj = gls[j]
                 push!(I,gi)
                 push!(J,gj)
@@ -581,14 +592,17 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
             # Gauss Points
             G = Gauss_2D()
 
+            # pré-aloca
+            s = Stress(G[1,1],G[2,1],mesh,1,U)
+
             # For each element,also loop at the Gauss Points
-            for ele in mesh
+            @inbounds for ele in mesh
                 xp = sparam(x[ele])
-                for j=1:4
-                    s = Stress(G[1,j],G[2,j],mesh,ele,U)
+                @inbounds for j=1:4
+                    s .= Stress(G[1,j],G[2,j],mesh,ele,U)
                     p1 = 3*(j-1)+1
                     p2 = 3*(j-1)+3
-                    @inbounds stresses[ele,p1:p2].=s[:]*xp
+                    stresses[ele,p1:p2].=s[:]*xp
                 end
             end
         elseif etype==:solid3D
@@ -596,14 +610,17 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
              # Gauss Points
              G = Gauss_3D()
 
+             # Pre-aloca
+             s = Stress(G[1,1],G[2,1],G[3,1],mesh,1,U)
+
              # For each element,also loop at the Gauss Points
-             for ele in mesh
+             @inbounds for ele in mesh
                  xp = sparam(x[ele])
-                 for j=1:8
-                     s = Stress(G[1,j],G[2,j],G[3,j],mesh,ele,U)
+                 #inbounds for j=1:8
+                     s .= Stress(G[1,j],G[2,j],G[3,j],mesh,ele,U)
                      p1 = 6*(j-1)+1
                      p2 = 6*(j-1)+6
-                     @inbounds stresses[ele,p1:p2].=s[:]*xp
+                     stresses[ele,p1:p2].=s[:]*xp
                  end
              end
             
