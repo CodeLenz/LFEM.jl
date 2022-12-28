@@ -162,7 +162,7 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     dropzeros!(K)
 
     # Return the global matrix
-    return Symmetric(K)
+    return K
 
 end
 
