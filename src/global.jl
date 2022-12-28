@@ -162,7 +162,7 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     dropzeros!(K)
 
     # Return the global matrix
-    return K
+    return Symmetric(K)
 
 end
 
@@ -359,7 +359,7 @@ with [node dof value;]
     dropzeros!(M)
 
     # Return the global mass matrix
-    return M
+    return Symmetric(M)
 
 end
 
@@ -443,7 +443,7 @@ function Global_C(M::AbstractMatrix{T},K::AbstractMatrix{T},mesh::Mesh,α_c=0.0,
 
     end # if :Damper
 
-    return C
+    return Symmetric(C)
 
 end
 
@@ -526,7 +526,7 @@ function Global_Ks(mesh::Mesh, stress::Array{T}) where T
     dropzeros!(Ks)
 
     # Return the global matrix 
-    return Ks
+    return Symmetric(Ks)
 
 end
 
