@@ -238,7 +238,7 @@ function Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{
     ug = SVector{8,T}(U[gls])
     
     # Stress
-    C*B[:,1:8]*ug
+    Mvector{3,T}(C*B[:,1:8]*ug)
     
 end
 

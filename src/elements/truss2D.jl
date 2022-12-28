@@ -96,6 +96,6 @@ function Stress_truss2D(mesh::Mesh2D,ele::Int64,U::Vector{T}) where T
        u = To_local(ug,mesh,ele)
 
        # Stress
-       Ee*B*u
+       MVector{1,T}(Ee*B*u)
        
 end
