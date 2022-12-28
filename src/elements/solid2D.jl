@@ -141,7 +141,7 @@ function K_solid2D(m::Mesh2D,ele::Int64)
     Kab = @view K[1:8,9:12]
     Kbb = @view K[9:12,9:12]
 
-    return MMatrix[8,8,Float64}(Kaa .- Kab*(Kbb\Kab'))
+    return MMatrix{8,8}(Kaa .- Kab*(Kbb\Kab'))
 
 end
 
