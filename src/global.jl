@@ -267,10 +267,10 @@ with [node dof value;]
              mx = mparam(x[ele])
 
              # Adiciona a matriz do elemento (rotacionada) à matriz Global
-             for i=1:s_gls
-                @inbounds gi = gls[i]
-                for j=1:s_gls
-                    @inbounds gj = gls[j]
+             @inbounds for i=1:s_gls
+                gi = gls[i]
+                @inbounds for j=1:s_gls
+                    gj = gls[j]
                     push!(I,gi)
                     push!(J,gj)
                     push!(V, Me[i,j]*mx)
@@ -493,7 +493,7 @@ function Global_Ks(mesh::Mesh, stress::Array{T}) where T
 
     # Loop pelos elementos, calculando a matriz local Ke de cada um
     # e posicionando na K
-    for ele in mesh
+    @inbounds for ele in mesh
         
         # Stress for element ele (returns a vector)
         sigma .= stress[ele,:]
@@ -578,9 +578,12 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
 
    # If center, solve and bail out 
    if center || ncol==1
-        # Loop 
+        
+        # Allocate before the loop 
         s = Stress(mesh,1,U)
-        @ibounds for ele in mesh
+
+        # Loop 
+        @inbounds for ele in mesh
             s .= Stress(mesh,ele,U)
             stresses[ele,:].=s[:]*sparam(x[ele])
         end
