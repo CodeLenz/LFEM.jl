@@ -16,12 +16,23 @@
    @test isapprox(AV[:,2],[0.0 ; -1.0])
    
 
-    # Randon, larger problem
-    A = rand(100,100) + 100*I(100); A = A .+ A' 
-    B = rand(100,100) + 200*I(100); B = B .+ B' 
-    av, AV = Solve_Eigen_(A,B,4)
+    # Larger problem
+    A = diagm(collect(10:10:100)) .+ rand(10,10)
+    B = diagm(collect(1.0:-0.1:0.1)) 
 
-    @test isapprox(norm(A*AV - B*AV*Diagonal(av)),0.0)
+    av, AV = Solve_Eigen_(A,B,6,false)
+
+    @test isapprox(norm(A*AV .- B*AV*Diagonal(av)),0.0,atol=1E-6)
+
+    # Test for ortogonality
+    #orto = Array(qr(AV).Q)
+    #for i=1:20
+    #    for j=1:20
+    #        if i!=j
+    #           @test isapprox(dot(orto[:,i],orto[:,j]),0.0,atol=1E-6)
+    #        end
+    #    end
+    #end
 
 
 end
