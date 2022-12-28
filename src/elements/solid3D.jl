@@ -153,7 +153,7 @@ function K_solid3D(m::Mesh3D,ele::Int64)
     Kaa = @view K[1:24,1:24]
     Kab = @view K[1:24,25:33]
     Kbb = @view K[25:33,25:33]
-    return Kaa .- Kab*(Kbb\Kab')
+    return SMatrix{24,24,Float64}(Kaa .- Kab*(Kbb\Kab'))
 
 end
 
