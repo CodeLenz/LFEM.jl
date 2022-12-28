@@ -13,7 +13,7 @@ function K_truss3D(mesh::Mesh3D,ele::Int64)
         Ae = mesh.geometries[geo].A
         Le = LMesh.Length(mesh,ele)
 
-        SMatrix{6,6,Float64}((Ee*Ae/Le)*[  1.0 0.0 0.0  -1.0 0.0 0.0;
+        MMatrix{6,6,Float64}((Ee*Ae/Le)*[  1.0 0.0 0.0  -1.0 0.0 0.0;
                                            0.0 0.0 0.0   0.0 0.0 0.0; 
                                            0.0 0.0 0.0   0.0 0.0 0.0;
                                           -1.0 0.0 0.0   1.0 0.0 0.0;
@@ -36,7 +36,7 @@ function Ks_truss3D(mesh::Mesh3D,ele::Int64,s::AbstractVector{Float64})
         Ae = mesh.geometries[geo].A
         Le = LMesh.Length(mesh,ele)
 
-        SMatrix{6,6,Float64}((s[1]*Ae/Le)*[  0.0  0.0  0.0   0.0  0.0  0.0;
+        MMatrix{6,6,Float64}((s[1]*Ae/Le)*[  0.0  0.0  0.0   0.0  0.0  0.0;
                                              0.0  1.0  0.0   0.0 -1.0  0.0; 
                                              0.0  0.0  1.0   0.0  0.0 -1.0;
                                              0.0  0.0  0.0   0.0  0.0  0.0;
@@ -61,7 +61,7 @@ function M_truss3D(mesh::Mesh,ele::Int64;lumped=true)
     Ae = mesh.geometries[geo].A
     Le = LMesh.Length(mesh,ele)
 
-    SMatrix{6,6,Float64}((De*Ae*Le/2)*[ 1.0 0.0 0.0  0.0 0.0 0.0;
+    MMatrix{6,6,Float64}((De*Ae*Le/2)*[ 1.0 0.0 0.0  0.0 0.0 0.0;
                                         0.0 1.0 0.0  0.0 0.0 0.0; 
                                         0.0 0.0 1.0  0.0 0.0 0.0;
                                         0.0 0.0 0.0  1.0 0.0 0.0;

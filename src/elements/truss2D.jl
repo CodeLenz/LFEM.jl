@@ -13,7 +13,7 @@ function K_truss2D(mesh::Mesh2D,ele::Int64)
        Ae = mesh.geometries[geo].A
        Le = LMesh.Length(mesh,ele)
   
-       SMatrix{4,4,Float64}( (Ee*Ae/Le)*[ 1.0 0.0 -1.0 0.0 ;
+       MMatrix{4,4,Float64}( (Ee*Ae/Le)*[ 1.0 0.0 -1.0 0.0 ;
                                           0.0 0.0  0.0 0.0 ; 
                                          -1.0 0.0  1.0 0.0 ;
                                           0.0 0.0  0.0 0.0 ] )
@@ -33,7 +33,7 @@ function Ks_truss2D(mesh::Mesh2D,ele::Int64,s::AbstractVector{Float64})
        Ae = mesh.geometries[geo].A
        Le = LMesh.Length(mesh,ele)
 
-       SMatrix{4,4,Float64}( (s[1]*Ae/Le)*[ 0.0  0.0  0.0  0.0 ;
+       MMatrix{4,4,Float64}( (s[1]*Ae/Le)*[ 0.0  0.0  0.0  0.0 ;
                                             0.0  1.0  0.0 -1.0 ; 
                                             0.0  0.0  0.0  0.0 ;
                                             0.0 -1.0  0.0  1.0 ] )
@@ -55,7 +55,7 @@ function M_truss2D(mesh::Mesh2D,ele::Int64;lumped=true)
        Ae = mesh.geometries[geo].A
        Le = LMesh.Length(mesh,ele)
   
-        SMatrix{4,4,Float64}((De*Ae*Le/2)*[ 1.0 0.0  0.0 0.0 ;
+       MMatrix{4,4,Float64}((De*Ae*Le/2)*[ 1.0 0.0  0.0 0.0 ;
                                             0.0 1.0  0.0 0.0 ; 
                                             0.0 0.0  1.0 0.0 ;
                                             0.0 0.0  0.0 1.0 ] )
@@ -68,7 +68,7 @@ Local B matrix for truss2D
 """
 function B_truss2D(mesh::Mesh2D,ele::Int64)
        Le = LMesh.Length(mesh,ele)
-       SMatrix{1,4,Float64}( [-1/Le 0.0 1/Le 0.0] )
+       MMatrix{1,4,Float64}( [-1/Le 0.0 1/Le 0.0] )
 end
 
 """
