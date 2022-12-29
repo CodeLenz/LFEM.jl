@@ -13,7 +13,7 @@ Returns:
 
     U = displacement vector (dim*nn x 1)
     F = Force vector (dim*nn x 1)
-    Chol = Cholesky decomposition of K, just free positions (mesh.free_dofs[loadcase])
+    linsolve = LinearSolve object with factored linear problem
 """
 function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase::Int64=1)
   
@@ -32,15 +32,18 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
     # View
     K =  K[free_dofs,free_dofs]
 
-    # Solve just for free dofs
-    Chol = cholesky(Symmetric(K))
-    Ul = Chol\F[free_dofs]
-    
+    # Create LinearSolve problem
+    prob = LinearProblem(K,F[free_dofs])
+    linsolve = init(prob)
+
+    # Solve
+    Ul = solve(linsolve)
+
     # Expand homogeneous ebc
     Us  = zeros(length(F))
-    Expand_vector!(Us,Ul,free_dofs)
+    Expand_vector!(Us,Ul.u,free_dofs)
     
-    return Us, F, Chol
+    return Us, F, linsolve
     
  end
 
@@ -53,7 +56,7 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
  
      U = displacement vector (dim*nn x 1)
      F = Force vector (dim*nn x 1)
-     Chol = Cholesky decomposition of K, just free positions (mesh.free_dofs)
+     linsolve = LinearSolve object with factored linear problem
  """ 
 function Solve_linear(mesh::Mesh;loadcase::Int64=1)
 

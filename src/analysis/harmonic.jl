@@ -18,7 +18,7 @@ where
 Returns:
 
     Ud = displacement vector (ComplexF64) of size dim*nn x 1
-    LU = LU factorization of Kd(x,w) (just free positions)
+    linsolve = LinearSolve object with factored linear problem
 
 """
 function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
@@ -47,17 +47,18 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     # Harmonic matrix
     KD =  K[free_dofs, free_dofs] .+ w*im*C[free_dofs, free_dofs] .- (w^2)*M[free_dofs, free_dofs]
 
-    # Lu decomposition
-    LU = lu(KD)
-    
+    # Create LinearSolve problem
+    prob = LinearProblem(KD,F[free_dofs])
+    linsolve = init(prob)
+
     # Harmonic displacement
-    Ul = LU\F[free_dofs]
+    Ul = solve(linsolve)
 
     # Expand 
-    Ud = Expand_vector(Ul,nfull,free_dofs)
+    Ud = Expand_vector(Ul.u,nfull,free_dofs)
     
     # Return
-    return Ud, LU
+    return Ud, linsolve
     
  end
 
@@ -76,7 +77,7 @@ where
 Returns:
 
     Ud = displacement vector (ComplexF64) of size dim*nn x 1  
-    LU = LU factorization of Kd(x,w) (just free positions)  
+    linsolve = LinearSolve object with factored linear problem
 """
 function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64
                         ; loadcase::Int64=1)
