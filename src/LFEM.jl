@@ -2,6 +2,7 @@ module LFEM
 
 using LinearAlgebra, SparseArrays
 using ArnoldiMethod, LinearMaps
+using LinearSolve
 using StaticArrays
 using BMesh, LMesh
 
