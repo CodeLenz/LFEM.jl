@@ -21,7 +21,7 @@ using LFEM
 mesh = Simply_supported2D(6,6)
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh)
+U, F, linsolve = Solve_linear(mesh)
 
 ```
 
@@ -35,7 +35,7 @@ using LFEM
 mesh = Simply_supported2D(6,6,:solid2D)
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh)
+U, F, linsolve = Solve_linear(mesh)
 
 # It is also possible to export the results to
 # gmsh (https://gmsh.info/)
@@ -59,7 +59,7 @@ using LFEM
 mesh = Simply_supported3D(6,6,6)
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh)
+U, F, linsolve = Solve_linear(mesh)
 
 # Show displacements
 plot(mesh;U=U)
@@ -76,7 +76,7 @@ using LFEM
 mesh = Simply_supported3D(6,6,6,:solid3D)
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh)
+U, F, linsolve = Solve_linear(mesh)
 
 # Initilize an output file
 name = "output.pos"
@@ -99,7 +99,7 @@ using LFEM
 mesh = Simply_supported2D(6,6)
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh)
+U, F, linsolve = Solve_linear(mesh)
 
 # Array with stresses
 sigma = Stresses(mesh,U)
@@ -128,7 +128,7 @@ using LFEM
 mesh = Simply_supported3D(6,6,6,:solid3D)
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh)
+U, F, linsolve = Solve_linear(mesh)
 
 # Array with stresses - Default is at the center of the element
 sigma = Stresses(mesh,U)
@@ -158,7 +158,7 @@ using LFEM
 mesh = Simply_supported2D(6,6,:solid2D)
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh)
+U, F, linsolve = Solve_linear(mesh)
 
 # Array with stresses - Default is at the center of the element
 sigma = Stresses(mesh,U)
@@ -220,7 +220,7 @@ mesh = Simply_supported2D(6,6)
 w = 20.0
 
 # Solve the harmonic problem
-Ud,LU = Solve_harmonic(mesh,w)
+Ud, linsolve = Solve_harmonic(mesh,w)
 
 # Initilize an output file
 name = "output.pos"
@@ -250,7 +250,7 @@ w = 20.0
 β_c = 1E-6
 
 # Solve the harmonic problem
-Ud,LU = Solve_harmonic(mesh,w,α_c,β_c)
+Ud, linsolve = Solve_harmonic(mesh,w,α_c,β_c)
 
 # Harmonic stresses
 sigma_h = Harmonic_stresses(mesh,Ud,w,β_c)
@@ -346,7 +346,7 @@ x = ones(Get_ne(mesh))
 kparam(xe::Float64,p=3.0)= xe^p
 
 # Solve the linear static equilibrium passing x and kparam
-U, F, Chol = Solve_linear(mesh,x,kparam)
+U, F, linsolve = Solve_linear(mesh,x,kparam)
 
 # Initilize an output file
 name = "output.pos"
@@ -376,7 +376,7 @@ sparam(xe::Float64,p=3.0,q=2.5)= xe^(p-q)
 
 
 # Solve the linear static equilibrium
-U, F, Chol = Solve_linear(mesh,x,kparam)
+U, F, linsolve = Solve_linear(mesh,x,kparam)
 
 # Array with stresses
 sigma = Stresses(mesh,U,x,sparam)
@@ -442,7 +442,7 @@ kparam(xe::Float64,p=3.0)= xe^p
 mparam(xe::Float64,p=2.0,cut=0.1)= ifelse(xe>=cut,xe,xe^p)
 
 # Solve the harmonic problem
-Ud,LU = Solve_harmonic(mesh,w,α_c,β_c,x,kparam,mparam)
+Ud, linsolve = Solve_harmonic(mesh,w,α_c,β_c,x,kparam,mparam)
 
 # Array with harmonic stresses
 sigma_h = Harmonic_stresses(mesh,U,w,β_c,x,sparam)
