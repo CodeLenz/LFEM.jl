@@ -177,7 +177,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     MN = VM .+ β*VK*Δt^2 .+ γ*VC*Δt
 
     # Create a LinearPoblem
-    prob = LinearPoblem(Symmetric(MN),b)
+    prob = LinearProblem(Symmetric(MN),b)
     linsolve = init(prob)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
