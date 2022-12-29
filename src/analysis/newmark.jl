@@ -176,9 +176,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Newmark operator
     MN = VM .+ β*VK*Δt^2 .+ γ*VC*Δt
 
-    # Create a LinearPoblem
-    prob = LinearProblem(Symmetric(MN),b)
-    linsolve = init(prob)
+    # Cholesky decomposition
+    CMN = cholesky(Symmetric(MN))
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
     # t + Δt.
@@ -189,11 +188,10 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
-        LinearSolve.set_b(linsolve,F[free_dofs] .- VK*U0[free_dofs] .-(VC .+Δt*VK)*V0[free_dofs] .- (VC*Δt*(1-γ) .+ VK*(1/2-β)*Δt^2)*A0[free_dofs])   
+        b .= F[free_dofs] .- VK*U0[free_dofs] .-(VC .+Δt*VK)*V0[free_dofs] .- (VC*Δt*(1-γ) .+ VK*(1/2-β)*Δt^2)*A0[free_dofs]   
 
         # Solve for A in t+Δt
-        sol = solve(linsolve)
-        Af .= sol.u
+        Af .= CMN\b
 
         # Expand A0f 
         Expand_vector!(A,Af,free_dofs)
