@@ -192,7 +192,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         LinearSolve.set_b(linsolve,F[free_dofs] .- VK*U0[free_dofs] .-(VC .+Δt*VK)*V0[free_dofs] .- (VC*Δt*(1-γ) .+ VK*(1/2-β)*Δt^2)*A0[free_dofs])   
 
         # Solve for A in t+Δt
-        Af .= solve(linsolve).u
+        sol = solve(linsolve)
+        Af .= sol.u
 
         # Expand A0f 
         Expand_vector!(A,Af,free_dofs)
