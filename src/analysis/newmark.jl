@@ -133,15 +133,15 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     C = Global_C(M,K,mesh,α_c,β_c)
 
     # Some views
-    VK = @view K[free_dofs,free_dofs]
-    VM = @view M[free_dofs,free_dofs]
-    VC = @view C[free_dofs,free_dofs]
+    VK =  K[free_dofs,free_dofs]
+    VM =  M[free_dofs,free_dofs]
+    VC =  C[free_dofs,free_dofs]
 
     # Newmark operator
     MN = VM .+ β*VK*Δt^2 .+ γ*VC*Δt
 
     # Cholesky decomposition
-    CMN = cholesky!(Symmetric(MN))
+    CMN = cholesky(Symmetric(MN))
 
     #
     # Initial acceleration

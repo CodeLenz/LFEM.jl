@@ -44,16 +44,11 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     # Free dofs
     free_dofs = mesh.free_dofs[loadcase]
     
-    # Local views to the free dofs
-    KV = @view  K[free_dofs, free_dofs]
-    MV = @view  M[free_dofs, free_dofs]
-    CV = @view  C[free_dofs, free_dofs]
-
     # Harmonic matrix
-    KD =  KV .+ w*im*CV .- (w^2)*MV
+    KD =  K[free_dofs, free_dofs] .+ w*im*C[free_dofs, free_dofs] .- (w^2)*M[free_dofs, free_dofs]
 
     # Lu decomposition
-    LU = lu!(KD)
+    LU = lu(KD)
     
     # Harmonic displacement
     Ul = LU\F[free_dofs]

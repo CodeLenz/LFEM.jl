@@ -30,10 +30,10 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
     free_dofs = mesh.free_dofs[loadcase]
     
     # View
-    VK = @view K[free_dofs,free_dofs]
+    K =  K[free_dofs,free_dofs]
 
     # Solve just for free dofs
-    Chol = cholesky!(Symmetric(VK))
+    Chol = cholesky(Symmetric(K))
     Ul = Chol\F[free_dofs]
     
     # Expand homogeneous ebc
