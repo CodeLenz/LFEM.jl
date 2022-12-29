@@ -32,14 +32,11 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     free_dofs = mesh.free_dofs[loadcase]
     
     # Local views to the free dofs
-    KV = @view K[free_dofs, free_dofs]
-    MV = @view M[free_dofs, free_dofs]
+    K =  K[free_dofs, free_dofs]
+    M =  M[free_dofs, free_dofs]
 
-    # Solve using Arpack
-    # We are curently not using ARPACK
-    #λ, ϕ = eigs(KV,MV,nev=nev,which=which,sigma=σ)
-    #λ, ϕ = eigen(KV,MV)
-    λ, ϕ = Solve_Eigen_(KV,MV,nev)
+    # Solve using Arnoldi interface
+    λ, ϕ = Solve_Eigen_(K,M,nev)
 
     # Total number of dofs
     dim = Get_dim(mesh)
@@ -142,7 +139,7 @@ function Organize_Eigen(lambda::Vector,phi::Matrix,ngls::Int64,free_dofs::Vector
 
         # Expande esse modo para os gls globais
         fill!(Usf,0.0)
-        Expand_vector!(Usf,real.(phi_real[:,i]),free_dofs)
+        Expand_vector!(Usf,phi_real[:,i],free_dofs)
         PHI[:,i] .= Usf
 
     end
