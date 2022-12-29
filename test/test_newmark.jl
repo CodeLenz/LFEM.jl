@@ -24,7 +24,6 @@
     dt = 1E-2
 
     # Solve the transient problem
-    Solve_newmark(mesh,f!,monitor,tspan,dt)
     @test try  Solve_newmark(mesh,f!,monitor,tspan,dt)
             true
     catch err  
@@ -57,7 +56,6 @@
     dt = 1E-2
 
     # Solve the transient problem
-    Solve_newmark(mesh,f1!,monitor,tspan,dt)
     @test try  Solve_newmark(mesh,f1!,monitor,tspan,dt)
             true
     catch err  
