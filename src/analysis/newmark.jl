@@ -189,7 +189,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
-        linsolve = LinearSolve.set_b(F[free_dofs] .- VK*U0[free_dofs] .-(VC .+Δt*VK)*V0[free_dofs] .- (VC*Δt*(1-γ) .+ VK*(1/2-β)*Δt^2)*A0[free_dofs])   
+        linsolve = LinearSolve.set_b(linsolve,F[free_dofs] .- VK*U0[free_dofs] .-(VC .+Δt*VK)*V0[free_dofs] .- (VC*Δt*(1-γ) .+ VK*(1/2-β)*Δt^2)*A0[free_dofs])   
 
         # Solve for A in t+Δt
         sol = solve(linsolve)
