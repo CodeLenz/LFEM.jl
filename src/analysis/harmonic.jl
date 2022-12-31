@@ -50,7 +50,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     M =  M[free_dofs, free_dofs]
 
     # Harmonic matrix
-    KD = @. Symmetric(Kv) + w*im*Symmetric(Cv) - (w^2)*Symmetric(Mv)
+    KD = @. Symmetric(K) + w*im*Symmetric(C) - (w^2)*Symmetric(M)
 
     # Create LinearSolve problem
     prob = LinearProblem(KD,Complex.(F[free_dofs]))
