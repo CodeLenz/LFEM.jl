@@ -45,10 +45,10 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     free_dofs = mesh.free_dofs[loadcase]
     
     # Harmonic matrix
-    KD =  K[free_dofs, free_dofs] .+ w*im*C[free_dofs, free_dofs] .- (w^2)*M[free_dofs, free_dofs]
+    KD =  Symmetric(K[free_dofs, free_dofs]) .+ w*im*Symmetric(C[free_dofs, free_dofs]) .- (w^2)*Symmetric(M[free_dofs, free_dofs])
 
     # Create LinearSolve problem
-    prob = LinearProblem(Symmetric(KD),Complex.(F[free_dofs]))
+    prob = LinearProblem(KD,Complex.(F[free_dofs]))
     linsolve = init(prob)
 
     # Harmonic displacement
