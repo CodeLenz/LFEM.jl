@@ -44,8 +44,13 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     # Free dofs
     free_dofs = mesh.free_dofs[loadcase]
     
+    # Views
+    Kv = @view K[free_dofs, free_dofs]
+    Cv = @view C[free_dofs, free_dofs]
+    Mv = @view M[free_dofs, free_dofs]
+
     # Harmonic matrix
-    KD =  Symmetric(K[free_dofs, free_dofs]) .+ w*im*Symmetric(C[free_dofs, free_dofs]) .- (w^2)*Symmetric(M[free_dofs, free_dofs])
+    KD = @. Symmetric(Kv) + w*im*Symmetric(Cv) - (w^2)*Symmetric(Mv)
 
     # Create LinearSolve problem
     prob = LinearProblem(KD,Complex.(F[free_dofs]))
