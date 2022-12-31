@@ -33,7 +33,7 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
     K =  K[free_dofs,free_dofs]
 
     # Create LinearSolve problem
-    prob = LinearProblem(K,F[free_dofs])
+    prob = LinearProblem(Symmetric(K),F[free_dofs])
     linsolve = init(prob)
 
     # Solve

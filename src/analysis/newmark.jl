@@ -170,14 +170,14 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     U = similar(F)
     V = similar(F)
     A = similar(F)
-    b = similar(A0f)
+    #b = similar(A0f)
     Af = similar(A0f)
 
     # Newmark operator
     MN = VM .+ β*VK*Δt^2 .+ γ*VC*Δt
 
     # Create LinearSolve problem
-    prob = LinearProblem(MN,b)
+    prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
     linsolve = init(prob)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
