@@ -133,9 +133,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     C = Global_C(M,K,mesh,α_c,β_c)
 
     # Some views
-    VK =  K[free_dofs,free_dofs]
-    VM =  M[free_dofs,free_dofs]
-    VC =  C[free_dofs,free_dofs]
+    K =  K[free_dofs,free_dofs]
+    M =  M[free_dofs,free_dofs]
+    C =  C[free_dofs,free_dofs]
 
     #
     # Initial acceleration
@@ -147,7 +147,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Lets make a final consistency test
     @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
 
-    rhs = F[free_dofs] .- VK*U0[free_dofs] .- VC*V0[free_dofs]
+    rhs = @. F[free_dofs] - K*U0[free_dofs] - C*V0[free_dofs]
     A0f = VM\rhs
 
     # Expand A0f 
@@ -174,7 +174,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     Af = similar(A0f)
 
     # Newmark operator
-    MN = VM .+ β*VK*Δt^2 .+ γ*VC*Δt
+    MN = @. M + β*K*Δt^2 + γ*C*Δt
 
     # Create LinearSolve problem
     prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
@@ -189,7 +189,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
-        linsolve = LinearSolve.set_b(linsolve,F[free_dofs] .- VK*U0[free_dofs] .-(VC .+Δt*VK)*V0[free_dofs] .- (VC*Δt*(1-γ) .+ VK*(1/2-β)*Δt^2)*A0[free_dofs])   
+        linsolve = LinearSolve.set_b(linsolve,F[free_dofs] .- K*U0[free_dofs] .-(C .+Δt*K)*V0[free_dofs] .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0[free_dofs])   
 
         # Solve for A in t+Δt
         sol = solve(linsolve)
@@ -199,8 +199,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         Expand_vector!(A,Af,free_dofs)
 
         # Velocity and displacement at t+Δt
-        V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
-        U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
+        @. V = V0 + Δt*( (1-γ)*A0 + γ*A )
+        @. U = U0 + Δt*V0 + ( (1/2-β)*A0 + β*A )*Δt^2
 
         # Store values at t+Δt
         A_t[count]    = t + Δt
@@ -343,7 +343,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     nfull = size(M,1)
 
     # Newmark operator
-    MN = M .+ β*K*Δt^2 .+ γ*C*Δt
+    MN = @. M + β*K*Δt^2 + γ*C*Δt
 
     # Check initial conditons
     if isempty(U0)
@@ -371,7 +371,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
 
     # Initial acceleration
     f!(0.0,F)
-    A0 = M\(F- K*U0 -C*V0)
+    A0 = M\(F .- K*U0 .- C*V0)
 
     # Arrays to monitor the solution. The number of time points is 
     # tspan / dt + 1.
@@ -398,10 +398,10 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     for t in tspan
 
             f!(t+Δt,F)
-            b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
-            A .= MN\b
-            V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
-            U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
+            @. b = F - K*U0 -(C .+Δt*K)*V0 - (C*Δt*(1-γ) + K*(1/2-β)*Δt^2)*A0
+            @. A = MN\b
+            @. V = V0 + Δt*( (1-γ)*A0 + γ*A )
+            @. U = U0 + Δt*V0 + ( (1/2-β)*A0 + β*A )*Δt^2
             
            # Store values at t+Δt
             A_t[count]    = t + Δt
