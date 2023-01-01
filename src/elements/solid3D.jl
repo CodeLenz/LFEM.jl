@@ -145,7 +145,7 @@ function K_solid3D(m::Mesh3D,ele::Int64)
         B, dJ = B_solid3D(r,s,t,x,y,z)
 
         # Add 
-        @. K = K + transpose(B)*C*B*dJ
+        K .= K .+ transpose(B)*C*B*dJ
         
     end
 
@@ -216,7 +216,7 @@ function M_solid3D(m::Mesh3D,ele::Int64,lumped=false)
         J = Jacobian_solid3D(x,y,z,dNrst)
 
         # Add 
-        @. M = M + transpose(N)*N*(det(J)*dens)
+        M .= M .+ transpose(N)*N*(det(J)*dens)
         
     end
 
