@@ -219,8 +219,12 @@ mesh = Simply_supported2D(6,6)
 # Angular frequency [rad/s]
 w = 20.0
 
+# Structural damping
+α_c = 0.0
+β_c = 1E-6
+
 # Solve the harmonic problem
-Ud, linsolve = Solve_harmonic(mesh,w)
+Ud, linsolve = Solve_harmonic(mesh,w,α_c,β_c)
 
 # Initilize an output file
 name = "output.pos"
