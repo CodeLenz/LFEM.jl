@@ -133,9 +133,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     C = Global_C(M,K,mesh,α_c,β_c)
 
     # Some views
-    K =  K[free_dofs,free_dofs]
-    M =  M[free_dofs,free_dofs]
-    C =  C[free_dofs,free_dofs]
+    Kv = @view K[free_dofs,free_dofs]
+    Mv = @view M[free_dofs,free_dofs]
+    Cv = @view C[free_dofs,free_dofs]
 
     #
     # Initial acceleration
@@ -147,8 +147,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Lets make a final consistency test
     @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
 
-    rhs =  F[free_dofs] .- K*U0[free_dofs] .- C*V0[free_dofs]
-    A0f = M\rhs
+    rhs =  F[free_dofs] .- sparse(Kv)*U0[free_dofs] .- sparse(Cv)*V0[free_dofs]
+    A0f = sparse(Mv)\rhs
 
     # Expand A0f 
     A0 = Expand_vector(A0f,nfull,free_dofs)
@@ -170,15 +170,19 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     U = similar(F)
     V = similar(F)
     A = similar(F)
-    #b = similar(A0f)
+    b = similar(A0f)
     Af = similar(A0f)
 
     # Newmark operator
-    MN =  M .+ β*K*Δt^2 .+ γ*C*Δt
+    MN =  sparse(Mv) .+ β*sparse(Kv)*Δt^2 .+ γ*sparse(Cv)*Δt
 
     # Create LinearSolve problem
     prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
     linsolve = init(prob)
+
+    sKv = sparse(Kv)
+    sMv = sparse(Mv)
+    sCv = sparse(Cv)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
     # t + Δt.
@@ -189,7 +193,10 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         f!(t+Δt,F,mesh,loadcase)  
 
         # R.H.S in t+dt
-        linsolve = LinearSolve.set_b(linsolve,F[free_dofs] .- K*U0[free_dofs] .-(C .+Δt*K)*V0[free_dofs] .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0[free_dofs])   
+        #b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
+            
+        @. b = F[free_dofs] - sKv*U0[free_dofs] - (sCv + Δt*sKv)*V0[free_dofs] - (sCv*Δt*(1-γ) + sKv*(1/2-β)*(Δt^2))*A0[free_dofs]
+        linsolve = LinearSolve.set_b(linsolve,b)   
 
         # Solve for A in t+Δt
         sol = solve(linsolve)
@@ -199,8 +206,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         Expand_vector!(A,Af,free_dofs)
 
         # Velocity and displacement at t+Δt
-        V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
-        U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
+        @. V = V0 + Δt*( (1-γ)*A0 + γ*A )
+        @. U = U0 + Δt*V0 + ( (1/2-β)*A0 + β*A )*(Δt^2)
 
         # Store values at t+Δt
         A_t[count]    = t + Δt
