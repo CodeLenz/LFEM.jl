@@ -53,7 +53,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     KD = sparse(K) .+ (w*im).*sparse(C) .- (w^2).*sparse(M)
 
     # Create LinearSolve problem
-    prob = LinearProblem((K),complex.(F[free_dofs]))
+    prob = LinearProblem(KD,complex.(F[free_dofs]))
     linsolve = init(prob)
 
     # Harmonic displacement
