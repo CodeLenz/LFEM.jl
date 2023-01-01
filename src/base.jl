@@ -45,7 +45,7 @@ end
  function To_global(M::AbstractMatrix,mesh::Mesh,ele::Int64)
 
     # Bail out if solid
-    Get_eclass(mesh)==:solid && return M
+    Get_eclass(mesh)===:solid && return M
     
     # Evaluate the rotation matrix for this element
     Te = T_matrix(mesh.bmesh,ele)
@@ -61,7 +61,7 @@ end
   function To_local(M::AbstractMatrix,mesh::Mesh,ele::Int64)
  
     # Bail out if solid
-    Get_eclass(mesh)==:solid && return M
+    Get_eclass(mesh)===:solid && return M
     
     # Evaluate the rotation matrix for this element
     Te = T_matrix(mesh.bmesh,ele)
@@ -78,7 +78,7 @@ end
   function To_global(V::AbstractVector,mesh::Mesh,ele::Int64)
  
     # Bail out if solid
-    Get_eclass(mesh)==:solid && return V
+    Get_eclass(mesh)===:solid && return V
     
     # Evaluate the rotation matrix for this element
     Te = T_matrix(mesh.bmesh,ele)
@@ -94,7 +94,7 @@ end
   function To_local(V::AbstractVector,mesh::Mesh,ele::Int64)
  
     # Bail out if solid
-    Get_eclass(mesh)==:solid && return V
+    Get_eclass(mesh)===:solid && return V
     
     # Evaluate the rotation matrix for this element
     Te = T_matrix(mesh.bmesh,ele)

@@ -61,7 +61,7 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     # Experimental!!
     # If this key is set, than 
     # use Keg from element 1 ONLY
-    if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
+    if haskey(options,:IS_TOPO) && Get_eclass(mesh)===:solid
 
        @inbounds for ele in mesh
             # Determina quais são os gls GLOBAIS que são "acessados"
@@ -256,7 +256,7 @@ with [node dof value;]
     # Experimental!!
     # If this key is set, than 
     # use Meg from element 1 ONLY
-    if haskey(options,:IS_TOPO) && Get_eclass(mesh)==:solid
+    if haskey(options,:IS_TOPO) && Get_eclass(mesh)===:solid
 
         for ele in mesh
              # Determina quais são os gls GLOBAIS que são "acessados"
@@ -567,9 +567,9 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
    etype = Get_etype(mesh)
 
    ncol = 1
-   if etype==:solid2D
+   if etype===:solid2D
       ncol= ifelse(center,3,3*4)
-   elseif etype==:solid3D
+   elseif etype===:solid3D
       ncol = ifelse(center,6,6*8)
    end
 
@@ -591,7 +591,7 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
     else
 
         # Solid 2D,four Gauss Points        
-        if etype==:solid2D
+        if etype===:solid2D
        
             # Gauss Points
             G = Gauss_2D()

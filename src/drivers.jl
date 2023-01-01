@@ -74,11 +74,11 @@ function Local_K(mesh::Mesh2D,ele::Int64)
    etype = Get_etype(mesh)
   
    # If solid
-   if etype==:solid2D 
+   if etype===:solid2D 
 
       Ke = K_solid2D(mesh,ele)
 
-   elseif etype==:truss2D
+   elseif etype===:truss2D
 
       Ke = K_truss2D(mesh,ele)
 
@@ -101,11 +101,11 @@ function Local_K(mesh::Mesh3D,ele::Int64)
    etype = Get_etype(mesh)
   
    # If solid
-   if etype==:solid3D 
+   if etype===:solid3D 
 
       Ke = K_solid3D(mesh,ele)
 
-   elseif etype==:truss3D  
+   elseif etype===:truss3D  
       
       Ke = K_truss3D(mesh,ele)
 
@@ -129,11 +129,11 @@ function Local_Ks(mesh::Mesh2D,ele::Int64,stress::AbstractVector{T}) where T
    etype = Get_etype(mesh)
   
    # If solid
-   if etype==:solid2D 
+   if etype===:solid2D 
 
       error("Local_Ks:: não implementado para elasticidade 2D")
 
-   elseif etype==:truss2D
+   elseif etype===:truss2D
 
       Ke = Ks_truss2D(mesh,ele,stress)
 
@@ -156,13 +156,13 @@ function Local_Ks(mesh::Mesh3D,ele::Int64, stress::AbstractVector{T}) where T
    etype = Get_etype(mesh)
   
    # If solid
-   if etype==:solid3D 
+   if etype===:solid3D 
 
       
       error("Local_Ks:: não implementado para elasticidade 3D")
 
 
-   elseif etype==:truss3D  
+   elseif etype===:truss3D  
       
        
       Ke = Ks_truss3D(mesh,ele,stress)
@@ -188,11 +188,11 @@ function Local_M(mesh::Mesh2D,ele::Int64)
    etype = Get_etype(mesh)
   
    # If solid
-   if etype==:solid2D 
+   if etype===:solid2D 
 
       Me = M_solid2D(mesh,ele)
 
-   elseif etype==:truss2D
+   elseif etype===:truss2D
 
       Me = M_truss2D(mesh,ele)
 
@@ -216,11 +216,11 @@ function Local_M(mesh::Mesh3D,ele::Int64)
    etype = Get_etype(mesh)
   
    # If solid
-   if etype==:solid3D 
+   if etype===:solid3D 
 
       Me = M_solid3D(mesh,ele)
 
-   elseif etype==:truss3D  
+   elseif etype===:truss3D  
       
       Me = M_truss3D(mesh,ele)
 
@@ -274,9 +274,9 @@ function Volume_element(mesh::Mesh,ele::Int64)
    etype = Get_etype(mesh)
   
    volume = 0.0
-   if etype==:truss2D || etype==:truss3D
+   if etype===:truss2D || etype===:truss3D
       volume =  Volume_truss(mesh,ele)
-   elseif etype==:solid2D
+   elseif etype===:solid2D
       volume =  Volume_solid2D(mesh,ele)
    else 
       volume = Volume_solid3D(mesh,ele)

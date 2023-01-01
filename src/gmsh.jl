@@ -212,11 +212,11 @@ function Gmsh_element_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
     outs = zeros(nelems,6)
 
     etype = Get_etype(mesh)
-    if etype==:truss2D || etype==:truss3D
+    if etype===:truss2D || etype===:truss3D
 
         outs[:,1].=stress[:]
 
-    elseif etype==:solid2D    
+    elseif etype===:solid2D    
 
         # Normal
         outs[:,1:2].=stress[:,1:2]
