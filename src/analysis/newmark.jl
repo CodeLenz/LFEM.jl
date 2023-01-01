@@ -147,7 +147,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Lets make a final consistency test
     @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
 
-    rhs = @. F[free_dofs] - K*U0[free_dofs] - C*V0[free_dofs]
+    rhs =  F[free_dofs] .- K*U0[free_dofs] .- C*V0[free_dofs]
     A0f = M\rhs
 
     # Expand A0f 
@@ -174,7 +174,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     Af = similar(A0f)
 
     # Newmark operator
-    MN = @. M + β*K*Δt^2 + γ*C*Δt
+    MN =  M .+ β*K*Δt^2 .+ γ*C*Δt
 
     # Create LinearSolve problem
     prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
@@ -199,8 +199,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         Expand_vector!(A,Af,free_dofs)
 
         # Velocity and displacement at t+Δt
-        @. V = V0 + Δt*( (1-γ)*A0 + γ*A )
-        @. U = U0 + Δt*V0 + ( (1/2-β)*A0 + β*A )*Δt^2
+        V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
+        U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
 
         # Store values at t+Δt
         A_t[count]    = t + Δt
