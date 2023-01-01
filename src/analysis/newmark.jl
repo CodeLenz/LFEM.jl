@@ -343,7 +343,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     nfull = size(M,1)
 
     # Newmark operator
-    MN = @. M + β*K*Δt^2 + γ*C*Δt
+    MN =  M .+ β*K*Δt^2 .+ γ*C*Δt
 
     # Check initial conditons
     if isempty(U0)
@@ -398,10 +398,10 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     for t in tspan
 
             f!(t+Δt,F)
-            @. b = F - K*U0 -(C +Δt*K)*V0 - (C*Δt*(1-γ) + K*(1/2-β)*Δt^2)*A0
+            b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             A .= MN\b
-            @. V = V0 + Δt*( (1-γ)*A0 + γ*A )
-            @. U = U0 + Δt*V0 + ( (1/2-β)*A0 + β*A )*Δt^2
+            V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
+            U =. U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
             
            # Store values at t+Δt
             A_t[count]    = t + Δt
