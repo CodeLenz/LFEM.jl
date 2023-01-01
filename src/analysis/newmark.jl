@@ -148,7 +148,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
 
     rhs = @. F[free_dofs] - K*U0[free_dofs] - C*V0[free_dofs]
-    A0f = VM\rhs
+    A0f = M\rhs
 
     # Expand A0f 
     A0 = Expand_vector(A0f,nfull,free_dofs)
