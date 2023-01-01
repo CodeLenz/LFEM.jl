@@ -399,7 +399,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
 
             f!(t+Δt,F)
             @. b = F - K*U0 -(C .+Δt*K)*V0 - (C*Δt*(1-γ) + K*(1/2-β)*Δt^2)*A0
-            @. A = MN\b
+            A .= MN\b
             @. V = V0 + Δt*( (1-γ)*A0 + γ*A )
             @. U = U0 + Δt*V0 + ( (1/2-β)*A0 + β*A )*Δt^2
             
