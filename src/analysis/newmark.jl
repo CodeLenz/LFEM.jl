@@ -401,7 +401,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
             b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             A .= MN\b
             V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
-            U =. U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
+            U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
             
            # Store values at t+Δt
             A_t[count]    = t + Δt
