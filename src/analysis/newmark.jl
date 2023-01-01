@@ -137,6 +137,10 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     Mv = @view M[free_dofs,free_dofs]
     Cv = @view C[free_dofs,free_dofs]
 
+    sKv = sparse(Kv)
+    sMv = sparse(Mv)
+    sCv = sparse(Cv)
+
     #
     # Initial acceleration
     #
@@ -147,8 +151,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Lets make a final consistency test
     @assert length(F)==nfull "Solve_newmark:: Function f!(t,F) must return a $nfull length vector F"
 
-    rhs =  F[free_dofs] .- sparse(Kv)*U0[free_dofs] .- sparse(Cv)*V0[free_dofs]
-    A0f = sparse(Mv)\rhs
+    rhs =  F[free_dofs] .- sKv*U0[free_dofs] .- sCv*V0[free_dofs]
+    A0f = sMv\rhs
 
     # Expand A0f 
     A0 = Expand_vector(A0f,nfull,free_dofs)
@@ -174,15 +178,11 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     Af = similar(A0f)
 
     # Newmark operator
-    MN =  sparse(Mv) .+ β*sparse(Kv)*Δt^2 .+ γ*sparse(Cv)*Δt
+    MN =  sMv .+ β*sKv*(Δt^2) .+ γ*sCv*Δt
 
     # Create LinearSolve problem
     prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
     linsolve = init(prob)
-
-    sKv = sparse(Kv)
-    sMv = sparse(Mv)
-    sCv = sparse(Cv)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
     # t + Δt.
