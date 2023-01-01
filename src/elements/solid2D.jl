@@ -132,7 +132,7 @@ function K_solid2D(m::Mesh2D,ele::Int64)
         B, dJ = B_solid2D(r,s,x,y)
 
         # Add 
-        @. K +=  transpose(B)*C*B*dJ*thick
+        @. K = K + transpose(B)*C*B*dJ*thick
         
     end
 
@@ -206,7 +206,7 @@ function M_solid2D(m::Mesh2D,ele::Int64,lumped=false)
         J = Jacobian_solid2D(x,y,dNrs)
 
         # Add 
-        @. M +=  transpose(N)*N*(det(J)*thick*dens)
+        @. M = M + transpose(N)*N*(det(J)*thick*dens)
           
     end
 
