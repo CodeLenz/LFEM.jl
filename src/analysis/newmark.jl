@@ -200,7 +200,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
 
         # Solve for A in t+Δt
         sol = solve(linsolve)
-        @inbound Af .= sol.u
+        @inbounds Af .= sol.u
 
         # Expand A0f 
         Expand_vector!(A,Af,free_dofs)
