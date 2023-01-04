@@ -36,8 +36,15 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     M =  M[free_dofs, free_dofs]
 
     # Solve using Arnoldi interface
-    λ, ϕ = Solve_Eigen_(K,M,nev)
-
+    flag, λ, ϕ = Solve_Eigen_(K,M,nev)
+ 
+    # If flag == -1 or -2, revert to desparate measures
+    if flag==-1 || flag==-2
+        println("Solve_modal:: Solve_Eigen_ failed with flag = ", flag)
+        println("Solve_modal:: reverting to base eigen to compute the eigenvalues and eigenvectors")
+        λ, ϕ = Failed_Arnoldi(K,M,nev)
+    end
+     
     # Total number of dofs
     dim = Get_dim(mesh)
     nn  = Get_nn(mesh)
