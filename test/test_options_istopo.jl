@@ -49,13 +49,13 @@
     delete!(mesh.options,:IS_TOPO)
 
     # Solve using all elements
-    w, _ = Solve_modal(mesh)
+    flag1, w, _ = Solve_modal(mesh)
 
     # Set option
     mesh.options[:IS_TOPO] = ones(1,1)
 
     # Solve using only one element
-    w2, _ = Solve_modal(mesh)
+    flag2, w2, _ = Solve_modal(mesh)
 
     @test all(isapprox(w2,w))
      
@@ -69,13 +69,13 @@
     delete!(mesh.options,:IS_TOPO)
 
     # Solve using all elements
-    w, _ = Solve_modal(mesh,nev=1)
+    flag1, w, _ = Solve_modal(mesh,nev=1)
 
     # Set option
     mesh.options[:IS_TOPO] = ones(1,1)
 
     # Solve using only one element
-    w2, _ = Solve_modal(mesh,nev=1)
+    flag2, w2, _ = Solve_modal(mesh,nev=1)
 
     @test all(isapprox(w2,w))
     
