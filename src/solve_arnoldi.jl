@@ -33,13 +33,14 @@ positive -> only positive values are returned
 order    -> eigenvalues are sorted in ascending order
 tol and restarts are defined in ArnoldiMethod
 verbose -> if true, show some debug messages
+ortho -> if true, check if eigenvectors are orthogonal
 
 Returns
 flag 
   1 if OK
  -1 if partialschur fails
  -2 if solution is not OK
- -3 if eigenvectors are not orthogonal
+ -3 if eigenvectors are not orthogonal (just if ortho==true)
 
 eigenvalues (real vector)
 eigenvectors (real matrix)
@@ -47,7 +48,7 @@ eigenvectors (real matrix)
 obs: If flag is -1 eigenvalues is zeros(1) and eigenvectors is zeros(1,1).
 
 """
-function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, order=true, tol=1E-8, restarts=500, verbose=false)
+function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, order=true, tol=1E-8, restarts=500, verbose=false, ortho=false)
 
     # Return flag 
     #  1 if OK
@@ -71,13 +72,21 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
     # can enforce this situation
     if positive
         
-        # Extract just the positive values
-        λp = λs[λs.>0.0] 
+        # positive eigenvalues
+        pp = λs.>0.0
 
         # Verify if we have at least one positive eigenvalues
-        length(λp)>=1 || throw("Solve_Eigen_:: there are no positive eigenvalues - $(λs)")
+        length(pp)>=1 || throw("Solve_Eigen_:: there are no positive eigenvalues - $(λs)")
+
+        # Extract just the positive values
+        λp = λs[pp] 
+
+        # The same for the eigenvectors
+        Xp = real.(X[:,pp])
+
     else
         λp = λs
+        Xp = X
     end
 
     # Effective number of eigenvalues
@@ -91,7 +100,7 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
         
     # Alias to sorted solutions
     sorted_λp = @view λp[p]
-    sorted_X  = real.(X[:,p])
+    sorted_X  = real.(Xp[:,p])
 
     # Normalize sorted_X[:,i] - just to make it easier to verify the 
     # eigenvectors in the output of this function
@@ -123,30 +132,66 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
     (check1 < 1) || return -2, sorted_λp, sorted_X   #throw("Solve_Eigen_:: Solution is not OK. Revert to other solver")
 
     # Second, we check if eigenvectors are orthogonal
-    flag_ortho = true
-    for i=1:nλp
+    if ortho
+        flag_ortho = true
+        for i=1:nλp
 
-        for j=i:nλp
-            if i!=j
+            for j=i:nλp
+                if i!=j
 
-                # Evaluate the dot product between two distinct eigenvectors
-                ortho = abs(dot(sorted_X[:,i],sorted_X[:,j]))
+                    # Evaluate the dot product between two distinct eigenvectors
+                    ortho = abs(dot(sorted_X[:,i],sorted_X[:,j]))
 
-                # If verbose
-                verbose && println("Solve_Eigen_:: check ortho ($i,$j) ", ortho)
-    
-                # Check ortho
-                if ortho >= 1E-1
-                    flag_ortho = false
-                    break
+                    # If verbose
+                    verbose && println("Solve_Eigen_:: check ortho ($i,$j) ", ortho)
+        
+                    # Check ortho
+                    if ortho >= 1E-1
+                        flag_ortho = false
+                        break
+                    end
                 end
             end
         end
+        flag_ortho || return -3, sorted_λp, sorted_X #throw("Solve_Eigen_:: eigenvectors are not orthogonal.")
     end
-    flag_ortho || return -3, sorted_λp, sorted_X #throw("Solve_Eigen_:: eigenvectors are not orthogonal.")
 
-    # It seems that everithing is OK
+    # It seems that everything is OK
     # Return both the eigenvalues and the eigenvectors
     return  1, sorted_λp, sorted_X
+
+end
+
+#
+#  Routine for circumvent failed Arnoldi
+#
+# to be called if previous routine flag is -2
+#
+function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true)
+
+    # Solve using base eigen
+    av, AV = eigen(A,B)
+
+    if positive
+        
+        # Pointer to the positive eigenvalues
+        pp = av.>0.0
+
+        # Check if is there sufficient eigenvalues
+        length(pp)>=nev || throw("Failed_Arnoldi:: there are no sufficient positive eigenvalues")
+        
+        # Extract just the positive values
+        λp = av[pp]
+        Xp = AV[:,pp]
+        
+    else
+
+        λp = av
+        Xp = AV
+
+    end
+
+    # Return just the requested values
+    return λp[1:nev], Xp[:,1:nev]
 
 end
