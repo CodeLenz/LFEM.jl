@@ -170,7 +170,7 @@ end
 function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true)
 
     # Solve using base eigen
-    av, AV = eigen(A,B)
+    av, AV = eigen(Array(A),Array(B))
 
     if positive
         
