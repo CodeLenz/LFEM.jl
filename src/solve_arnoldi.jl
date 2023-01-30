@@ -234,15 +234,7 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
         println("**********************************************************")
     end
 
-
-    # Return just the requested values
-    nvev = length(λp)
-    if nvev < nev
-        println("Failed_Arnoldy:: take care, there are fewer valid eigenvalues then requested ",nvev)
-        nev = nvev
-    end
-
-    return λp[1:nev], Xp[:,1:nev]
+    return λp, Xp
 
 end
 
