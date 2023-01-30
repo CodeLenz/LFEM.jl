@@ -212,7 +212,7 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
     # OK, now we have to check if the solution is OK. Check each 
     # eigenpair by its residue
     check1 = true
-    for i=1:nev
+    for i=1:length(λp)
 
         # Evaluate the residual
         residue = Residue_Eigenpair(A, B, Xp[:,i], λp[i])
@@ -236,6 +236,12 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
 
 
     # Return just the requested values
+    nvev = length(λp)
+    if nvev < nev
+        println("Failed_Arnoldy:: take care, there are fewer valid eigenvalues then requested ",nvev)
+        nev = nvev
+    end
+
     return λp[1:nev], Xp[:,1:nev]
 
 end
