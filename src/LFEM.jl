@@ -28,7 +28,7 @@ include("analysis/newmark.jl")
 include("gmsh.jl")
 
 
-export Solve_Eigen_, Failed_Arnoldi
+export Solve_Eigen_, Failed_Arnoldi, Residue_Eigenpair
 export Point_load
 export Expand_vector, Expand_vector!, To_global, To_local
 export Constitutive, Equivalent_stress

@@ -32,6 +32,7 @@ nev  -> Number of eigenvalues (2*nev are evaluated to account for possible negat
 positive -> only positive values are returned
 order    -> eigenvalues are sorted in ascending order
 tol and restarts are defined in ArnoldiMethod
+tol_residue -> tolerance to check the norm of the residuer to EACH eingenpair
 verbose -> if true, show some debug messages
 ortho -> if true, check if eigenvectors are orthogonal
 
@@ -48,7 +49,8 @@ eigenvectors (real matrix)
 obs: If flag is -1 eigenvalues is zeros(1) and eigenvectors is zeros(1,1).
 
 """
-function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, order=true, tol=1E-8, restarts=500, verbose=false, ortho=false)
+function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, order=true, tol=1E-8, tol_residue=1E=4,
+                      restarts=500, verbose=false, ortho=false)
 
     # Return flag 
     #  1 if OK
@@ -73,7 +75,7 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
     if positive
         
         # positive eigenvalues
-        pp = λs.>0.0
+        pp = λs.>1E-3
 
         # Verify if we have at least one positive eigenvalues
         length(pp)>=1 || throw("Solve_Eigen_:: there are no positive eigenvalues - $(λs)")
@@ -120,16 +122,28 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
     end
 
 
-    # OK, now we have to check if the solution is OK.
+    # OK, now we have to check if the solution is OK. Check each 
+    # eigenpair by its residue
+    check1 = true
+    for i=1:nλp
 
-    # First, we verify if the solution is correct
-    check1 = norm(A*sorted_X .- B*sorted_X*Diagonal(sorted_λp))
+        # Evaluate the residual
+        residue = Residue_Eigenpair(A, B, sorted_X[:,i], sorted_λp[i])
 
-    # If verbose
-    verbose && println("Solve_Eigen_:: check1 is ", check1)
+        # If the norm of the residue is larger than a tolerance
+        nresid = norm(residue)
+        if nresid>tol_residue 
+            if verbose 
+                println("Solve_Eigen_:: residue $nresid for eigenpair $i is larger than the tolerance. Eigenvalue is $(sorted_λp[i])")
+            end
+            check1 = false
+        end
+
+    end
+
     
     # If solution is not OK
-    (check1 < 1) || return -2, sorted_λp, sorted_X   #throw("Solve_Eigen_:: Solution is not OK. Revert to other solver")
+    (check1) || return -2, sorted_λp, sorted_X   #throw("Solve_Eigen_:: Solution is not OK. Revert to other solver")
 
     # Second, we check if eigenvectors are orthogonal
     if ortho
@@ -167,7 +181,7 @@ end
 #
 # to be called if previous routine flag is -2
 #
-function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true)
+function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, tol_residue=1E-4, verbose=true)
 
     # Solve using base eigen
     av, AV = eigen(Array(A),Array(B))
@@ -179,7 +193,7 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
     if positive
         
         # Pointer to the positive eigenvalues
-        pp = avR.>0.0
+        pp = avR.>1E-3
 
         # Check if is there sufficient eigenvalues
         length(pp)>=nev || throw("Failed_Arnoldi:: there are no sufficient positive eigenvalues")
@@ -195,7 +209,42 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
 
     end
 
+    # OK, now we have to check if the solution is OK. Check each 
+    # eigenpair by its residue
+    check1 = true
+    for i=1:nev
+
+        # Evaluate the residual
+        residue = Residue_Eigenpair(A, B, Xp[:,i], λp[i])
+
+        # If the norm of the residue is larger than a tolerance
+        nresid = norm(residue)
+        if nresid>tol_residue 
+            if verbose 
+                println("Failed_Arnoldy:: residue $nresid for eigenpair $i is larger than the tolerance. Eigenvalue is $(λp[i])")
+            end
+            check1 = false
+        end
+
+    end
+
+    if !check1
+        println("**********************************************************")
+        println("Failed_Arnoldy:: take care, there are non valid eigenparis")
+        println("**********************************************************")
+    end
+
+
     # Return just the requested values
     return λp[1:nev], Xp[:,1:nev]
+
+end
+
+#
+# Check if a given eigenpar satisfies the modal equation
+#
+function Residue_Eigenpair(A::AbstractMatrix, B::AbstractMatrix, phi::AbstractVector, λ::Float64)
+
+  return (A*phi .- B*phi*λ)
 
 end
