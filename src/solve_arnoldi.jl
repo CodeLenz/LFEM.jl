@@ -50,7 +50,7 @@ obs: If flag is -1 eigenvalues is zeros(1) and eigenvectors is zeros(1,1).
 
 """
 function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, order=true, tol=1E-8, tol_residue=1E-4,
-                      restarts=500, verbose=false, ortho=false)
+                      restarts=500, verbose=false, ortho=false, cut_pos=0.0)
 
     # Return flag 
     #  1 if OK
@@ -75,7 +75,7 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
     if positive
         
         # positive eigenvalues
-        pp = λs.>1E-3
+        pp = λs.>cut_pos
 
         # Verify if we have at least one positive eigenvalues
         length(pp)>=1 || throw("Solve_Eigen_:: there are no positive eigenvalues - $(λs)")
@@ -181,7 +181,7 @@ end
 #
 # to be called if previous routine flag is -2
 #
-function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, tol_residue=1E-4, verbose=true)
+function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, tol_residue=1E-4, verbose=true, cut_pos=0.0)
 
     # Solve using base eigen
     av, AV = eigen(Array(A),Array(B))
@@ -193,7 +193,7 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
     if positive
         
         # Pointer to the positive eigenvalues
-        pp = avR.>1E-3
+        pp = avR.>cut_pos
 
         # Check if is there sufficient eigenvalues
         length(pp)>=nev || throw("Failed_Arnoldi:: there are no sufficient positive eigenvalues")
