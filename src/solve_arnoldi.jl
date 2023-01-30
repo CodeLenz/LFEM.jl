@@ -118,6 +118,8 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
             normat = mn
         end
 
+        !isapprox(normat,0.0) || throw("Solve_Eigen_:: normalization factor is approx 0.0")
+        
         sorted_X[:,i]  ./= normat
     end
 
