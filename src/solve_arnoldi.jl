@@ -172,22 +172,26 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
     # Solve using base eigen
     av, AV = eigen(Array(A),Array(B))
 
+    # Convert av and AV to real
+    avR = real.(av)
+    AVR = real.(AV)
+
     if positive
         
         # Pointer to the positive eigenvalues
-        pp = av.>0.0
+        pp = avR.>0.0
 
         # Check if is there sufficient eigenvalues
         length(pp)>=nev || throw("Failed_Arnoldi:: there are no sufficient positive eigenvalues")
         
         # Extract just the positive values
-        λp = av[pp]
-        Xp = AV[:,pp]
+        λp = avR[pp]
+        Xp = AVR[:,pp]
         
     else
 
-        λp = av
-        Xp = AV
+        λp = avR
+        Xp = AVR
 
     end
 
