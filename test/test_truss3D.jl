@@ -78,7 +78,7 @@
 
     
     # Test local mass matrix
-    M = Local_M(m3,1,lumped=false)
+    M = Local_M(m3,1)
 
     # Reference
     cte = (1.0*1.0*0.1)/2
