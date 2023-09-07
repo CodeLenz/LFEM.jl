@@ -41,8 +41,8 @@ end
 
 
 """
-Local mass matrix for truss2D (lumped)
-       M_truss2D(mesh::Mesh2D,ele::Int64)
+Local mass matrix for truss2D
+       M_truss2D(mesh::Mesh2D,ele::Int64; lumped=true)
 """
 function M_truss2D(mesh::Mesh2D,ele::Int64;lumped=true)
 
@@ -55,10 +55,20 @@ function M_truss2D(mesh::Mesh2D,ele::Int64;lumped=true)
        Ae = mesh.geometries[geo].A
        Le = LMesh.Length(mesh,ele)
   
-       MMatrix{4,4,Float64}((De*Ae*Le/2)*[ 1.0 0.0  0.0 0.0 ;
-                                            0.0 1.0  0.0 0.0 ; 
-                                            0.0 0.0  1.0 0.0 ;
-                                            0.0 0.0  0.0 1.0 ] )
+       if lumped
+              MMatrix{4,4,Float64}((De*Ae*Le/2)*[ 1.0 0.0  0.0 0.0 ;
+                                                 0.0 1.0  0.0 0.0 ; 
+                                                 0.0 0.0  1.0 0.0 ;
+                                                 0.0 0.0  0.0 1.0 ] )
+
+       else                 
+              #https://fliphtml5.com/ndqi/ctkj/basic                   
+              MMatrix{4,4,Float64}((De*Ae*Le/6)*[ 2.0 0.0  1.0 0.0 ;
+                                                 0.0 2.0  0.0 1.0 ; 
+                                                 1.0 0.0  2.0 0.0 ;
+                                                 0.0 1.0  0.0 2.0 ] )
+       end
+
 end
 
 

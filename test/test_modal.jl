@@ -16,12 +16,12 @@
     mesh = Simply_supported2D(6,6,:solid2D)
 
     # Solve the modal problem
-    @test try  Solve_modal(mesh)
+    @test try  Solve_modal(mesh,lumped=false)
             true
     catch err  
             false
     end
-    @isinferred Solve_modal(mesh)
+    @isinferred Solve_modal(mesh,lumped=false)
 
     # Load Simply supported 3D from TMeshes (truss)
     mesh = Simply_supported3D(2,2,2)
@@ -38,12 +38,12 @@
     mesh = Simply_supported3D(2,2,2,:solid3D)
 
     # Solve the modal problem
-    @test try  Solve_modal(mesh)
+    @test try  Solve_modal(mesh,lumped=false)
         true
     catch err  
         false
     end
-    @isinferred Solve_modal(mesh)
+    @isinferred Solve_modal(mesh,lumped=false)
 
 end
 
@@ -73,12 +73,12 @@ end
     x = ones(Get_ne(mesh))
     
     # Solve the modal problem
-    @test try  Solve_modal(mesh,x,kparam,mparam)
+    @test try  Solve_modal(mesh,x,kparam,mparam,lumped=false)
         true
     catch err  
         false
     end
-    @isinferred Solve_modal(mesh,x,kparam,mparam)
+    @isinferred Solve_modal(mesh,x,kparam,mparam,lumped=false)
         
     # Load Simply supported 3D from TMeshes (truss)
     mesh = Simply_supported3D(2,2,2)
@@ -101,11 +101,11 @@ end
     x = ones(Get_ne(mesh))
     
     # Solve the modal problem
-    @test try  Solve_modal(mesh,x,kparam,mparam)
+    @test try  Solve_modal(mesh,x,kparam,mparam,lumped=false)
         true
     catch err  
         false
     end
-    @isinferred Solve_modal(mesh,x,kparam,mparam)
+    @isinferred Solve_modal(mesh,x,kparam,mparam,lumped=false)
 
 end

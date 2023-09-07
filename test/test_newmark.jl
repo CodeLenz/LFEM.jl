@@ -57,12 +57,12 @@
     dt = 1E-2
 
     # Solve the transient problem
-    @test try  Solve_newmark(mesh,f1!,monitor,tspan,dt)
+    @test try  Solve_newmark(mesh,f1!,monitor,tspan,dt,lumped=false)
             true
     catch err  
             false
     end
-    @isinferred Solve_newmark(mesh,f1!,monitor,tspan,dt)
+    @isinferred Solve_newmark(mesh,f1!,monitor,tspan,dt,lumped=false)
 
 
     # Load Simply supported 3D from TMeshes (truss)
@@ -120,12 +120,12 @@
     dt = 1E-2
 
     # Solve the transient problem
-    @test try  Solve_newmark(mesh,f3!,monitor,tspan,dt)
+    @test try  Solve_newmark(mesh,f3!,monitor,tspan,dt,lumped=false)
             true
     catch err  
             false
     end
-    @isinferred Solve_newmark(mesh,f3!,monitor,tspan,dt)
+    @isinferred Solve_newmark(mesh,f3!,monitor,tspan,dt,lumped=false)
     
 end
 
@@ -196,12 +196,12 @@ end
     dt = 1E-2
 
     # Solve the transient problem
-    @test try  Solve_newmark(mesh,f5!,monitor,tspan,dt)
+    @test try  Solve_newmark(mesh,f5!,monitor,tspan,dt,lumped=false)
             true
     catch err  
             false
     end
-    @isinferred Solve_newmark(mesh,f5!,monitor,tspan,dt)
+    @isinferred Solve_newmark(mesh,f5!,monitor,tspan,dt,lumped=false)
 
 
     # Load Simply supported 3D from TMeshes (truss)
@@ -265,12 +265,12 @@ end
     dt = 1E-2
 
     # Solve the transient problem
-    @test try  Solve_newmark(mesh,f7!,monitor,tspan,dt)
+    @test try  Solve_newmark(mesh,f7!,monitor,tspan,dt,lumped=false)
             true
     catch err  
             false
     end
-    @isinferred Solve_newmark(mesh,f7!,monitor,tspan,dt)
+    @isinferred Solve_newmark(mesh,f7!,monitor,tspan,dt,lumped=false)
     
 end
 

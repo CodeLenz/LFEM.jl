@@ -4,7 +4,7 @@ where Kd(x,w)= K(x)-M(x)w^2 + im*w*C(x)
 
     Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64, x::Vector{Float64}, 
                    kparam::Function, mparam::Function ; 
-                   loadcase=1)
+                   lumped=true,loadcase=1)
 
 where 
 
@@ -13,6 +13,7 @@ where
     x is a ne x 1 vector of design varibles 
     kparam(xe): R->R is the material parametrization for K (SIMP like)
     mparam(xe): R->R is the material parametrization for M (SIMP like)
+    lumped is true for lumped mass matrices
     loadcase is the loadcase
 
 Returns:
@@ -23,7 +24,7 @@ Returns:
 """
 function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
                         x::Vector{Float64},
-                        kparam::Function, mparam::Function; loadcase::Int64=1)
+                        kparam::Function, mparam::Function; lumped=true, loadcase::Int64=1)
   
     # Basic checks
     w >= 0.0 || throw("Solve_harmonic:: angular frequency w must be >=0.0")
@@ -32,7 +33,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
 
     # Assembly K, M and C
     K = Global_K(mesh,x,kparam)
-    M = Global_M(mesh,x,mparam)
+    M = Global_M(mesh,x,mparam,lumped=lumped)
     C = Global_C(M,K,mesh,α_c,β_c)
 
     # total size
@@ -50,7 +51,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     M =  @view M[free_dofs, free_dofs]
 
     # Harmonic matrix 
-    KD = sparse(K) .+ (w*im).*sparse(C) .- (w^2).*sparse(M)
+    @inbounds KD = sparse(K) .+ (w*im).*sparse(C) .- (w^2).*sparse(M)
 
     # Create LinearSolve problem
     prob = LinearProblem(KD,complex.(F[free_dofs]))
@@ -60,7 +61,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     Ul = solve(linsolve)
 
     # Expand 
-    Ud = Expand_vector(Ul.u,nfull,free_dofs)
+    Expand_vector(Ul.u,nfull,free_dofs)
     
     # Return
     return Ud, linsolve
@@ -85,7 +86,7 @@ Returns:
     linsolve = LinearSolve object with factored linear problem
 """
 function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64
-                        ; loadcase::Int64=1)
+                        ; lumped=true, loadcase::Int64=1)
 
       # x->1.0 mapping
       dummy_f(x)=1.0
@@ -95,6 +96,6 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64
   
      # Call Solve_harmonic
      
-     Solve_harmonic(mesh, w, α_c, β_c, x, dummy_f, dummy_f, loadcase=loadcase)
+     Solve_harmonic(mesh, w, α_c, β_c, x, dummy_f, dummy_f, lumped=lumped, loadcase=loadcase)
 
 end

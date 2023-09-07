@@ -198,7 +198,7 @@ end
 """
 Assembly the global mass matrix.
 
-     Global_M(mesh::Mesh, x=Float64[], mparam::Function)
+     Global_M(mesh::Mesh, x=Float64[], mparam::Function; lumped=true)
 
 where mparam(x) can be, for example
 
@@ -216,7 +216,7 @@ This function also considers entries :Mass in mesh.options
 with [node dof value;]
     
 """
- function Global_M(mesh::Mesh, x::Vector{T}, mparam::Function) where T
+ function Global_M(mesh::Mesh, x::Vector{T}, mparam::Function;lumped=true) where T
 
     # Alias
     ne = Get_ne(mesh)
@@ -250,7 +250,7 @@ with [node dof value;]
     s_gls = length(gls)
    
     # Aloca M aqui para aproveitar depois
-    Me = Local_M(mesh,1) 
+    Me = Local_M(mesh,1,lumped=lumped) 
     Meg = similar(Me)
 
     # Experimental!!
@@ -286,7 +286,7 @@ with [node dof value;]
         for ele in mesh
 
             # Local mass matrix
-            Me .= Local_M(mesh,ele)
+            Me .= Local_M(mesh,ele,lumped=lumped)
             
             # Determina quais são os gls GLOBAIS que são "acessados"
             # por esse elemento
@@ -316,7 +316,7 @@ with [node dof value;]
     end #IS_TOPO
         
     # Add options:: :Mass
-    # If there are lumped mass, we add here
+    # If there are discrete lumped masses, we add here
     options = mesh.options
 
     # If :Mass is defined
@@ -372,7 +372,7 @@ This function also considers entries :Stiffness in mesh.options
 with [node dof value;]
     
 """
-function Global_M(mesh::Mesh)
+function Global_M(mesh::Mesh; lumped=false)
 
     # Dummy function
     dummy_f(x)=1.0
@@ -382,7 +382,7 @@ function Global_M(mesh::Mesh)
     x = ones(ne)
 
     # Call function
-    Global_M(mesh, x, dummy_f)
+    Global_M(mesh, x, dummy_f, lumped=lumped)
 end
 
 

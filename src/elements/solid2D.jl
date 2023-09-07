@@ -171,6 +171,9 @@ Consistent mass matrix for solid 2D
 """
 function M_solid2D(m::Mesh2D,ele::Int64,lumped=false)
 
+    # We have to implement the lumped version at the end
+    lumped || throw("M_solid2D:: lumped mass still not implemented")
+
     # Coordinates
     x,y = Nodal_coordinates(m,ele)
 

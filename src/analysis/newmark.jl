@@ -22,6 +22,7 @@ where
     U0 and V0 are the initial conditions  
     β and γ are the parameters of the Newmark method
     α_c and  β_c are the coefficients for proportional damping C=α_cM + β_c*K
+    lumped is true for lumped mass matrix
     loadcase is the loadcase
  
     f!(t,F,mesh,loadcase) must be a function of t, mesh and F where F is dim*nn x 1,
@@ -51,6 +52,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
                       mparam::Function, verbose=false; 
                       U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
                       α_c=0.0, β_c=1E-6,
+                      lumped=true,
                       loadcase::Int64=1)
 
 
@@ -127,7 +129,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     K = Global_K(mesh, x, kparam)
 
     # Global mass matrix
-    M = Global_M(mesh, x, mparam)
+    M = Global_M(mesh, x, mparam,lumped=lumped)
 
     # Global damping matrix
     C = Global_C(M,K,mesh,α_c,β_c)
@@ -195,12 +197,12 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         # R.H.S in t+dt
         #b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             
-        @inbounds b .= F[free_dofs] .- sKv*U0[free_dofs] .- (sCv .+ Δt*sKv)*V0[free_dofs] .- (sCv*Δt*(1-γ) .+ sKv*(1/2-β)*(Δt^2))*A0[free_dofs]
+        b .= F[free_dofs] .- sKv*U0[free_dofs] .- (sCv .+ Δt*sKv)*V0[free_dofs] .- (sCv*Δt*(1-γ) .+ sKv*(1/2-β)*(Δt^2))*A0[free_dofs]
         linsolve = LinearSolve.set_b(linsolve,b)   
 
         # Solve for A in t+Δt
         sol = solve(linsolve)
-        @inbounds Af .= sol.u
+        Af .= sol.u
 
         # Expand A0f 
         Expand_vector!(A,Af,free_dofs)
@@ -245,6 +247,7 @@ where
     verbose is false or true
     U0 and V0 are the initial conditions  
     β and γ are the parameters of the Newmar method
+    lumped is true for lumped mass matrix
     loadcase is the loadcase
 
     f!(t,F,mesh,loadcase) must be a function of t, mesh and F where F is dim*nn x 1,
@@ -272,6 +275,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
                        ts::Tuple{Float64, Float64}, Δt::Float64,
                        verbose=false;
                        U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
+                       lumped=true,
                        loadcase::Int64=1)
 
       # x->1.0 mapping
@@ -282,7 +286,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
 
       # Call Solve_newmark
       Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,verbose,
-                    U0=U0,V0=V0,β=β,γ=γ,loadcase=loadcase)
+                    U0=U0,V0=V0,β=β,γ=γ,lumped=lumped,loadcase=loadcase)
  
 end   
 

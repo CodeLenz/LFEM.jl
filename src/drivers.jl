@@ -182,7 +182,7 @@ end
 #
 # Driver for Mass (2D)
 #
-function Local_M(mesh::Mesh2D,ele::Int64)
+function Local_M(mesh::Mesh2D,ele::Int64; lumped=true)
 
    # Element type
    etype = Get_etype(mesh)
@@ -190,11 +190,11 @@ function Local_M(mesh::Mesh2D,ele::Int64)
    # If solid
    if etype===:solid2D 
 
-      Me = M_solid2D(mesh,ele)
+      Me = M_solid2D(mesh,ele,lumped=lumped)
 
    elseif etype===:truss2D
 
-      Me = M_truss2D(mesh,ele)
+      Me = M_truss2D(mesh,ele,lumped=lumped)
 
    else
       
@@ -210,7 +210,7 @@ end
 #
 # Driver for Mass (3D)
 #
-function Local_M(mesh::Mesh3D,ele::Int64)
+function Local_M(mesh::Mesh3D,ele::Int64;lumped=true)
 
    # Element type
    etype = Get_etype(mesh)
@@ -218,11 +218,11 @@ function Local_M(mesh::Mesh3D,ele::Int64)
    # If solid
    if etype===:solid3D 
 
-      Me = M_solid3D(mesh,ele)
+      Me = M_solid3D(mesh,ele,lumped=lumped)
 
    elseif etype===:truss3D  
       
-      Me = M_truss3D(mesh,ele)
+      Me = M_truss3D(mesh,ele,lumped=lumped)
 
    else
       
