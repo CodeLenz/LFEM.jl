@@ -183,10 +183,7 @@ end
 Consistent mass matrix for solid 3D
     M_solid3D(m::Mesh3D,ele::Int64,lumped=false)
 """
-function M_solid3D(m::Mesh3D,ele::Int64,lumped=false)
-
-    # We have to implement the lumped version at the end
-    lumped || throw("M_solid3D:: lumped mass still not implemented")
+function M_solid3D(m::Mesh3D,ele::Int64; lumped=false)
 
     # Coordinates
     x,y,z = Nodal_coordinates(m,ele)

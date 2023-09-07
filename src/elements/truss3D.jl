@@ -52,11 +52,6 @@ Local mass matrix for truss3D (lumped)
 """
 function M_truss3D(mesh::Mesh,ele::Int64;lumped=true)
 
-
-    # We have to implement the lumped version at the end
-    lumped || throw("M_truss3D:: consistent mass still not implemented")
-
-
     # Element properties
     mat = mesh.mat_ele[ele]
     geo = mesh.geo_ele[ele]
