@@ -78,6 +78,7 @@ where
 
     w is the angular frequency  
     α_c and  β_c are the parameters for proportional damping
+    lumped=true is for lumped mass matrix
     loadcase is the loadcase  
 
 Returns:
@@ -85,8 +86,8 @@ Returns:
     Ud = displacement vector (ComplexF64) of size dim*nn x 1  
     linsolve = LinearSolve object with factored linear problem
 """
-function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64
-                        ; lumped=true, loadcase::Int64=1)
+function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64 ;
+                       lumped=true, loadcase::Int64=1)
 
       # x->1.0 mapping
       dummy_f(x)=1.0
