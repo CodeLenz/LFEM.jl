@@ -10,6 +10,7 @@ where
     kparam(xe): R->R is the material parametrization for K (SIMP like)
     mparam(xe): R->R is the material parametrization for M (SIMP like)
     nev is the number of eigenvalues and eigenvectors to compute
+    lumped is true for lumped mass matrix
     loadcase is the loadcase
 
 Returns:
@@ -18,7 +19,7 @@ Returns:
     modes = matrix dim*nn x nev with the eigenvectors
 """
 function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
-                     mparam::Function; nev=4, loadcase::Int64=1)
+                     mparam::Function; nev=4, lumped=true, loadcase::Int64=1)
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")
@@ -26,7 +27,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
 
     # Assembly K and M
     K = Global_K(mesh,x,kparam)
-    M = Global_M(mesh,x,mparam)
+    M = Global_M(mesh,x,mparam,lumped=lumped)
 
     # Free dofs
     free_dofs = mesh.free_dofs[loadcase]
@@ -83,7 +84,7 @@ Returns:
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh; nev=4,  loadcase::Int64=1)
+function Solve_modal(mesh::Mesh; nev=4, lumped=true, loadcase::Int64=1)
 
     # x->1.0 mapping
     dummy_f(x)=1.0
@@ -92,7 +93,7 @@ function Solve_modal(mesh::Mesh; nev=4,  loadcase::Int64=1)
     x = Vector{Float64}(undef,Get_ne(mesh))
 
     # Call Solve_modal
-    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, loadcase=loadcase)
+    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, lumped=lumped, loadcase=loadcase)
   
 end
   
