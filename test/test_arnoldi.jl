@@ -77,7 +77,7 @@
     # Thus, we revert to 
     af, Vf = Failed_Arnoldi(A, B, nev, positive=true)
 
-    @test isapprox(af, 0.4*ones(nev))
+    @test isapprox(af, 0.4*ones(length(af)))
     #for i=1:nev
     #   rf = zeros(10)
     #   rf[i] = 1.0
