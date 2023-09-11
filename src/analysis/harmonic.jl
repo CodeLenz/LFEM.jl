@@ -61,7 +61,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     Ul = solve(linsolve)
 
     # Expand 
-    Expand_vector(Ul.u,nfull,free_dofs)
+    Ud = Expand_vector(Ul.u,nfull,free_dofs)
     
     # Return
     return Ud, linsolve
