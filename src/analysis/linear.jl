@@ -21,9 +21,7 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
     length(x)==Get_ne(mesh) || throw("Solve_linear:: length of x must be ne")
 
     0<=loadcase<=mesh.nload || throw("Solve_linear:: invalid loadcase")
-
-    @show "global"
-    
+   
     # Assembly
     K = Global_K(mesh,x,kparam)
     F = Point_load(mesh,loadcase)
@@ -31,17 +29,13 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
     # Free dofs
     free_dofs = mesh.free_dofs[loadcase]
 
-    @show "fim global"
-    
     # View
     Kv = K[free_dofs,free_dofs]
 
     # Create LinearSolve problem
-    prob = LinearProblem((Kv),F[free_dofs])
+    prob = LinearProblem(Kv,F[free_dofs])
     linsolve = init(prob)
 
-    @show "solve" 
-    
     # Solve
     Ul = solve(linsolve)
 
