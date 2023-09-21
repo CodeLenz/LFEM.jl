@@ -30,7 +30,7 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
     free_dofs = mesh.free_dofs[loadcase]
     
     # View
-    Kv =  @view K[free_dofs,free_dofs]
+    Kv = K[free_dofs,free_dofs]
 
     # Create LinearSolve problem
     prob = LinearProblem(Symmetric(Kv),F[free_dofs])
