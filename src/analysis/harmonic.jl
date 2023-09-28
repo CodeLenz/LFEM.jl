@@ -46,12 +46,13 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     free_dofs = mesh.free_dofs[loadcase]
     
     # Views
-    K =  @view K[free_dofs, free_dofs]
-    C =  @view C[free_dofs, free_dofs]
-    M =  @view M[free_dofs, free_dofs]
+    #K =  @view K[free_dofs, free_dofs]
+    #C =  @view C[free_dofs, free_dofs]
+    #M =  @view M[free_dofs, free_dofs]
 
     # Harmonic matrix 
-    @inbounds KD = sparse(K) .+ (w*im).*sparse(C) .- (w^2).*sparse(M)
+    #@inbounds KD = sparse(K) .+ (w*im).*sparse(C) .- (w^2).*sparse(M)
+    KD = K[free_dofs, free_dofs] .+ (w*im).*C[free_dofs, free_dofs] .- (w^2).*M[free_dofs, free_dofs
 
     # Create LinearSolve problem
     #prob = LinearProblem(KD,complex.(F[free_dofs]))
