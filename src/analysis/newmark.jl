@@ -183,8 +183,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     MN =  sMv .+ β*sKv*(Δt^2) .+ γ*sCv*Δt
 
     # Create LinearSolve problem
-    prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
-    linsolve = init(prob)
+    #prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
+    #linsolve = init(prob)
+    linsolve = lu(MN)
 
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
     # t + Δt.
@@ -198,11 +199,12 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         #b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             
         b .= F[free_dofs] .- sKv*U0[free_dofs] .- (sCv .+ Δt*sKv)*V0[free_dofs] .- (sCv*Δt*(1-γ) .+ sKv*(1/2-β)*(Δt^2))*A0[free_dofs]
-        linsolve = LinearSolve.set_b(linsolve,b)   
+        #linsolve = LinearSolve.set_b(linsolve,b)   
 
         # Solve for A in t+Δt
-        sol = solve(linsolve)
-        Af .= sol.u
+        #sol = solve(linsolve)
+        #Af .= sol.u
+        Af = linsolve\b
 
         # Expand A0f 
         Expand_vector!(A,Af,free_dofs)
@@ -222,7 +224,6 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         A0 .= A
         V0 .= V
         U0 .= U
-
 
     end #t
 
@@ -355,6 +356,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
 
     # Newmark operator
     MN =  M .+ β*K*Δt^2 .+ γ*C*Δt
+    linsolve = lu(MN)
 
     # Check initial conditons
     if isempty(U0)
@@ -410,7 +412,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
 
             f!(t+Δt,F)
             b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
-            A .= MN\b
+            A .= linsolve\b
             V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
             U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
             
