@@ -1,7 +1,7 @@
 name = "LFEM"
 uuid = "4af38767-59e5-4730-b1a5-c8cba679ba80"
 authors = ["CodeLenz <eduardobarplenz@gmail.com>"]
-version = "0.1.0"
+version = "0.1.1"
 
 [deps]
 ArnoldiMethod = "ec485272-7323-5ecc-a04f-4719b315124d"
@@ -19,4 +19,4 @@ BMesh = "0.2"
 LMesh = "0.1"
 StaticArrays = "1.5"
 TMeshes = "0.1"
-julia = "1.8"
+julia = "1.9"
