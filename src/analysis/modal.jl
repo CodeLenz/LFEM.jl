@@ -19,7 +19,7 @@ Returns:
     modes = matrix dim*nn x nev with the eigenvectors
 """
 function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
-                     mparam::Function; nev=4, lumped=true, loadcase::Int64=1)
+                     mparam::Function; nev=4, lumped=true, loadcase::Int64=1, tol_residue=1E-4)
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")
@@ -37,7 +37,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     M =  M[free_dofs, free_dofs]
 
     # Solve using Arnoldi interface
-    flag, λ, ϕ = Solve_Eigen_(K,M,nev)
+    flag, λ, ϕ = Solve_Eigen_(K,M,nev,tol_residue=tol_residue)
  
     # If flag == -1 or -2, revert to desparate measures
     if flag==-1 || flag==-2
