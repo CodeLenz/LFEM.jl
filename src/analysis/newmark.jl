@@ -187,6 +187,11 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     #linsolve = init(prob)
     linsolve = lu(MN)
 
+    # Pre-allocates to avoid some computations inside the main loop
+    CKdt = sCv .+ Δt*sKv
+    CKbeta = sCv*Δt*(1-γ) .+ sKv*(1/2-β)*(Δt^2)
+
+
     # Main Loop. At each t in the loop we are at t, evaluating for the next time steps
     # t + Δt.
     count = 2
@@ -198,7 +203,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         # R.H.S in t+dt
         #b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             
-        b .= F[free_dofs] .- sKv*U0[free_dofs] .- (sCv .+ Δt*sKv)*V0[free_dofs] .- (sCv*Δt*(1-γ) .+ sKv*(1/2-β)*(Δt^2))*A0[free_dofs]
+        b .= F[free_dofs] .- sKv*U0[free_dofs] .- CKdt*V0[free_dofs] .- CKbeta*A0[free_dofs]
         #linsolve = LinearSolve.set_b(linsolve,b)   
 
         # Solve for A in t+Δt
@@ -406,12 +411,16 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
     A = similar(F)
     b = similar(F)
 
+    # Pre-allocates to avoid some computations inside the main loop
+    CKdt = C .+Δt*K
+    CKbeta = C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2
+
     # Main loop
     count = 2
     for t in tspan
 
             f!(t+Δt,F)
-            b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
+            b .= F .- K*U0 .-CKdt*V0 .- CKbeta*A0
             A .= linsolve\b
             V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
             U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
