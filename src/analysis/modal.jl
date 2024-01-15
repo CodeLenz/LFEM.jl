@@ -66,7 +66,7 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     end
  
     # Return the eigenvalues and the eigenvectors
-    return λ, PHI
+    return λ[1:nev], PHI
     
  end
 
