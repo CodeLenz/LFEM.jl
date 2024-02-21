@@ -49,8 +49,8 @@ eigenvectors (real matrix)
 obs: If flag is -1 eigenvalues is zeros(1) and eigenvectors is zeros(1,1).
 
 """
-function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, order=true, tol=1E-8, tol_residue=1E-4,
-                      restarts=500, verbose=false, ortho=false, cut_pos=0.0)
+function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true, order=true, tol=1E-5, tol_residue=1E-4,
+                      restarts=1000, verbose=false, ortho=false, cut_pos=0.0)
 
     # Return flag 
     #  1 if OK
