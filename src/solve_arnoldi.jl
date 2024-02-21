@@ -214,7 +214,7 @@ function Failed_Arnoldi(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=tr
     # OK, now we have to check if the solution is OK. Check each 
     # eigenpair by its residue
     check1 = true
-    for i=1:length(λp)
+    for i in LinearIndices(λp)
 
         # Evaluate the residual
         residue = Residue_Eigenpair(A, B, Xp[:,i], λp[i])
