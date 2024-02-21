@@ -40,20 +40,20 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     # Solve using Arnoldi interface
     flag, λ, ϕ = Solve_Eigen_(K,M,nev,tol_residue=tol_residue)
  
-    # The user can avoid using native eigen
-    if accept_failure && (flag==-1 || flag==-2)
-        println("Solve_modal:: Solve_Eigen_ failed with flag ",flag)
-        println("But the flag accept_failure is on. Proccede with care")
-        return λ, ϕ
-    end 
-
-    # If flag == -1 or -2, revert to desparate measures
+    # Treat error flags 
     if flag==-1 || flag==-2
-        println("Solve_modal:: Solve_Eigen_ failed with flag ", flag)
-        println("Solve_modal:: reverting to base eigen to compute the eigenvalues and eigenvectors")
-        λ, ϕ = Failed_Arnoldi(K,M,nev)
+
+        if accept_failure 
+            println("Solve_modal:: Solve_Eigen_ failed with flag ",flag)
+            println("But the flag accept_failure is on. Proccede with care")
+        else
+            println("Solve_modal:: Solve_Eigen_ failed with flag ", flag)
+            println("Solve_modal:: reverting to base eigen to compute the eigenvalues and eigenvectors")
+            λ, ϕ = Failed_Arnoldi(K,M,nev)
+        end
+        
     end
-     
+ 
     # Total number of dofs
     dim = Get_dim(mesh)
     nn  = Get_nn(mesh)
