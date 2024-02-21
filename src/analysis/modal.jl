@@ -19,7 +19,8 @@ Returns:
     modes = matrix dim*nn x nev with the eigenvectors
 """
 function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
-                     mparam::Function; nev=4, lumped=true, loadcase::Int64=1, tol_residue=1E-4)
+                     mparam::Function; accept_failure=false,
+                     nev=4, lumped=true, loadcase::Int64=1, tol_residue=1E-4)
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")
@@ -39,6 +40,13 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     # Solve using Arnoldi interface
     flag, λ, ϕ = Solve_Eigen_(K,M,nev,tol_residue=tol_residue)
  
+    # The user can avoid using native eigen
+    if accept_failure && (flag==-1 || flag==-2)
+        println("Solve_modal:: Solve_Eigen_ failed with flag ",flag)
+        println("But the flag accept_failure is on. Proccede with care")
+        return λ, ϕ
+    end 
+
     # If flag == -1 or -2, revert to desparate measures
     if flag==-1 || flag==-2
         println("Solve_modal:: Solve_Eigen_ failed with flag ", flag)
@@ -84,7 +92,7 @@ Returns:
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh; nev=4, lumped=true, loadcase::Int64=1)
+function Solve_modal(mesh::Mesh; accept_failure=false, nev=4, lumped=true, loadcase::Int64=1)
 
     # x->1.0 mapping
     dummy_f(x)=1.0
@@ -93,7 +101,7 @@ function Solve_modal(mesh::Mesh; nev=4, lumped=true, loadcase::Int64=1)
     x = Vector{Float64}(undef,Get_ne(mesh))
 
     # Call Solve_modal
-    Solve_modal(mesh, x, dummy_f, dummy_f, nev=nev, lumped=lumped, loadcase=loadcase)
+    Solve_modal(mesh, x, dummy_f, dummy_f, accept_failure=accept_failure, nev=nev, lumped=lumped, loadcase=loadcase)
   
 end
   
