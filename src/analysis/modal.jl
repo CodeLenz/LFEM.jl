@@ -40,8 +40,19 @@ function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function,
     # Solve using Arnoldi interface
     flag, λ, ϕ = Solve_Eigen_(K,M,nev,tol_residue=tol_residue)
  
-    # Treat error flags 
-    if flag==-1 || flag==-2
+    # If flag==-1, there are no way we can use the result
+    if flag==-1
+        if !accept_failure
+            println("Solve_modal:: Arnoldy failure without repair")
+            println("Solve_modal:: reverting to base eigen to compute the eigenvalues and eigenvectors")
+            λ, ϕ = Failed_Arnoldi(K,M,nev)
+        else
+            error("Solve_modal:: Arnoldy failure without repair")
+        end
+    end
+
+    # Treat error flag
+    if flag==-2
 
         if accept_failure 
             println("Solve_modal:: Solve_Eigen_ failed with flag ",flag)
