@@ -26,23 +26,14 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
 
     # Dimensão do problema
     dim = Get_dim(mesh)
-    
-    # Tipo de elemento
-    etype = Get_etype(mesh)
 
     # Options
     options = mesh.options
 
-    # Primeira coisa é alocar a matriz K 
-    ng = dim*nn
-
-    # Vamos usar um sizehint de 1% de esparsividade
-    # hint = round(Int64,0.01*(ng^2))
-
     # Aloca arrays para usar o sparse
-    VI = Int64[]; #sizehint!(I,hint)
-    VJ = Int64[]; #sizehint!(J,hint)
-    VV = Float64[]; #sizehint!(V,hint)
+    VI = Int64[]; 
+    VJ = Int64[]; 
+    VV = Float64[]; 
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -231,18 +222,9 @@ with [node dof value;]
     # Dimensão do problema
     dim = Get_dim(mesh)
 
-    # Tipo de elemento
-    etype = Get_etype(mesh)
-
-    # Primeira coisa é alocar a matriz M 
-    ng = dim*nn
-    
-    # Vamos usar um sizehint de 1% de esparsividade
-    # hint = round(Int64,0.01*(ng^2))
-
-    VI = Int64[]; #sizehint!(I,hint)
-    VJ = Int64[]; #sizehint!(J,hint)
-    VV = Float64[]; #sizehint!(V,hint)
+    VI = Int64[]; 
+    VJ = Int64[]; 
+    VV = Float64[]; 
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -463,15 +445,6 @@ function Global_Ks(mesh::Mesh, stress::Array{T}) where T
     # Dimensão do problema
     dim = Get_dim(mesh)
     
-    # Tipo de elemento
-    etype = Get_etype(mesh)
-
-    # Options
-    options = mesh.options
-
-    # Primeira coisa é alocar a matriz Ks
-    ng = dim*nn
-
     # Vamos usar um sizehint de 1% de esparsividade
     # hint = round(Int64,0.01*(ng^2))
 
