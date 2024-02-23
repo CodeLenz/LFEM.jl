@@ -59,7 +59,7 @@ function Solve_Eigen_(A::AbstractMatrix, B::AbstractMatrix, nev=4; positive=true
     # -3 if eigenvectors are not orthogonal
   
     # Target the largest eigenvalues of the inverted problem
-    decomp, history  = partialschur(construct_linear_map(A, B), nev=nev, tol=tol, restarts=restarts, which=LM())
+    decomp, history  = partialschur(construct_linear_map(A, B), nev=nev, tol=tol, restarts=restarts, which=:LM)
 
     # Test for convergency
     history.converged  || return -1, zeros(1), zeros(1,1) #throw("Solve_eigen:: $(string(history))")
