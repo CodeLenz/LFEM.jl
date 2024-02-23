@@ -438,34 +438,23 @@ Assembly the global geometric stiffness matrix.
 """
 function Global_Ks(mesh::Mesh, stress::Array{T}) where T
 
-    # Alias
-    ne = Get_ne(mesh)
-    nn = Get_nn(mesh)
+    # Vectors for sparse storage
+    VI = Int64[]; 
+    VJ = Int64[]; 
+    VV = Float64[]; 
 
-    # Dimensão do problema
-    dim = Get_dim(mesh)
-    
-    # Vamos usar um sizehint de 1% de esparsividade
-    # hint = round(Int64,0.01*(ng^2))
-
-    VI = Int64[]; #sizehint!(I,hint)
-    VJ = Int64[]; #sizehint!(J,hint)
-    VV = Float64[]; #sizehint!(V,hint)
-
-    # Chama dofs uma vez para depois reaproveitar 
-    # o acesso de memória
+    # Call dofs once to reuse latter
     gls = DOFs(mesh,1) 
     s_gls = length(gls)
 
-    # Pré-aloca
+    # Pre allocate 
     sigma = stress[1,:]
 
     # Local geometric stiffness matrix
     Kse = Local_Ks(mesh,1,sigma) 
     Kseg = similar(Kse)
 
-    # Loop pelos elementos, calculando a matriz local Ke de cada um
-    # e posicionando na K
+    # Loop over the elements
     @inbounds for ele in mesh
         
         # Stress for element ele (returns a vector)
@@ -474,14 +463,13 @@ function Global_Ks(mesh::Mesh, stress::Array{T}) where T
         # Local geometric stiffness matrix
         Kse .= Local_Ks(mesh,ele,sigma) 
 
-        # Determina quais são os gls GLOBAIS que são "acessados"
-        # por esse elemento
+        # global dofs for this element
         gls .= DOFs(mesh,ele) 
 
         # If needed, convert to global reference
         Kseg .= To_global(Kse,mesh,ele)
             
-        # Adiciona a matriz do elemento (rotacionada) à matriz Global
+        # Add to the global matrix
         @inbounds for i=1:s_gls
             gi = gls[i]
             @inbounds for j=1:s_gls
