@@ -65,6 +65,9 @@
 
     # interesting test case - Arnoldi does not solve it 
     # since eigenvalues are too close.
+    # ARNONDLI methods was improved and this text
+    # does not fails anymore
+    #=
     A = 2.0.*I(10)
     B = 5.0.*I(10)
     nev = 4
@@ -76,8 +79,9 @@
 
     # Thus, we revert to 
     af, Vf = Failed_Arnoldi(A, B, nev, positive=true)
-
+    
     @test isapprox(af, 0.4*ones(length(af)))
+    =#
     #for i=1:nev
     #   rf = zeros(10)
     #   rf[i] = 1.0
