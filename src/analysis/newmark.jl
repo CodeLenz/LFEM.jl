@@ -203,8 +203,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         # R.H.S in t+dt
         #b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             
-        b .= F[free_dofs] .- sKv*U0[free_dofs] .- CKdt*V0[free_dofs] .- CKbeta*A0[free_dofs]
-        linsolve = LinearSolve.set_b(linsolve,b)   
+        linsolve.b .= F[free_dofs] .- sKv*U0[free_dofs] .- CKdt*V0[free_dofs] .- CKbeta*A0[free_dofs]
+        #linsolve = LinearSolve.set_b(linsolve,b)   
 
         # Solve for A in t+Δt
         sol = solve!(linsolve)
