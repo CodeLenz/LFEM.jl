@@ -55,17 +55,17 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     KD = K[free_dofs, free_dofs] .+ (w*im).*C[free_dofs, free_dofs] .- (w^2).*M[free_dofs, free_dofs]
 
     # Create LinearSolve problem
-    #prob = LinearProblem(KD,complex.(F[free_dofs]))
-    #linsolve = init(prob)
-    linsolve = lu(KD)
+    prob = LinearProblem(KD,complex.(F[free_dofs]))
+    linsolve = init(prob)
+    #linsolve = lu(KD)
 
     # Harmonic displacement
-    #Ul = solve(linsolve)
-    Ul = linsolve\F[free_dofs]
+    Ul = solve(linsolve)
+    #Ul = linsolve\F[free_dofs]
 
     # Expand 
-    #Ud = Expand_vector(Ul.u,nfull,free_dofs)
-    Ud = Expand_vector(Ul,nfull,free_dofs)
+    Ud = Expand_vector(Ul.u,nfull,free_dofs)
+    #Ud = Expand_vector(Ul,nfull,free_dofs)
     
     # Return
     return Ud, F, linsolve

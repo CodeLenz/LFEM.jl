@@ -33,17 +33,18 @@ function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase
     Kv = K[free_dofs,free_dofs]
 
     # Create LinearSolve problem
-    #prob = LinearProblem(Kv,F[free_dofs])
-    #linsolve = init(prob)
-    linsolve = cholesky(Symmetric(Kv))
+    prob = LinearProblem(Kv,F[free_dofs])
+    linsolve = init(prob)
+    #linsolve = cholesky(Symmetric(Kv))
 
     # Solve
-    Ul = linsolve\F[free_dofs] #solve(linsolve)
+    #Ul = linsolve\F[free_dofs] #
+    Ul = solve(linsolve)
 
     # Expand homogeneous ebc
     Us  = zeros(length(F))
-    #Expand_vector!(Us,Ul.u,free_dofs)
-    Expand_vector!(Us,Ul,free_dofs)
+    Expand_vector!(Us,Ul.u,free_dofs)
+    #Expand_vector!(Us,Ul,free_dofs)
     
     return Us, F, linsolve
     

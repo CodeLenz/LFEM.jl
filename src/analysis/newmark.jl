@@ -183,9 +183,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     MN =  sMv .+ β*sKv*(Δt^2) .+ γ*sCv*Δt
 
     # Create LinearSolve problem
-    #prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
-    #linsolve = init(prob)
-    linsolve = lu(MN)
+    prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
+    linsolve = init(prob)
+    #linsolve = lu(MN)
 
     # Pre-allocates to avoid some computations inside the main loop
     CKdt = sCv .+ Δt*sKv
@@ -204,12 +204,12 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         #b .= F .- K*U0 .-(C .+Δt*K)*V0 .- (C*Δt*(1-γ) .+ K*(1/2-β)*Δt^2)*A0
             
         b .= F[free_dofs] .- sKv*U0[free_dofs] .- CKdt*V0[free_dofs] .- CKbeta*A0[free_dofs]
-        #linsolve = LinearSolve.set_b(linsolve,b)   
+        linsolve = LinearSolve.set_b(linsolve,b)   
 
         # Solve for A in t+Δt
-        #sol = solve(linsolve)
-        #Af .= sol.u
-        Af = linsolve\b
+        sol = solve(linsolve)
+        Af .= sol.u
+        #Af = linsolve\b
 
         # Expand A0f 
         Expand_vector!(A,Af,free_dofs)
