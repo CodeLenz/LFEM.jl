@@ -207,7 +207,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
         linsolve = LinearSolve.set_b(linsolve,b)   
 
         # Solve for A in t+Δt
-        sol = solve(linsolve)
+        sol = solve!(linsolve)
         Af .= sol.u
         #Af = linsolve\b
 

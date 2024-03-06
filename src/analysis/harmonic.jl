@@ -60,7 +60,7 @@ function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
     #linsolve = lu(KD)
 
     # Harmonic displacement
-    Ul = solve(linsolve)
+    Ul = solve!(linsolve)
     #Ul = linsolve\F[free_dofs]
 
     # Expand 
