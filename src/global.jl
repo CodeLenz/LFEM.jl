@@ -217,7 +217,7 @@ with [node dof value;]
     options = mesh.options
 
     # Basic check
-    length(x)==ne || throw("Stresses::x must have the same dimensions as the number of elements")
+    length(x)==ne || throw("Gloabl_M::x must have the same dimensions as the number of elements")
 
     # Dimensão do problema
     dim = Get_dim(mesh)
@@ -529,7 +529,7 @@ function Stresses(mesh::Mesh,U::Vector{T},x::Vector{T1},sparam::Function; center
 
    ncol = 1
    if etype===:solid2D
-      ncol= ifelse(center,3,3*4)
+      ncol = ifelse(center,3,3*4)
    elseif etype===:solid3D
       ncol = ifelse(center,6,6*8)
    end
