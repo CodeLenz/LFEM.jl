@@ -81,8 +81,7 @@ function B_solid2D(r::T,s::T,x::Vector{T},y::Vector{T}) where T
     B = @MMatrix zeros(T,3,12)
     @inbounds for j=1:6
 
-        # xx 
-        
+        # xx         
         B[1,2*(j-1)+1]=dNxy[1,j]
         # yy
         B[2,2*(j-1)+2]=dNxy[2,j]
