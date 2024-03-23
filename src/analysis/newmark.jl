@@ -243,7 +243,7 @@ using Newmark-beta method.
 
     Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
                   ts::Tuple{Float64, Float64}, Δt::Float64,
-                  verbose=false;
+                  verbose=false;α_c=0.0, β_c=1E-6,
                   U0=Float64[], V0=Float64[], β=1/4, γ=1/2,loadcase=1)
 
 where 
@@ -252,7 +252,8 @@ where
     Δt is (fixed) time steps
     verbose is false or true
     U0 and V0 are the initial conditions  
-    β and γ are the parameters of the Newmar method
+    β and γ are the parameters of the Newmark method
+    α_c and β_c are the parameters for the proportional damping
     lumped is true for lumped mass matrix
     loadcase is the loadcase
 
@@ -281,8 +282,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
                        ts::Tuple{Float64, Float64}, Δt::Float64,
                        verbose=false;
                        U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
+                       α_c=0.0, β_c=1E-6,
                        lumped=true,
-                       loadcase::Int64=1)
+                       loadcase::Int64=1
 
       # x->1.0 mapping
       dummy_f(x)=1.0
@@ -292,7 +294,8 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
 
       # Call Solve_newmark
       Solve_newmark(mesh,f!,gls,ts,Δt,x,dummy_f,dummy_f,verbose,
-                    U0=U0,V0=V0,β=β,γ=γ,lumped=lumped,loadcase=loadcase)
+                    U0=U0,V0=V0,β=β,γ=γ,α_c=α_c, β_c=β_c,
+                    lumped=lumped,loadcase=loadcase)
  
 end   
 
