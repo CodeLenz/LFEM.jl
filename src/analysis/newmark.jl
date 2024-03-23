@@ -284,7 +284,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
                        U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
                        α_c=0.0, β_c=1E-6,
                        lumped=true,
-                       loadcase::Int64=1
+                       loadcase::Int64=1)
 
       # x->1.0 mapping
       dummy_f(x)=1.0
