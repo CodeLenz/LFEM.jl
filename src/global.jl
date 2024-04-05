@@ -341,7 +341,11 @@ with [node dof value;]
     dropzeros!(M)
 
     # Return the global mass matrix
-    return M
+    if lumped
+        return Diagonal(M)
+    else
+        return M
+    end
 
 end
 
