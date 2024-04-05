@@ -217,7 +217,7 @@ with [node dof value;]
     options = mesh.options
 
     # Basic check
-    length(x)==ne || throw("Gloabl_M::x must have the same dimensions as the number of elements")
+    length(x)==ne || throw("Global_M::x must have the same dimensions as the number of elements")
 
     # Dimensão do problema
     dim = Get_dim(mesh)
