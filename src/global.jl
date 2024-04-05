@@ -340,6 +340,15 @@ with [node dof value;]
     M = sparse(VI,VJ,VV)
     dropzeros!(M)
 
+
+    # Lets make sure M is really diagonal in elasticity case
+    if lumped
+        if isa(mesh.bmesh,Bmesh_solid_2D) || isa(mesh.bmesh, Bmesh_solid_3D)
+           M = Diagonal(M)./norm(M)    
+        end
+    end
+
+
     # Return the global mass matrix
     return M
 
