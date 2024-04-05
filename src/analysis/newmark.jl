@@ -129,7 +129,16 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     K = Global_K(mesh, x, kparam)
 
     # Global mass matrix
-    M = Global_M(mesh, x, mparam,lumped=lumped)
+    M_ = Global_M(mesh, x, mparam,lumped=lumped)
+
+    # Lets make sure M is really diagonal in elasticity case
+    if lumped
+       if isa(mesh.bmesh,Bmesh_solid_2D) || isa(mesh.bmesh, Bmesh_solid_3D)
+          M = Diagonal(M_)./norm(M_)    
+       end
+    else
+        M = M_
+    end
 
     # Global damping matrix
     C = Global_C(M,K,mesh,α_c,β_c)
