@@ -47,9 +47,28 @@
 
     # Mass matrix
     M = Local_M(m2,1,lumped=false)
+
+    # Reference
+    Mref = 	[10/9 	0 	5/9	0	5/18	0	5/9	0 ;
+		0	10/9	0	5/9	0	5/18	0	5/9 ;
+		5/9	0	10/9	0	5/9	0	5/18	0 ;
+		0	5/9	0	10/9	0	5/9	0	5/18 ;
+		5/18	0	5/9	0	10/9	0	5/9	0 ;
+		0	5/18	0	5/9	0	10/9	0	5/9;
+		5/9	0	5/18	0	5/9	0	10/9	0;
+		0	5/9	0	5/18	0	5/9	0	10/9]
+	
     
-    # sum should be equal 2*mass
-    @test isapprox(sum(M), 2*mass)
+    # Test equality
+    @test isapprox(norm(M.-Mref), 0.0, atol=1E-12)
+
+    # Mass matrix
+    M_l = Local_M(m2,1,lumped=true)
+       
+    # Constisten diagonal mass
+    Mlref = 1.125*Diagonal(Mref)
+
+    @test isapprox(norm(M_l.-Mlref), 0.0, atol=1E-12)
 
     # Displacement
     U,_ = Solve_linear(m2)

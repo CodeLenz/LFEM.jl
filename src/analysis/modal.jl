@@ -20,7 +20,7 @@ Returns:
 """
 function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
                      mparam::Function; accept_failure=false,
-                     nev=4, lumped=true, loadcase::Int64=1, tol_residue=1E-4)
+                     nev=4, lumped=false, loadcase::Int64=1, tol_residue=1E-4)
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")

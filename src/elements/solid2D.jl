@@ -190,6 +190,7 @@ function M_solid2D(m::Mesh2D,ele::Int64;lumped=false)
     M = @MMatrix zeros(8,8)
 
     # Main loop
+    mass = 0.0
     @inbounds for i=1:4
 
         # Gauss points
@@ -204,13 +205,24 @@ function M_solid2D(m::Mesh2D,ele::Int64;lumped=false)
         # Jacobian matrix
         J = Jacobian_solid2D(x,y,dNrs)
 
+        # Determinant 
+        DJ = det(J)
+
+        # Update mass
+        mass += DJ*thick*dens
+
         # Add 
-        M .= M .+ transpose(N)*N*(det(J)*thick*dens)
+        M .= M .+ transpose(N)*N*(DJ*thick*dens)
           
     end
 
-    # Return M
-    return M
+    # If lumped, we use the special technique in pg 445 Hugues
+    if lumped
+        alp = mass / sum(diag(M))
+        return Diagonal(M).*alp
+    else
+        return M
+    end
 
 end
 

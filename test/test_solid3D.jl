@@ -70,6 +70,13 @@
     # sum of M should be equal to 3*mass
     @test isapprox(sum(M), 3*mass)
 
+    # Mass matrix
+    Ml = Local_M(m3,1,lumped=true)
+    
+    # sum of M should be equal to 3*mass
+    @test isapprox(sum(Ml), mass)
+
+
     # Displacement
     U,_ = Solve_linear(m3)
 

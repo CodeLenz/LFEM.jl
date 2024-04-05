@@ -201,6 +201,7 @@ function M_solid3D(m::Mesh3D,ele::Int64; lumped=false)
     M = @MMatrix zeros(24,24)
 
     # Main loop
+    mass = 0.0
     for i=1:8
 
         # Gauss points
@@ -215,14 +216,24 @@ function M_solid3D(m::Mesh3D,ele::Int64; lumped=false)
         # Jacobian matrix
         J = Jacobian_solid3D(x,y,z,dNrst)
 
+        # Determinant
+        DJ = det(J)
+
+        # Mass
+        mass += DJ*dens
+
         # Add 
-        M .= M .+ transpose(N)*N*(det(J)*dens)
+        M .= M .+ transpose(N)*N*(DJ*dens)
         
     end
 
-    # Return M
-    return M
-
+    # If lumped, we use the special technique in pg 445 Hugues
+    if lumped
+        alp = mass / sum(diag(M))
+        return Diagonal(M).*alp
+    else
+        return M
+    end
 end
 
 

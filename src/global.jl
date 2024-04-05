@@ -207,7 +207,7 @@ This function also considers entries :Mass in mesh.options
 with [node dof value;]
     
 """
- function Global_M(mesh::Mesh, x::Vector{T}, mparam::Function;lumped=true) where T
+ function Global_M(mesh::Mesh, x::Vector{T}, mparam::Function;lumped=false) where T
 
     # Alias
     ne = Get_ne(mesh)
@@ -339,15 +339,6 @@ with [node dof value;]
     # Generate the sparse matrix
     M = sparse(VI,VJ,VV)
     dropzeros!(M)
-
-
-    # Lets make sure M is really diagonal in elasticity case
-    if lumped
-        if isa(mesh.bmesh,Bmesh_solid_2D) || isa(mesh.bmesh, Bmesh_solid_3D)
-           M = Diagonal(M)./norm(M)    
-        end
-    end
-
 
     # Return the global mass matrix
     return M
