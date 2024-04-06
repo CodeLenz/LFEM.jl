@@ -229,8 +229,34 @@ function M_solid3D(m::Mesh3D,ele::Int64; lumped=false)
 
     # If lumped, we use the special technique in pg 445 Hugues
     if lumped
-        alp = mass / sum(diag(M))
-        return Diagonal(M).*alp
+
+        # Dofs X
+        glsx = collect(1:3:24)
+        diagx = diag(M[glsx,glsx])
+        alpx = mass / sum(diagx)
+        diagx .*= alpx
+
+        # Dofs Y
+        glsy = collect(2:3:24)
+        diagy = diag(M[glsy,glsy])
+        alpy = mass / sum(diagy)
+        diagy .*= alpy
+      
+        # Dofs Z
+        glsz = collect(3:3:24)
+        diagz = diag(M[glsz,glsz])
+        alpz = mass / sum(diagz)
+        diagz .*= alpz
+
+
+        # Mix the X and Y and return the diagonal matrix
+        dig = zeros(24)
+        dig[glsx].= diagx
+        dig[glsy].= diagy
+        dig[glsz].= diagz
+        
+    
+        return diagm(dig)   
     else
         return M
     end

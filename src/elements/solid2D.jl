@@ -218,8 +218,25 @@ function M_solid2D(m::Mesh2D,ele::Int64;lumped=false)
 
     # If lumped, we use the special technique in pg 445 Hugues
     if lumped
-        alp = mass / sum(diag(M))
-        return Diagonal(M).*alp
+
+        # Dofs X
+        glsx = [1;3;5;7]
+        diagx = diag(M[glsx,glsx])
+        alpx = mass / sum(diagx)
+        diagx .*= alpx
+
+        # Dofs Y
+        glsy = [2;4;6;8]
+        diagy = diag(M[glsy,glsy])
+        alpy = mass / sum(diagy)
+        diagy .*= alpy
+      
+        # Mix the X and Y and return the diagonal matrix
+        dig = zeros(8)
+        dig[glsx].= diagx
+        dig[glsy].= diagy
+    
+        return diagm(dig)
     else
         return M
     end

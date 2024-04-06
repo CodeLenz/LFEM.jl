@@ -66,7 +66,7 @@
     M_l = Local_M(m2,1,lumped=true)
        
     # Constisten diagonal mass
-    Mlref = 1.125*Diagonal(Mref)
+    Mlref = (mass/(4*10/9))*Diagonal(Mref)
 
     @test isapprox(norm(M_l.-Mlref), 0.0, atol=1E-12)
 
