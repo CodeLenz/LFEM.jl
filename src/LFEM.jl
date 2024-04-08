@@ -6,6 +6,10 @@ module LFEM
        using StaticArrays
        using BMesh, LMesh
 
+       # From version 0.4 of Arnoldy methods, one has to explicitly 
+       # import the symbols
+       using ArnoldiMethod: LM
+
        # If possible, set optimization to 3
        if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@optlevel"))
               @eval Base.Experimental.@optlevel 3
