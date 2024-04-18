@@ -354,7 +354,8 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
 
     # Tspan    
     t0,tf = ts
-    tspan = t0:Δt:tf-Δt
+    #tspan = t0:Δt:tf-Δt
+    tspan = range(start=t0,stop=tf-Δt,length=ceil(Int64,(tf-Δt)/Δt))
 
     # Number of time steps
     nt = length(tspan)
