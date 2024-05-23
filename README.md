@@ -9,7 +9,7 @@ https://github.com/CodeLenz/BMesh.jl
 https://github.com/CodeLenz/LMesh.jl  
 https://github.com/CodeLenz/TMeshes.jl  
 
-It is adviseable to install using the following sequence
+It is recomended to install using the following sequence
 ```julia
 using Pkg
 Pkg.add(url="https://github.com/CodeLenz/BMesh.jl.git#main#main")
