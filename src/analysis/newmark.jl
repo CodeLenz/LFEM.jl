@@ -427,8 +427,8 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix,
 
             f!(t+Δt,F)
             b .= F .- K*U0 .-CKdt*V0 .- CKbeta*A0
-            #A .= linsolve\b
-            ldiv!(A,linsolve,b)
+            A .= linsolve\b
+            #ldiv!(A,linsolve,b)
             V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
             U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
             
