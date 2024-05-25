@@ -343,19 +343,20 @@ number of time steps (length of t0:Δt:tf)
     
     A_t is a vector of size nt x 1 with discrete times
 """
-function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!::Function, gls::Vector{Int64}, 
-                      ts::Tuple{Float64, Float64}, Δt::Float64,
-                      verbose=false; 
-                      U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
+function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, 
+                       f!::Function, gls::Vector{Int64}, 
+                       ts::Tuple{Float64, Float64}, Δt::Float64,
+                       verbose=false; 
+                       U0=Float64[], V0=Float64[], β=1/4, γ=1/2)
 
 
     #
     #                              Initialization
     #             
 
-    # Tspan    
+    # Tspan   
+    #tspan = t0:Δt:tf-Δt 
     t0,tf = ts
-    #tspan = t0:Δt:tf-Δt
     tspan = range(start=t0,stop=tf-Δt,length=ceil(Int64,(tf-Δt)/Δt))
 
     # Number of time steps
@@ -388,7 +389,7 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
 
     # List with DOFs to monitor
     if isempty(gls)
-        error("At least one valid dof  must be monitored (gls)")
+        error("Newmark:: At least one valid dof  must be monitored (gls)")
     end
 
 
@@ -426,7 +427,8 @@ function Solve_newmark(M::AbstractMatrix,C::AbstractMatrix,K::AbstractMatrix, f!
 
             f!(t+Δt,F)
             b .= F .- K*U0 .-CKdt*V0 .- CKbeta*A0
-            A .= linsolve\b
+            #A .= linsolve\b
+            ldiv!(A,linsolve,b)
             V .= V0 .+ Δt*( (1-γ)*A0 .+ γ*A )
             U .= U0 .+ Δt*V0 .+ ( (1/2-β)*A0 .+ β*A )*Δt^2
             
