@@ -100,4 +100,30 @@
     @test isapprox(U[3*(6-1)+3],uz)
     @test isapprox(U[3*(7-1)+3],uz)
 
+    # lets turn the bubble ON
+    m3.options[:INCOMPATIBLE]=[1.0 1.0]
+
+    # Displacement
+    U,_ = Solve_linear(m3)
+
+    # reference is u = FL/EA, where A = height*depth
+    refu = 100*5/(100.0 * 2 * 1)
+    @test isapprox(U[3*(2-1)+1],refu)
+    @test isapprox(U[3*(3-1)+1],refu)
+    @test isapprox(U[3*(6-1)+1],refu)
+    @test isapprox(U[3*(7-1)+1],refu)
+    
+    # vertical displacements are proportional to Poisson's ratio
+    # exx = F/EA
+    exx = 100/(100.0*2*1)
+    eyy = -0.3*exx
+    ezz = -0.3*exx
+    uy = eyy*2.0
+    uz = ezz*1.0
+    @test isapprox(U[3*(3-1)+2],uy)
+    @test isapprox(U[3*(4-1)+2],uy)
+ 
+    @test isapprox(U[3*(6-1)+3],uz)
+    @test isapprox(U[3*(7-1)+3],uz)
+ 
 end

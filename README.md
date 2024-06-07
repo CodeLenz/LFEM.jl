@@ -18,6 +18,14 @@ Pkg.add(url="https://github.com/CodeLenz/TMeshes.git#main#main")
 Pkg.add(url="https://github.com/CodeLenz/LFEM.git#main#main")
 ```
 
+There are currently four types of elements: 2D and 3D bar (truss) elements and 
+2D (four node bilinear isoparametric elements) and 3D (eigth node trilinear isoparametric elements).
+The elasticity elements are compatible, without additional incompatible (or bubble) modes. To turn on
+the elasticity elements into their incompatible couterparts, use
+```julia
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
+```
+
 
 # Examples 
 
@@ -31,6 +39,14 @@ using LFEM
 mesh = Simply_supported2D(6,6);
 
 # Solve the linear static equilibrium
+# using the traditional 4 node bilinear isop elements
+U, F, linsolve = Solve_linear(mesh);
+
+# Turn the incompatible mode on
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
+
+# Solve the linear static equilibrium
+# using incompatible elements
 U, F, linsolve = Solve_linear(mesh);
 
 ```
@@ -43,6 +59,9 @@ using LFEM
 
 # Load Simply supported 2D from TMeshes
 mesh = Simply_supported2D(6,6,:solid2D);
+
+# Turn the incompatible mode on
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
 
 # Solve the linear static equilibrium
 U, F, linsolve = Solve_linear(mesh);
@@ -85,6 +104,9 @@ using LFEM
 # Load Simply supported 2D from TMeshes
 mesh = Simply_supported3D(6,6,6,:solid3D);
 
+# Turn the incompatible mode on
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
+
 # Solve the linear static equilibrium
 U, F, linsolve = Solve_linear(mesh);
 
@@ -107,6 +129,9 @@ using LFEM
 
 # Load Simply supported 2D from TMeshes
 mesh = Simply_supported2D(6,6);
+
+# Turn the incompatible mode on
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
 
 # Solve the linear static equilibrium
 U, F, linsolve = Solve_linear(mesh);
@@ -137,6 +162,9 @@ using LFEM
 # Load Simply supported 2D from TMeshes
 mesh = Simply_supported3D(6,6,6,:solid3D);
 
+# Turn the incompatible mode on
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
+
 # Solve the linear static equilibrium
 U, F, linsolve = Solve_linear(mesh);
 
@@ -166,6 +194,9 @@ using LFEM
 
 # Load Simply supported 2D from TMeshes
 mesh = Simply_supported2D(6,6,:solid2D);
+
+# Turn the incompatible mode on
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
 
 # Solve the linear static equilibrium
 U, F, linsolve = Solve_linear(mesh);

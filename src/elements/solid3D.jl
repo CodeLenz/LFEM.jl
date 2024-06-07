@@ -149,11 +149,16 @@ function K_solid3D(m::Mesh3D,ele::Int64)
         
     end
 
-    # Guyan reduction
-    Kaa = @view K[1:24,1:24]
-    Kab = @view K[1:24,25:33]
-    Kbb = @view K[25:33,25:33]
-    return MMatrix{24,24}(Kaa .- Kab*(Kbb\Kab'))
+
+    if !haskey(m.options,:INCOMPATIBLE)
+        return MMatrix{24,24}(K[1:24,1:24])
+    else
+        # Guyan reduction
+        Kaa = @view K[1:24,1:24]
+        Kab = @view K[1:24,25:33]
+        Kbb = @view K[25:33,25:33]
+        return MMatrix{24,24}(Kaa .- Kab*(Kbb\Kab'))
+    end
 
 end
 
@@ -255,7 +260,6 @@ function M_solid3D(m::Mesh3D,ele::Int64; lumped=false)
         dig[glsy].= diagy
         dig[glsz].= diagz
         
-    
         return diagm(dig)   
     else
         return M
@@ -282,7 +286,8 @@ function Stress_solid3D(r::Float64,s::Float64,t::Float64,
     # Global DOFs
     gls = DOFs(mesh,ele) 
 
-    # Element displacements
+    # Element displacements - We are not using the 
+    # additional Bubble DOFs
     ug = SVector{24,T}(U[gls])
     
     # Stress

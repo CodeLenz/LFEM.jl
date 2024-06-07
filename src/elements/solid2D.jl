@@ -135,12 +135,16 @@ function K_solid2D(m::Mesh2D,ele::Int64)
         
     end
 
-    # Guyan reduction
-    Kaa = @view K[1:8,1:8]
-    Kab = @view K[1:8,9:12]
-    Kbb = @view K[9:12,9:12]
-
-    return MMatrix{8,8}(Kaa .- Kab*(Kbb\Kab'))
+    # Check if bubble is off
+    if !haskey(m.options,:INCOMPATIBLE)
+        return K[1:8,1:8]
+    else
+        # Bubble is on - Guyan reduction
+        Kaa = @view K[1:8,1:8]
+        Kab = @view K[1:8,9:12]
+        Kbb = @view K[9:12,9:12]
+        return MMatrix{8,8}(Kaa .- Kab*(Kbb\Kab'))
+    end
 
 end
 
@@ -244,7 +248,7 @@ function M_solid2D(m::Mesh2D,ele::Int64;lumped=false)
 end
 
 """
-Local stress for solid 2D ((Not expanding bubble DOFs)
+Local stress for solid 2D (Not expanding bubble DOFs)
     Stress_solid2D(r::Float64,s::Float64,mesh::Mesh2D,ele::Int64,U::Vector{T})
 
 """

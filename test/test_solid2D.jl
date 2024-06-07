@@ -86,4 +86,24 @@
     @test isapprox(U[6],uy)
     @test isapprox(U[8],uy)
 
+    # lets turn the bubble ON
+    m2.options[:INCOMPATIBLE]=[1.0 1.0]
+
+    # Displacement
+    U,_ = Solve_linear(m2)
+
+    # reference is u = FL/EA, where A = height*thickness
+    refu = 100*5/(100.0 * 2 * 0.1)
+    @test isapprox(U[3],refu)
+    @test isapprox(U[5],refu)
+   
+    # vertical displacement is proportional to Poisson's ratio
+    # exx = F/EA
+    exx = 100/(100.0*2*0.1)
+    eyy = -0.3*exx
+    uy = eyy*2.0
+    @test isapprox(U[6],uy)
+    @test isapprox(U[8],uy)
+
+
 end
