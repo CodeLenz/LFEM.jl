@@ -2,16 +2,16 @@
 #####                           GMSH 2.1                                 ######
 ################################################################################
 
-import BMesh:Gmsh_init
+import BMesh:Lgmsh_export_init
 """
 (Overloaded from BMesh)
 Initialize a gmsh mesh for post processing.
 
-    Gmsh_init(nome_arquivo::String,mesh::Mesh)
+    Lgmsh_export_init(nome_arquivo::String,mesh::Mesh)
 
 """
 function Gmsh_init(nome_arquivo::String,mesh::Mesh)
-         BMesh.Gmsh_init(nome_arquivo,mesh.bmesh)
+         BMesh.Lgmsh_export_init(nome_arquivo,mesh.bmesh)
 end
 
 
