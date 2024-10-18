@@ -136,9 +136,9 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     C = Global_C(M,K,mesh,α_c,β_c)
 
     # Some views
-    Kv = @view K[free_dofs,free_dofs]
-    Mv = @view M[free_dofs,free_dofs]
-    Cv = @view C[free_dofs,free_dofs]
+    Kv = K[free_dofs,free_dofs]
+    Mv = M[free_dofs,free_dofs]
+    Cv = C[free_dofs,free_dofs]
 
     sKv = sparse(Kv)
     sMv = sparse(Mv)
@@ -183,10 +183,12 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     # Newmark operator
     MN =  sMv .+ β*sKv*(Δt^2) .+ γ*sCv*Δt
 
+    # Operator assumptions
+    assumption = OperatorAssumptions(true,condition=OperatorCondition.WellConditioned)
+
     # Create LinearSolve problem
     prob = LinearProblem(Symmetric(MN),Af,alias_A=true)
-    linsolve = init(prob)
-    #linsolve = lu(MN)
+    linsolve = init(prob,assumptions=assumption)
 
     # Pre-allocates to avoid some computations inside the main loop
     CKdt = sCv .+ Δt*sKv
