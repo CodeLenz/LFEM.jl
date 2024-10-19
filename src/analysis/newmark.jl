@@ -187,7 +187,7 @@ function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64},
     assumption = OperatorAssumptions(true,condition=OperatorCondition.WellConditioned)
 
     # Create LinearSolve problem
-    prob = LinearProblem(Symmetric(MN),Af)
+    prob = LinearProblem(MN,Af)
     linsolve = init(prob,assumptions=assumption)
 
     # Pre-allocates to avoid some computations inside the main loop
