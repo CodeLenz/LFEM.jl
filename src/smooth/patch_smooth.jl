@@ -193,7 +193,7 @@ end
 # Loop over all patches and project the interpolated component stresses 
 # over the nodes
 #
-function Patches(mesh::Mesh, stresses::Array{T}) where T
+function Patch_stress_smooth(mesh::Mesh, stresses::Array{T}) where T
 
     # Number of nodes
     nn = Get_nn(mesh)
