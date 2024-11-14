@@ -166,7 +166,81 @@ end
 
 #
 # Adiciona uma vista tensorial a um arquivo (que ja deve ter o cabecalho)
-# O vetor que contem os valores centroidais deve ter dimensao nelems e o número de 
+# O array que contem os valores nodais deve ter dimensao nnos e o número de 
+# colunas depende do tipo de elemento
+#
+"""
+Export a tensorial element view to gmsh -> to be used when center=true 
+
+    Gmsh_nodal_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
+                      nome_vista::String,tempo=0.0)
+
+"""
+function Gmsh_nodal_stress(mesh::Mesh,stress::Matrix,nome_arquivo::String,
+                           nome_vista::String,tempo=0.0)
+
+
+    # Alias
+    nn = Get_nn(mesh)
+
+    # Tenta abrir o arquivo para append
+    saida = try
+    open(nome_arquivo,"a")
+    catch
+        error("ERROR::Gmsh_nodal_stress:: Cannot open $nome_arquivo")
+    end
+
+
+    # Verifica se a dimensao esta correta
+    if size(stress,1)!=nn
+        error("ERROR::Gmsh_nodal_stress:: number of rows must be nnos")
+    end
+
+    # Now we have to proccess the input. Each element type has different number of
+    # stress components. The maximum number is 6
+    # components are xx yy zz xz yz zy 
+    outs = zeros(nn,6)
+
+    etype = Get_etype(mesh)
+    if etype===:truss2D || etype===:truss3D
+
+        outs[:,1].=stress[:]
+
+    elseif etype===:solid2D    
+
+        # Normal
+        outs[:,1:2].=stress[:,1:2]
+
+        # Shear xy
+        outs[:,6].= stress[:,3]
+    else
+        outs = stress    
+    end
+    #
+    #
+    println(saida,"\$NodeData")
+    println(saida,"1")
+    println(saida,"\" $nome_vista \"")
+    println(saida,"1")
+    println(saida,tempo)
+    println(saida,"3")
+    println(saida,"0")
+    println(saida,"9")
+    println(saida,nn)
+    for i=1:nn
+        comp =outs[i,:]
+        println(saida,i," ",comp[1], " ", comp[6], " ", comp[5], " ", comp[6], " ",comp[2]," ",comp[4], " ",comp[5], " ",comp[4]," ",comp[3])
+    end
+    println(saida,"\$EndNodeData")
+
+    # Fecha por hora
+    close(saida)
+
+end
+
+#
+# Adiciona uma vista tensorial a um arquivo (que ja deve ter o cabecalho)
+# O array que contem os valores centroidais deve ter dimensao nelems e o número de 
 # colunas depende do tipo de elemento
 #
 """

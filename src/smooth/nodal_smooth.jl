@@ -9,7 +9,7 @@ function Nodal_stress_smooth(mesh,stresses::Array{TF}) where TF
     nc = size(stresses,2)
 
     # Assertion
-    (nc==3 || nc==6) && error("Nodal_stress_smooth:: implemented for centroidal stresses only")
+    (nc==3 || nc==6) || error("Nodal_stress_smooth:: implemented for centroidal stresses only")
 
     # Allocate the output array
     smooth = zeros(TF,mesh.bmesh.nn,nc)
@@ -20,16 +20,25 @@ function Nodal_stress_smooth(mesh,stresses::Array{TF}) where TF
     
     # We are assuming that stresses were evaluated at the center
     # of each element. Thus, a simple average is performed at each node
-    for node in axes(mesh.bmesh.coord,1)
+    for node=1:mesh.bmesh.nn 
 
-        # Elements sharing this node
+        # Neighbours 
         elements = neighbours[node]
 
+        # "volumes" for each element
+        vols =  [Volume_element(mesh,e) for e in elements]
+
+        # Stresses for each element
+        sigmas = stresses[elements,:]
+        
+        # Scale each stress for its volume
+        scale_sigma = sigmas .* vols
+
         # For each element and each component, evaluate the mean
-        smooth[node,:] .= mean(stresses[elements,:],dims=2)
+        smooth[node,:] .= vec(mean(scale_sigma,dims=1)) ./ sum(vols)
 
     end
-   
+
     # Return smoothed stresses
     return smooth
 
