@@ -229,13 +229,13 @@ Gmsh_element_stresses(mesh,sigma_g,name,"Gauss Points: Stress [Pa]");
 nodal_smooth_sigma = Nodal_stress_smooth(mesh,sigma)
 
 # Export the nodal stresses to gmsh
-Gmsh_nodal_stresses(mesh,nodal_smooth_sigma,name,"Nodal smooth: Stress [Pa]");
+Gmsh_nodal_stress(mesh,nodal_smooth_sigma,name,"Nodal smooth: Stress [Pa]");
 
 # Global smoothing
 global_smooth_sigma = Global_stress_smooth(mesh,sigma)
 
 # Export the nodal stresses to gmsh
-Gmsh_nodal_stresses(mesh,global_smooth_sigma,name,"Global smooth: Stress [Pa]");
+Gmsh_nodal_stress(mesh,global_smooth_sigma,name,"Global smooth: Stress [Pa]");
 
 ```
 

@@ -54,6 +54,6 @@ module LFEM
        export Harmonic_stresses, Voigt_equivalent
        export B_element
        export Nodal_stress_smooth, Global_stress_smooth
-       export Gmsh_nodal_stresses
+       export Gmsh_nodal_stress
 
 end # module
