@@ -4,6 +4,7 @@ module LFEM
        using ArnoldiMethod, LinearMaps
        using LinearSolve
        using StaticArrays
+       using Statistics
        using BMesh, LMesh
 
        # From version 0.4 of Arnoldy methods, one has to explicitly 

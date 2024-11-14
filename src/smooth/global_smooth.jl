@@ -8,18 +8,6 @@ function Global_smooth_M(mesh::Mesh)
     # Element type
     etype = Get_etype(mesh)
 
-    # Functions and number of nodes depend on the 
-    # type of element
-    if etype===:solid2D
-        nn = 4
-        f(m,e) = M_smooth_solid2D(m,e)
-    elseif etype===:solid3D
-        nn = 8
-        f(m,e) = M_smooth_solid3D(m,e)
-    else
-        error("Global_smooth_M:: just for elasticity")
-    end
-
     # Allocate auxiliar vectors
     VI = Int64[]; 
     VJ = Int64[]; 
@@ -30,7 +18,13 @@ function Global_smooth_M(mesh::Mesh)
     for ele in mesh
 
         # Local "mass" matrix
-        Me = f(mesh,ele)
+        if etype===:solid2D
+           Me = M_smooth_solid2D(mesh,ele)
+           nn = 4
+        else
+           Me = M_smooth_solid3D(mesh,ele)
+           nn = 8
+        end
         
         # Find element nodes
         nodes = Connect(mesh,ele)
@@ -64,15 +58,6 @@ function Global_smooth_F(mesh::Mesh,component::Vector{T}) where T
     # Element type
     etype = Get_etype(mesh)
 
-    # Functions  depending on the type of element
-    if etype===:solid2D
-        fF(m,e,t) = F_smooth_solid2D(m,e,t)
-    elseif etype===:solid3D
-        fF(m,e,t) = F_smooth_solid3D(m,e,t)
-    else
-        error("Global_smooth_F:: just for elasticity")
-    end
-
     # Number of nodes in the mesh
     nn = Get_nn(mesh)
 
@@ -86,7 +71,11 @@ function Global_smooth_F(mesh::Mesh,component::Vector{T}) where T
         stress = component[ele]
 
         # Local "force" vector
-        Fe = fF(mesh,ele,stress)
+        if etype===:solid2D
+           Fe = F_smooth_solid2D(mesh,ele,stress)
+        else
+           Fe = F_smooth_solid3D(mesh,ele,stress)
+        end
         
         # Find element nodes
         nodes = Connect(mesh,ele)
