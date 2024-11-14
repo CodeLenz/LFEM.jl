@@ -209,7 +209,7 @@ name = "output.pos";
 Gmsh_init(name,mesh);
 
 # Export stresses
-Gmsh_element_stress(mesh,sigma,name,"Stress [Pa]");
+Gmsh_element_stress(mesh,sigma,name,"Centroidal: Stress [Pa]");
 
 # Export displacements
 Gmsh_nodal_vector(mesh,U,name,"Displacement [m]");
@@ -221,8 +221,15 @@ sigma_g = Stresses(mesh,U,center=false);
 # Export stresses. In this case, stresses are interpolated to the 
 # nodes to be complatible with gmsh.
 # Note that the function has a different name!
-Gmsh_element_stresses(mesh,sigma_g,name,"Stress [Pa]");
+Gmsh_element_stresses(mesh,sigma_g,name,"Gauss Points: Stress [Pa]");
 
+# One can also apply nodal smoothing to stresses. There are some
+# approaches avaliable. For example, the simple nodal average (scaled
+# by the element volume)
+nodal_sigma = Nodal_stress_smooth(mesh,sigma)
+
+# Export the nodal stresses to gmsh
+Gmsh_nodal_stresses(mesh,nodal_sigma,name,"Nodal smooth: Stress [Pa]");
 
 ```
 
