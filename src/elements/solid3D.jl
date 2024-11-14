@@ -335,3 +335,115 @@ function Volume_solid3D(mesh::Mesh,ele::Int64)
     return volume
     
 end
+
+                            ###########################################################
+                            # Specific functions for global stress smoothing
+                            ###########################################################
+
+"""
+Interpolation matrix for solid 3D (For smoothing)
+    N_smooth_solid3D(r::T,s::T,t::T) where T
+"""
+function N_smooth_solid3D(r::T,s::T,t::T) where T
+
+    # Functions
+    N1 = (1/8)*(1-r)*(1-s)*(1-t); 
+    N2 = (1/8)*(1+r)*(1-s)*(1-t); 
+    N3 = (1/8)*(1+r)*(1+s)*(1-t); 
+    N4 = (1/8)*(1-r)*(1+s)*(1-t); 
+    N5 = (1/8)*(1-r)*(1-s)*(1+t); 
+    N6 = (1/8)*(1+r)*(1-s)*(1+t); 
+    N7 = (1/8)*(1+r)*(1+s)*(1+t); 
+    N8 = (1/8)*(1-r)*(1+s)*(1+t); 
+
+    return SMatrix{1,8}([N1 N2 N3 N4 N5 N6 N7 N8])
+
+end
+
+"""
+Consistent "mass" matrix for solid 3D ans stress smoothing
+    M_solid3D(m::Mesh3D,ele::Int64)
+"""
+function M_smooth_solid3D(m::Mesh3D,ele::Int64)
+
+    # Coordinates
+    x,y,z = Nodal_coordinates(m,ele)
+
+    # Gauss points
+    G = Gauss_3D()
+
+    # Matrix
+    M = @MMatrix zeros(8,8)
+
+    # Main loop
+    for i=1:8
+
+        # Gauss points
+        r,s,t = G[:,i]
+
+        # N matrix
+        N = N_smooth_solid3D(r,s,t)
+
+        # Derivates of N
+        dNrst = dN_solid3D(r,s,t)
+
+        # Jacobian matrix
+        J = Jacobian_solid3D(x,y,z,dNrst)
+
+        # Determinant
+        DJ = det(J)
+
+        # Add 
+        M .= M .+ transpose(N)*N*DJ
+        
+    end
+
+    # Return M
+    return M
+
+end
+
+
+"""
+Consistent "force" vector for solid 3D and stress smoothing
+    M_smooth_solid3D(m::Mesh2D,ele::Int64,stress::T) where T
+
+"""
+function F_smooth_solid3D(m::Mesh2D,ele::Int64,stress::T) where T
+
+     # Coordinates
+     x,y,z = Nodal_coordinates(m,ele)
+
+     # Gauss points
+     G = Gauss_3D()
+ 
+     # Matrix
+     F = @MVector zeros(8)
+ 
+     # Main loop
+     for i=1:8
+ 
+         # Gauss points
+         r,s,t = G[:,i]
+ 
+         # N matrix
+         N = N_smooth_solid3D(r,s,t)
+ 
+         # Derivates of N
+         dNrst = dN_solid3D(r,s,t)
+ 
+         # Jacobian matrix
+         J = Jacobian_solid3D(x,y,z,dNrst)
+ 
+         # Determinant
+         DJ = det(J)
+ 
+         # Add 
+         F .= F .+ transpose(N)*DJ*stress
+         
+     end
+ 
+     # Return F
+     return F
+ 
+ end

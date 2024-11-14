@@ -168,7 +168,7 @@ end
 
 
 """
-Consistent mass matrix for solid 2D
+Consistent/lumped mass matrix for solid 2D
     M_solid2D(m::Mesh2D,ele::Int64,lumped=false)
 
 """
@@ -315,4 +315,124 @@ function Volume_solid2D(mesh::Mesh2D,ele::Int64)
     end
     return volume
     
+end
+
+
+                            ###########################################################
+                            # Specific functions for global stress smoothing
+                            ###########################################################
+
+"""
+Interpolation matrix for solid 2D (For stress smoothing)
+    N_smooth_solid2D(r::T,s::T) where T
+
+"""
+function N_smooth_solid2D(r::T,s::T) where T
+
+    # Functions
+    N1 = (1/4)*(1-r)*(1-s)
+    N2 = (1/4)*(1+r)*(1-s)
+    N3 = (1/4)*(1+r)*(1+s)
+    N4 = (1/4)*(1-r)*(1+s)
+
+    return SMatrix{1,4}([N1 N2 N3 N4])
+
+end
+
+"""
+Consistent "mass" matrix for solid 2D and stress smoothing
+    M_smooth_solid2D(m::Mesh2D,ele::Int64,lumped=false)
+
+"""
+function M_smooth_solid2D(m::Mesh2D,ele::Int64)
+
+    # Coordinates
+    x,y = Nodal_coordinates(m,ele)
+
+    # Geometry
+    geo = m.geo_ele[ele]
+
+    # Thickness
+    thick = m.geometries[geo].thickness
+
+    # Gauss points
+    G = Gauss_2D()
+
+    # Matrix
+    M = @MMatrix zeros(4,4)
+
+    # Main loop
+    @inbounds for i=1:4
+
+        # Gauss points
+        r,s = G[:,i]
+
+        # N matrix
+        N = N_smooth_solid2D(r,s)
+
+        # Derivates of N
+        dNrs = dN_solid2D(r,s)
+
+        # Jacobian matrix
+        J = Jacobian_solid2D(x,y,dNrs)
+
+        # Determinant 
+        DJ = det(J)
+
+        # Add 
+        M .= M .+ transpose(N)*N*(DJ*thick)
+          
+    end
+
+    return M
+
+end
+
+"""
+Consistent "force" vector for solid 2D and stress smoothing
+    M_smooth_solid2D(m::Mesh2D,ele::Int64,stress::T) where T
+
+"""
+function F_smooth_solid2D(m::Mesh2D,ele::Int64,stress::T) where T
+
+    # Coordinates
+    x,y = Nodal_coordinates(m,ele)
+
+    # Geometry
+    geo = m.geo_ele[ele]
+
+    # Thickness
+    thick = m.geometries[geo].thickness
+
+    # Gauss points
+    G = Gauss_2D()
+
+    # Force vector
+    F = @MVector zeros(4)
+
+    # Main loop
+    @inbounds for i=1:4
+
+        # Gauss points
+        r,s = G[:,i]
+
+        # N matrix
+        N = N_smooth_solid2D(r,s)
+
+        # Derivates of N
+        dNrs = dN_solid2D(r,s)
+
+        # Jacobian matrix
+        J = Jacobian_solid2D(x,y,dNrs)
+
+        # Determinant 
+        DJ = det(J)
+
+        # Add 
+        F .= F .+ transpose(N)*stress*(DJ*thick)
+          
+    end
+
+    return F
+
 end
