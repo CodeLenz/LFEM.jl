@@ -90,7 +90,7 @@ function Vector_b_patch(coordinates::Array,component::Vector{T}) where T
 # Given a Patch and a stress component, return the coefficients 
 # of the patch
 #
-function Patch_smooth2D(patch::Patch,component::Vector{T}) where T
+function Patch_smooth2D(patch::Patch,mesh::Mesh,component::Vector{T}) where T
 
     # The dimension of the problem can be asserted from the dimension of lower_coord
     dim = 2
@@ -142,7 +142,7 @@ end
 # Given a Patch and a stress component, return the coefficients 
 # of the patch
 #
-function Patch_smooth3D(patch::Patch,component::Vector{T}) where T
+function Patch_smooth3D(patch::Patch,mesh::Mesh,component::Vector{T}) where T
 
     # The dimension of the problem can be asserted from the dimension of lower_coord
     dim = 3
@@ -222,9 +222,9 @@ function Patch_stress_smooth(mesh::Mesh, stresses::Array{T}) where T
 
             # Function 
             func = if dim==2
-                      Patch_smooth2D(p,stresses[:,j]) 
+                      Patch_smooth2D(p,mesh,stresses[:,j]) 
                    else
-                      Patch_smooth3D(p,stresses[:,j]) 
+                      Patch_smooth3D(p,mesh,stresses[:,j]) 
                    end
 
             # Nodes for this patch
