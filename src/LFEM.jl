@@ -29,6 +29,7 @@ module LFEM
        include("analysis/modal.jl")
        include("analysis/harmonic.jl")
        include("analysis/newmark.jl")
+       include("smooth/nodal_smooth.jl")
        include("gmsh.jl")
 
 
@@ -50,5 +51,6 @@ module LFEM
        export Gmsh_element_stress, Map_stress2nodes_Quad, Gmsh_element_stresses
        export Harmonic_stresses, Voigt_equivalent
        export B_element
+       export Nodal_stress_smooth
 
 end # module
