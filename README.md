@@ -226,10 +226,16 @@ Gmsh_element_stresses(mesh,sigma_g,name,"Gauss Points: Stress [Pa]");
 # One can also apply nodal smoothing to stresses. There are some
 # approaches avaliable. For example, the simple nodal average (scaled
 # by the element volume)
-nodal_sigma = Nodal_stress_smooth(mesh,sigma)
+nodal_smooth_sigma = Nodal_stress_smooth(mesh,sigma)
 
 # Export the nodal stresses to gmsh
-Gmsh_nodal_stresses(mesh,nodal_sigma,name,"Nodal smooth: Stress [Pa]");
+Gmsh_nodal_stresses(mesh,nodal_smooth_sigma,name,"Nodal smooth: Stress [Pa]");
+
+# Global smoothing
+global_smooth_sigma = Global_stress_smooth(mesh,sigma)
+
+# Export the nodal stresses to gmsh
+Gmsh_nodal_stresses(mesh,global_smooth_sigma,name,"Global smooth: Stress [Pa]");
 
 ```
 
