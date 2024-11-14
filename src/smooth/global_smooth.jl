@@ -66,9 +66,9 @@ function Global_smooth_F(mesh::Mesh,component::Vector{T}) where T
 
     # Functions  depending on the type of element
     if etype===:solid2D
-        f(m,e,t) = F_smooth_solid2D(m,e,t)
+        fF(m,e,t) = F_smooth_solid2D(m,e,t)
     elseif etype===:solid3D
-        f(m,e,t) = F_smooth_solid3D(m,e,t)
+        fF(m,e,t) = F_smooth_solid3D(m,e,t)
     else
         error("Global_smooth_F:: just for elasticity")
     end
@@ -86,7 +86,7 @@ function Global_smooth_F(mesh::Mesh,component::Vector{T}) where T
         stress = component[ele]
 
         # Local "force" vector
-        Fe = f(mesh,ele,stress)
+        Fe = fF(mesh,ele,stress)
         
         # Find element nodes
         nodes = Connect(mesh,ele)
