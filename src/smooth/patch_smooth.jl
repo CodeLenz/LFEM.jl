@@ -50,8 +50,6 @@ end
 # centroids
 #
 function Vector_b_patch(coordinates::Array,component::Vector{T}) where T
-
-  
   
     # Dimension
     dim = size(coordinates,2)
@@ -216,22 +214,22 @@ function Patch_stress_smooth(mesh::Mesh, stresses::Array{T}) where T
         # Build the patch
         p = Patch(mesh,ele)
 
+        # Nodes for this patch
+        nodes = p.nodes
+
+        # Accesses
+        acesses[nodes] .+= 1
+
         # For each component, find the LS and 
         # project onto the nodes of the patch
         for j=1:nsc
 
-            # Function 
+            # Function to interpolate the stress components
             func = if dim==2
                       Patch_smooth2D(p,mesh,stresses[:,j]) 
                    else
                       Patch_smooth3D(p,mesh,stresses[:,j]) 
                    end
-
-            # Nodes for this patch
-            nodes = p.nodes
-
-            # Accesses
-            acesses[nodes] .+= 1
 
             # Loop over the nodes of the patch
             for node in p.nodes
