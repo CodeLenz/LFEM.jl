@@ -237,6 +237,13 @@ global_smooth_sigma = Global_stress_smooth(mesh,sigma)
 # Export the nodal stresses to gmsh
 Gmsh_nodal_stress(mesh,global_smooth_sigma,name,"Global smooth: Stress [Pa]");
 
+# Patch (element centered) smoothing
+patch_smooth_sigma = Patch_stress_smooth(mesh, sigma)
+
+# Export the nodal stresses to gmsh
+Gmsh_nodal_stress(mesh,patch_smooth_sigma,name,"Patch smooth: Stress [Pa]");
+
+
 ```
 
 ## Modal analysis 
