@@ -34,6 +34,7 @@ module LFEM
        include("smooth/global_smooth.jl")
        include("smooth/patch.jl")
        include("smooth/patch_smooth.jl")
+       include("smooth/error.jl")
        include("gmsh.jl")
 
 
@@ -56,6 +57,7 @@ module LFEM
        export Harmonic_stresses, Voigt_equivalent
        export B_element
        export Nodal_stress_smooth, Global_stress_smooth, Patch_stress_smooth
+       export Element_error_stress
        export Gmsh_nodal_stress
 
 end # module
