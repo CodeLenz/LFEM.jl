@@ -35,7 +35,7 @@ function Nodal_stress_smooth(mesh,stresses::Array{TF}) where TF
         scale_sigma = sigmas .* vols
 
         # For each element and each component, evaluate the mean
-        smooth[node,:] .= vec(mean(scale_sigma,dims=1)) ./ sum(vols)
+        smooth[node,:] .= vec(sum(scale_sigma,dims=1)) ./ sum(vols)
 
     end
 
