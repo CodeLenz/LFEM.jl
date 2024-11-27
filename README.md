@@ -527,3 +527,205 @@ Gmsh_element_stress(mesh,abs.(sigma_h),name,"Harmonic stress [Pa] - abs")
 
 
 ```
+
+
+## Stress smoothing and error estimates (with refinement indicator)
+```julia
+#
+# Cantilever beam with different stress computation strategies and
+# stress smoothing, error estimates and refinement estimate
+#
+#
+using BMesh, LMesh, TMeshes
+using LFEM
+
+
+# Data
+
+# Lenth and heigth
+Lx = 1.0
+Ly = 0.1
+
+# Thickness
+esp = 0.1
+
+# Number of elements in each direction
+nx = 20*4
+ny = 2*4
+
+# Maximimum admissible error (for stress)
+# in %
+admissible = 5/100
+
+# For some problems, stress can tend to infinity as the mesh is 
+# refined. Thus, we can use a skiplist to avoid compute errors
+# in these elements.
+#
+# Avoid the elements in the corner of the clamped left side
+# and the element with point load
+# 
+skiplist = [1;2;nx;
+            nx+1;nx+2;
+            nx*(ny-2)+1;nx*(ny-2)+2; nx*(ny-1)+1;nx*(ny-1)+2]
+
+# Alternativelly, on can consider all elements
+#skiplist = Int64[]
+
+# Elements to be considered
+elist = setdiff(collect(1:(nx*ny)),skiplist)
+
+#
+#
+# BEAM 1 x 0.1 x 0.1, E = 1GPa e F=1kN
+#
+# Maximum vertical displacement is : FL³ / (3EI) = 0.04 m 
+# 
+# Maximum normal stress is : 6(FL)/(bh^2) = 6 Mpa
+#
+# Maximum shear stress is : (4/3)(F/bh) = 133.3 kPa
+#
+#
+
+# Load Simply supported 2D from TMeshes
+# We are using Poissons ratio = 0 to compare with the beam theory.
+# 
+mesh = Cantilever_beam_bottom2D(nx,ny,:solid2D,Lx=Lx, Ly=Ly, force=1000.0,
+                                Ex=1E9,νxy=0.0,thickness=esp)
+
+# Turn the incompatible mode on
+mesh.options[:INCOMPATIBLE]=[1.0 1.0]
+
+# Turn the incomplatible mode of
+#delete!(mesh.options,:INCOMPATIBLE)
+
+# Solve the linear static equilibrium
+U, F, linsolve = Solve_linear(mesh);
+
+# Reference displacement (beam theory)
+println("Displacement is  ", U[end], " analytical solution is 0.04 m ")
+
+# Array with stresses - Default is at the center of the element
+# xx yy xy para cada elemento (linha)
+sigma = Stresses(mesh,U);
+
+# Initilize an output file
+name = "output.pos";
+Gmsh_init(name,mesh);
+
+# Export displacements
+Gmsh_nodal_vector(mesh,U,name,"Displacement [m]");
+
+# Export stresses
+Gmsh_element_stress(mesh,sigma,name,"Centroidal: Stress [Pa]");
+
+# It is also possible to evaluate stresses at the superconvergent
+# points (since 2D and 3D elasticity elements are nonconforming)
+# xx yy xy | xx yy xy | ....
+sigma_g = Stresses(mesh,U,center=false);
+
+# Export stresses. In this case, stresses are interpolated to the 
+# nodes to be compatible with gmsh. Thus, there is already some
+# smoothing due to interpolation.
+#
+# Note that the function has a different name than before !
+Gmsh_element_stresses(mesh,sigma_g,name,"Gauss Points: Stress [Pa]");
+
+#
+# Smooth, error and adaptive refinement
+#
+
+# One can also apply nodal smoothing to stresses. There are some
+# approaches avaliable. 
+
+# For example, the simple nodal average (scaled by the element volume)
+nodal_smooth_sigma = Nodal_stress_smooth(mesh,sigma)
+
+# Export the nodal stresses to gmsh
+Gmsh_nodal_stress(mesh,nodal_smooth_sigma,name,"Nodal smooth: Stress [Pa]");
+
+# Global smoothing
+global_smooth_sigma = Global_stress_smooth(mesh,sigma)
+
+# Export the nodal stresses to gmsh
+Gmsh_nodal_stress(mesh,global_smooth_sigma,name,"Global smooth: Stress [Pa]");
+
+# Patch (element centered) smoothing. Patches are bilinear by now
+patch_smooth_sigma = Patch_stress_smooth(mesh, sigma)
+
+# Export the nodal stresses to gmsh
+Gmsh_nodal_stress(mesh,patch_smooth_sigma,name,"Patch smooth: Stress [Pa]");
+
+# Evaluate the element "error" L2 for each element
+errors_nodal = [Element_error_stress(mesh,ele,sigma,nodal_smooth_sigma) for ele=1:mesh.bmesh.ne]
+errors_global = [Element_error_stress(mesh,ele,sigma,global_smooth_sigma) for ele=1:mesh.bmesh.ne]
+errors_patch = [Element_error_stress(mesh,ele,sigma,patch_smooth_sigma) for ele=1:mesh.bmesh.ne]
+
+# Expor to gmsh
+Gmsh_element_scalar(mesh,errors_nodal,name,"e nodal")
+Gmsh_element_scalar(mesh,errors_global,name,"e global")
+Gmsh_element_scalar(mesh,errors_patch,name,"e patch")
+
+# Zero out the elements in the skiplist
+errors_nodal[skiplist] .= 0 
+errors_global[skiplist] .= 0 
+errors_patch[skiplist] .= 0 
+
+# Global errors (sum)
+error_nodal = sum(errors_nodal)
+error_global = sum(errors_global)
+error_patch = sum(errors_patch)
+
+# "Quality" of each element (% of error)
+quality_nodal = 100*(errors_nodal./(error_nodal))
+quality_global = 100*(errors_global./(error_global))
+quality_patch = 100*(errors_patch./(error_patch))
+
+# Export to gmsh
+Gmsh_element_scalar(mesh,quality_nodal,name,"Quality nodal %")
+Gmsh_element_scalar(mesh,quality_global,name,"Quality global %")
+Gmsh_element_scalar(mesh,quality_patch,name,"Quality patch %")
+
+# Effective number of elements
+nee = length(elist)
+
+# Evaluate the "indicator". If the element error is larger than
+# admissible*total error, the indicator is larger than 1. Thus
+# this element must be refined
+indicator_nodal = sqrt(nee)*errors_nodal/(admissible*error_nodal)
+indicator_global = sqrt(nee)*errors_global/(admissible*error_global)
+indicator_patch = sqrt(nee)*errors_patch/(admissible*error_patch)
+
+# Export to gmsh
+Gmsh_element_scalar(mesh,indicator_nodal,name,"Indicator: nodal smooth")
+Gmsh_element_scalar(mesh,indicator_global,name,"Indicator: global smooth")
+Gmsh_element_scalar(mesh,indicator_patch,name,"Indicator: patch smooth")
+
+#
+# h "refinement" (just the estimates, not the refinement)
+#
+
+# Element size (the mesh is regular and all elements are assumd to be 
+# the same size)
+h = min(Lx/nx,Ly/ny)
+println("Element size " , h)
+
+# Error estimate - nodal smooth
+estimate_h_nodal = h ./ sqrt.(indicator_nodal.+1E-12)
+
+# Error estimate - global smooth
+estimate_h_global = h ./ sqrt.(indicator_global.+1E-12)
+
+# Error estimate - element centered superconvergent patch recovery
+estimate_h_patch = h ./ sqrt.(indicator_patch.+1E-12)
+
+# Zero ou elements in the skiplist
+estimate_h_nodal[skiplist] .= 0
+estimate_h_global[skiplist] .= 0
+estimate_h_patch[skiplist] .= 0
+
+# Export new element sizes (estimates)
+Gmsh_element_scalar(mesh,estimate_h_nodal,name,"h nodal (original is $(h))")
+Gmsh_element_scalar(mesh,estimate_h_global,name,"h global (original is $(h))")
+Gmsh_element_scalar(mesh,estimate_h_patch,name,"h patch (original is $(h))")
+
+```
