@@ -542,7 +542,7 @@ using LFEM
 
 # Data
 
-# Lenth and heigth
+# Length and heigt
 Lx = 1.0
 Ly = 0.1
 
@@ -558,7 +558,8 @@ ny = 2*4
 admissible = 5/100
 
 # For some problems, stress can tend to infinity as the mesh is 
-# refined. Thus, we can use a skiplist to avoid compute errors
+# refined (point loads and right angle corners, for examploe).
+# Thus, we can use a skiplist to avoid compute errors
 # in these elements.
 #
 # Avoid the elements in the corner of the clamped left side
