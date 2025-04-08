@@ -33,7 +33,7 @@ function Global_K(mesh::Mesh, x::Vector{T}, kparam::Function) where T
     # Aloca arrays para usar o sparse
     VI = Int64[]; 
     VJ = Int64[]; 
-    VV = Float64[]; 
+    VV = T[]; 
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
@@ -224,7 +224,7 @@ with [node dof value;]
 
     VI = Int64[]; 
     VJ = Int64[]; 
-    VV = Float64[]; 
+    VV = T[]; 
 
     # Chama dofs uma vez para depois reaproveitar 
     # o acesso de memória
