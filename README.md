@@ -510,7 +510,7 @@ mparam(xe::Float64,p=2.0,cut=0.1)= ifelse(xe>=cut,xe,xe^p)
 Ud, linsolve = Solve_harmonic(mesh,w,α_c,β_c,x,kparam,mparam);
 
 # Array with harmonic stresses
-sigma_h = Harmonic_stresses(mesh,U,w,β_c,x,sparam);
+sigma_h = Harmonic_stresses(mesh,Ud,w,β_c,x,sparam);
 
 # Initilize an output file
 name = "output.pos"
