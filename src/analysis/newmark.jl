@@ -48,12 +48,12 @@ number of time steps (length of t0:Δt:tf)
 """
 function Solve_newmark(mesh::Mesh, f!::Function, gls::Matrix{Int64}, 
                       ts::Tuple{Float64, Float64}, Δt::Float64,
-                      x::Vector{Float64}, kparam::Function, 
+                      x::Vector{T}, kparam::Function, 
                       mparam::Function, verbose=false; 
                       U0=Float64[], V0=Float64[], β=1/4, γ=1/2,
                       α_c=0.0, β_c=1E-6,
                       lumped=true,
-                      loadcase::Int64=1)
+                      loadcase::Int64=1) where T
 
 
     #

@@ -18,9 +18,9 @@ Returns:
     λ = eigenvalues vector (nev x 1)
     modes = matrix dim*nn x nev with the eigenvectors
 """
-function Solve_modal(mesh::Mesh, x::Vector{Float64}, kparam::Function, 
-                     mparam::Function; accept_failure=false,
-                     nev=4, lumped=false, loadcase::Int64=1, tol_residue=1E-4)
+function Solve_modal(mesh::Mesh, x::Vector{T}, kparam::Function, 
+                     mparam::Function; accept_failure=false, 
+                     nev=4, lumped=false, loadcase::Int64=1, tol_residue=1E-4) where T
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_modal:: length of x must be ne")

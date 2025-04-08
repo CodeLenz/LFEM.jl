@@ -15,7 +15,7 @@ Returns:
     F = Force vector (dim*nn x 1)
     linsolve = LinearSolve object with factored linear problem
 """
-function Solve_linear(mesh::Mesh, x::Vector{Float64}, kparam::Function; loadcase::Int64=1)
+function Solve_linear(mesh::Mesh, x::Vector{T}, kparam::Function; loadcase::Int64=1) where T
   
     # Basic assertions
     length(x)==Get_ne(mesh) || throw("Solve_linear:: length of x must be ne")

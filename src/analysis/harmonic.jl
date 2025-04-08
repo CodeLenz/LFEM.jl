@@ -23,8 +23,8 @@ Returns:
 
 """
 function Solve_harmonic(mesh::Mesh, w::Float64, α_c::Float64, β_c::Float64,
-                        x::Vector{Float64},
-                        kparam::Function, mparam::Function; lumped=true, loadcase::Int64=1)
+                        x::Vector{T},
+                        kparam::Function, mparam::Function; lumped=true, loadcase::Int64=1) where T
   
     # Basic checks
     w >= 0.0 || throw("Solve_harmonic:: angular frequency w must be >=0.0")
