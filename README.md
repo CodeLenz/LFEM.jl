@@ -12,6 +12,7 @@ https://github.com/CodeLenz/TMeshes.jl
 It is recomended to install using the following sequence
 ```julia
 using Pkg
+Pkg.add(url="https://github.com/CodeLenz/Lgmsh.jl.git#main#main")
 Pkg.add(url="https://github.com/CodeLenz/BMesh.jl.git#main#main")
 Pkg.add(url="https://github.com/CodeLenz/LMesh.jl.git#main#main")
 Pkg.add(url="https://github.com/CodeLenz/TMeshes.git#main#main")
