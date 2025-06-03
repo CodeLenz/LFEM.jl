@@ -157,7 +157,7 @@ function KF_solid2D_nl(m::Mesh2D,ele::Int64,U::Vector)
 
         # Add 
         K .= K .+ transpose(B)*C*(B)*dJ*thick .+ transpose(G)*Shat*G*dJ*thick
-        F .= F .+ transpose(B)*S
+        F .= F .+ transpose(B)*S*dJ*thick
     end
 
     return K,F
