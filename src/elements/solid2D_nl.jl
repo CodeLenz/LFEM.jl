@@ -46,6 +46,7 @@ function Bs_solid2D_nl(r::T,s::T,x::Vector{T},y::Vector{T},ue::Vector{T}) where 
     u2 = ue[2:2:8]
 
     # Evaluate u1,1 u1,2 u2,1 and u2,2
+    # Derivative of component i wrt j
     # Bathe 565
     u11 = dot(dNxy[1,:],u1)
     u12 = dot(dNxy[2,:],u1)
