@@ -18,5 +18,4 @@ TMeshes = "00e613e3-3517-4068-b432-60b6a85c0988"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
-Statistics = "1.11.1"
-julia = "1.10"
+julia = "1.11"
